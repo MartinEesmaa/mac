@@ -117,24 +117,24 @@ int CStdLibFileIO::GetHandle()
     return FILENO(m_pFile);
 }
 
-int CStdLibFileIO::Open(const char * pName)
+int CStdLibFileIO::Open(LPCTSTR pName)
 {
     Close();
 
     m_bReadOnly = FALSE;
 
     if (0 == strcmp(pName, "-") || 0 == strcmp(pName, "/dev/stdin")) 
-	{
-		m_pFile = SETBINARY_IN(stdin);
+    {
+        m_pFile = SETBINARY_IN(stdin);
         m_bReadOnly = TRUE;                                                     // ReadOnly
     }
     else if (0 == strcmp (pName, "/dev/stdout")) 
-	{
+    {
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                                                    // WriteOnly
     }
     else 
-	{
+    {
         m_pFile = fopen(pName, "rb");
         m_bReadOnly = FALSE;                                                    // Read/Write
     }
@@ -152,7 +152,7 @@ int CStdLibFileIO::Close()
     int nRetVal = -1;
 
     if (m_pFile != NULL) 
-	{
+    {
         nRetVal = fclose(m_pFile);
         m_pFile = NULL;
     }
@@ -207,17 +207,17 @@ int CStdLibFileIO::GetName(char * pBuffer)
     return 0;
 }
 
-int CStdLibFileIO::Create(const char * pName)
+int CStdLibFileIO::Create(const wchar_t * pName)
 {
     Close();
 
     if (0 == strcmp (pName, "-") || 0 == strcmp (pName, "/dev/stdout")) 
-	{
+    {
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                            // WriteOnly
     }
     else 
-	{
+    {
         m_pFile = fopen (pName, "wb");                  // Read/Write
         m_bReadOnly = FALSE;
     }

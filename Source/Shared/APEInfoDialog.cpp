@@ -1,10 +1,9 @@
-#include <windows.h>
 #include "All.h"
-
 #include "APEInfo.h"
 #include "APEInfoDialog.h"
 #include "ID3Genres.h"
 #include "APECompress.h"
+#include "CharacterHelper.h"
 
 /***************************************************************************************
 The dialog component ID's
@@ -59,7 +58,7 @@ CAPEInfoDialog::~CAPEInfoDialog()
 /***************************************************************************************
 Display the file info dialog
 ***************************************************************************************/
-int CAPEInfoDialog::ShowAPEInfoDialog(const char * pFilename, HINSTANCE hInstance, LPCSTR lpszTemplateName, HWND hWndParent)
+int CAPEInfoDialog::ShowAPEInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpszTemplateName, HWND hWndParent)
 {
 	// only allow one instance at a time
 	if (g_pAPEDecompressDialog != NULL) { return -1; }
@@ -130,57 +129,60 @@ LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, WPARAM wPar
 		case WM_INITDIALOG:
 		{
 			// variable declares
-			char cTemp[1024]; cTemp[0] = 0;
+            TCHAR cTemp[1024] = { 0 };
 
 			// set info
-			char cFileName[MAX_PATH]; GET_IO(pAPEDecompress)->GetName(&cFileName[0]);
-			SetDlgItemText(hDlg, FILE_NAME_EDIT, &cFileName[0]);
+			wchar_t cFilename[MAX_PATH + 1] = {0};
+			GET_IO(pAPEDecompress)->GetName(&cFilename[0]);
+
+			SetDlgItemText(hDlg, FILE_NAME_EDIT, cFilename);
 			
 			switch (pAPEDecompress->GetInfo(APE_INFO_COMPRESSION_LEVEL))
 			{
-			case COMPRESSION_LEVEL_FAST: sprintf(cTemp, "Mode: Fast"); break;
-			case COMPRESSION_LEVEL_NORMAL: sprintf(cTemp, "Mode: Normal"); break;
-			case COMPRESSION_LEVEL_HIGH: sprintf(cTemp, "Mode: High"); break;
-			case COMPRESSION_LEVEL_EXTRA_HIGH: sprintf(cTemp, "Mode: Extra High"); break;
-			default: sprintf(cTemp, "Mode: Unknown"); break;
+			    case COMPRESSION_LEVEL_FAST: _stprintf(cTemp, _T("Mode: Fast")); break;
+			    case COMPRESSION_LEVEL_NORMAL: _stprintf(cTemp, _T("Mode: Normal")); break;
+			    case COMPRESSION_LEVEL_HIGH: _stprintf(cTemp, _T("Mode: High")); break;
+			    case COMPRESSION_LEVEL_EXTRA_HIGH: _stprintf(cTemp, _T("Mode: Extra High")); break;
+			    case COMPRESSION_LEVEL_INSANE: _stprintf(cTemp, _T("Mode: Insane")); break;
+			    default: _stprintf(cTemp, _T("Mode: Unknown")); break;
 			}
 			SetDlgItemText(hDlg, COMPRESSION_LEVEL_STATIC, cTemp);
 			
-			sprintf(cTemp, "Version: %.2f", float(pAPEDecompress->GetInfo(APE_INFO_FILE_VERSION)) / float(1000));
+			_stprintf(cTemp, _T("Version: %.2f"), float(pAPEDecompress->GetInfo(APE_INFO_FILE_VERSION)) / float(1000));
 			SetDlgItemText(hDlg, ENCODER_VERSION_STATIC, cTemp);
 
-			sprintf(cTemp, "Format Flags: %d", pAPEDecompress->GetInfo(APE_INFO_FORMAT_FLAGS));
+			_stprintf(cTemp, _T("Format Flags: %d"), pAPEDecompress->GetInfo(APE_INFO_FORMAT_FLAGS));
 			SetDlgItemText(hDlg, FORMAT_FLAGS_STATIC, cTemp);
 			
-			sprintf(cTemp, "Sample Rate: %d", pAPEDecompress->GetInfo(APE_INFO_SAMPLE_RATE));
+			_stprintf(cTemp, _T("Sample Rate: %d"), pAPEDecompress->GetInfo(APE_INFO_SAMPLE_RATE));
 			SetDlgItemText(hDlg, SAMPLE_RATE_STATIC, cTemp);
 			
-			sprintf(cTemp, "Channels: %d", pAPEDecompress->GetInfo(APE_INFO_CHANNELS));
+			_stprintf(cTemp, _T("Channels: %d"), pAPEDecompress->GetInfo(APE_INFO_CHANNELS));
 			SetDlgItemText(hDlg, CHANNELS_STATIC, cTemp);
 
-			sprintf(cTemp, "Bits Per Sample: %d", pAPEDecompress->GetInfo(APE_INFO_BITS_PER_SAMPLE));
+			_stprintf(cTemp, _T("Bits Per Sample: %d"), pAPEDecompress->GetInfo(APE_INFO_BITS_PER_SAMPLE));
 			SetDlgItemText(hDlg, BITS_PER_SAMPLE_STATIC, cTemp);
 
 			int nSeconds = pAPEDecompress->GetInfo(APE_INFO_LENGTH_MS) / 1000; int nMinutes = nSeconds / 60; nSeconds = nSeconds % 60; int nHours = nMinutes / 60; nMinutes = nMinutes % 60;
-			if (nHours > 0)	sprintf(cTemp, "Length: %d:%02d:%02d", nHours, nMinutes, nSeconds);
-			else if (nMinutes > 0) sprintf(cTemp, "Length: %d:%02d", nMinutes, nSeconds);
-			else sprintf(cTemp, "Length: 0:%02d", nSeconds);
+			if (nHours > 0)	_stprintf(cTemp, _T("Length: %d:%02d:%02d"), nHours, nMinutes, nSeconds);
+			else if (nMinutes > 0) _stprintf(cTemp, _T("Length: %d:%02d"), nMinutes, nSeconds);
+			else _stprintf(cTemp, _T("Length: 0:%02d"), nSeconds);
 			SetDlgItemText(hDlg, TRACK_LENGTH_STATIC, cTemp);
 
 			int nPeakLevel = pAPEDecompress->GetInfo(APE_INFO_PEAK_LEVEL);
-			if (nPeakLevel >= 0) sprintf(cTemp, "Peak Level: %d", nPeakLevel);
-			else sprintf(cTemp, "Peak Level: ?");
+			if (nPeakLevel >= 0) _stprintf(cTemp, _T("Peak Level: %d"), nPeakLevel);
+			else _stprintf(cTemp, _T("Peak Level: ?"));
 			SetDlgItemText(hDlg, PEAK_LEVEL_STATIC, cTemp);
 
 			// the file size
-			sprintf(cTemp, "APE: %.2f MB", float(pAPEDecompress->GetInfo(APE_INFO_APE_TOTAL_BYTES)) / float(1048576));
+			_stprintf(cTemp, _T("APE: %.2f MB"), float(pAPEDecompress->GetInfo(APE_INFO_APE_TOTAL_BYTES)) / float(1048576));
 			SetDlgItemText(hDlg, APE_SIZE_STATIC, cTemp);
 			
-			sprintf(cTemp, "WAV: %.2f MB", float(pAPEDecompress->GetInfo(APE_INFO_WAV_TOTAL_BYTES)) / float(1048576));
+			_stprintf(cTemp, _T("WAV: %.2f MB"), float(pAPEDecompress->GetInfo(APE_INFO_WAV_TOTAL_BYTES)) / float(1048576));
 			SetDlgItemText(hDlg, WAV_SIZE_STATIC, cTemp);
 			
 			// the compression ratio
-			sprintf(cTemp, "Compression: %.2f%%", float(pAPEDecompress->GetInfo(APE_INFO_AVERAGE_BITRATE) * 100) / float(pAPEDecompress->GetInfo(APE_INFO_DECOMPRESSED_BITRATE)));
+			_stprintf(cTemp, _T("Compression: %.2f%%"), float(pAPEDecompress->GetInfo(APE_INFO_AVERAGE_BITRATE) * 100) / float(pAPEDecompress->GetInfo(APE_INFO_DECOMPRESSED_BITRATE)));
 			SetDlgItemText(hDlg, COMPRESSION_RATIO_STATIC, cTemp);
 
 			// the has tag
@@ -188,46 +190,46 @@ LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, WPARAM wPar
 			BOOL bHasAPETag = GET_TAG(pAPEDecompress)->GetHasAPETag();
 						
 			if (!bHasID3Tag && !bHasAPETag)
-				sprintf(cTemp, "Tag: None");
+				_stprintf(cTemp, _T("Tag: None"));
 			else if (bHasID3Tag && !bHasAPETag)
-				sprintf(cTemp, "Tag: ID3v1.1");
+				_stprintf(cTemp, _T("Tag: ID3v1.1"));
 			else if (!bHasID3Tag && bHasAPETag)
-				sprintf(cTemp, "Tag: APE Tag");
+				_stprintf(cTemp, _T("Tag: APE Tag"));
 			else
-				sprintf(cTemp, "Tag: Corrupt");
+				_stprintf(cTemp, _T("Tag: Corrupt"));
 			SetDlgItemText(hDlg, HAS_TAG_STATIC, cTemp);
 				
-			char cBuffer[256];
+			wchar_t cBuffer[256];
 			int nBufferBytes = 256;
 
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_TITLE, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_TITLE, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, TITLE_EDIT, cBuffer);
 			
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_ARTIST, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_ARTIST, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, ARTIST_EDIT, cBuffer);
 			
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_ALBUM, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_ALBUM, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, ALBUM_EDIT, cBuffer);
 			
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_COMMENT, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_COMMENT, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, COMMENT_EDIT, cBuffer);
 			
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_YEAR, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_YEAR, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, YEAR_EDIT, cBuffer);
 			
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_TRACK, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_TRACK, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, TRACK_EDIT, cBuffer);
 			
 			g_pAPEDecompressDialog->FillGenreComboBox(hDlg, GENRE_COMBOBOX, NULL);
 
 			nBufferBytes = 256;
-			GET_TAG(pAPEDecompress)->GetField(APE_TAG_FIELD_GENRE, cBuffer, &nBufferBytes);
+			GET_TAG(pAPEDecompress)->GetFieldString(APE_TAG_FIELD_GENRE, cBuffer, &nBufferBytes);
 			SetDlgItemText(hDlg, GENRE_COMBOBOX, cBuffer);
 			
 			return TRUE;
@@ -251,16 +253,17 @@ LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, WPARAM wPar
 				case REMOVE_TAG_BUTTON:
 				{
 					// make sure you really wanted to
-					int nnRetVal = ::MessageBox(hDlg, "Are you sure you want to permanently remove the tag?", "Are You Sure?", MB_YESNO | MB_ICONQUESTION);
-					if (nnRetVal == IDYES)
+					int nRetVal = ::MessageBox(hDlg, _T("Are you sure you want to permanently remove the tag?"), _T("Are You Sure?"), MB_YESNO | MB_ICONQUESTION);
+					if (nRetVal == IDYES)
 					{
 						// remove the ID3 tag...
 						if (GET_TAG(pAPEDecompress)->Remove() != 0) 
 						{
-							MessageBox(hDlg, "Error removing tag. (could the file be read-only?)", "Error Removing Tag",MB_OK | MB_ICONEXCLAMATION);
+							MessageBox(hDlg, _T("Error removing tag. (could the file be read-only?)"), _T("Error Removing Tag"), MB_OK | MB_ICONEXCLAMATION);
 							return TRUE;
 						}
-						else {
+						else 
+                        {
 							EndDialog(hDlg, 0);
 					 		return TRUE;
 						}
@@ -270,12 +273,12 @@ LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, WPARAM wPar
 				case SAVE_TAG_BUTTON:
 					
 					// make the id3 tag
-					char cBuffer[256]; int z;
+					TCHAR cBuffer[256]; int z;
 
 					#define SAVE_FIELD(ID, Field)							\
 						for (z = 0; z < 256; z++) { cBuffer[z] = 0; }		\
 						GetDlgItemText(hDlg, ID, cBuffer, 256);				\
-						GET_TAG(pAPEDecompress)->SetField(Field, cBuffer);
+						GET_TAG(pAPEDecompress)->SetFieldString(Field, cBuffer);
 
 					SAVE_FIELD(TITLE_EDIT, APE_TAG_FIELD_TITLE)
 					SAVE_FIELD(ARTIST_EDIT, APE_TAG_FIELD_ARTIST)
@@ -287,7 +290,7 @@ LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, WPARAM wPar
 					
 					if (GET_TAG(pAPEDecompress)->Save() != 0) 
 					{
-						MessageBox(hDlg, "Error saving tag. (could the file be read-only?)", "Error Saving Tag",MB_OK | MB_ICONEXCLAMATION);
+						MessageBox(hDlg, _T("Error saving tag. (could the file be read-only?)"), _T("Error Saving Tag"), MB_OK | MB_ICONEXCLAMATION);
 						return TRUE;
 					}
 

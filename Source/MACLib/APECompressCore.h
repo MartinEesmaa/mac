@@ -13,34 +13,29 @@ CAPECompressCore - manages the core of compression and bitstream output
 class  CAPECompressCore
 {
 public:
-	CAPECompressCore(CIO * pIO, const WAVEFORMATEX * pwfeInput, int nMaxFrameBlocks, int nCompressionLevel);
-	~CAPECompressCore();
+    CAPECompressCore(CIO * pIO, const WAVEFORMATEX * pwfeInput, int nMaxFrameBlocks, int nCompressionLevel);
+    ~CAPECompressCore();
 
-	int EncodeFrame(unsigned char * pInputData, int nInputBytes);
+    int EncodeFrame(const void * pInputData, int nInputBytes);
 
-	CBitArray * GetBitArray() { return m_spBitArray.GetPtr(); }
-	int GetPeakLevel() { return m_nPeakLevel; }
+    CBitArray * GetBitArray() { return m_spBitArray.GetPtr(); }
+    int GetPeakLevel() { return m_nPeakLevel; }
 
 private:
 
-	CSmartPtr<CBitArray>			m_spBitArray;
-	CSmartPtr<IPredictorCompress>	m_spPredictorX;
-	CSmartPtr<IPredictorCompress>	m_spPredictorY;
+    int Prepare(const void * pInputData, int nInputBytes, int * pSpecialCodes);
 
-	BIT_ARRAY_STATE		m_BitArrayStateX;
-	BIT_ARRAY_STATE		m_BitArrayStateY;
-
-	CSmartPtr<int>					m_spDataX;
-	CSmartPtr<int>					m_spDataY;
-	CSmartPtr<int>					m_spTempData;
-	
-	CSmartPtr<CPrepare>				m_spPrepare;
-
-	WAVEFORMATEX		m_wfeInput;
-	
-	int				m_nPeakLevel;
-
-	int Prepare(unsigned char * pInputData, int nInputBytes, int * pSpecialCodes);
+    CSmartPtr<CBitArray> m_spBitArray;
+    CSmartPtr<IPredictorCompress> m_spPredictorX;
+    CSmartPtr<IPredictorCompress> m_spPredictorY;
+    BIT_ARRAY_STATE    m_BitArrayStateX;
+    BIT_ARRAY_STATE    m_BitArrayStateY;
+    CSmartPtr<int> m_spDataX;
+    CSmartPtr<int> m_spDataY;
+    CSmartPtr<int> m_spTempData;
+    CSmartPtr<CPrepare> m_spPrepare;
+    WAVEFORMATEX m_wfeInput;
+    int    m_nPeakLevel;
 };
 
 #endif // #ifndef APE_APECOMPRESSCORE_H
