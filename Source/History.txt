@@ -1,6 +1,51 @@
 History:
 
+Monkey's Audio 3.99 Update 4
 
+1. Fixed: Decoder could erroneously report a CRC error on the last frame of some files.
+
+Monkey's Audio 3.99 Update 3
+
+1. Changed: Worked on making data types more standard / cross-platform friendly.
+2. Changed: Switched code from tab-based to space based. (may still be some out-of-whack formatting)
+3. Fixed: Building ID3 tags could cause a crash.
+4. Fixed: APL builder treated the last part of a CUE time as a hundreth of a second instead of as a frame. (1 / 75 of a second)
+5. Fixed: File Info dialog used by Winamp plugin wouldn't accept / save Unicode tag values properly.
+6. Fixed: APL files could output noise or silence at the end of the file in some cases.
+
+Monkey's Audio 3.99 Update 2
+
+1. Fixed: Possible buffer overflow attack weakness in APE tagging code.
+2. Fixed: MACDll.dll was not doing ANSI to Unicode conversions properly.
+3. Changed: Added Unicode versions of interface wrappers to MACDll.dll.
+4. Changed: Updated Winamp plugin to better handle Unicode.
+5. Changed: Removed peak-level normalize from file and Winamp plugin. (newer players can do normalize / replay gain during playback)
+6. Changed: Updated Cool Edit filter to 3.99.
+
+Monkey's Audio 3.99 Update 1
+
+1. Fixed: MACDll.dll wasn't working on Win9x / ME systems.
+2. Changed: MAC.exe updated to 3.99.
+
+Monkey's Audio 3.99
+
+1. Changed: Decoding engine better at handling corrupt streams / loss of internet connection while playing.
+2. Changed: Simplified assembly code building for 3rd party developers.
+3. NEW: Improved entropy coder for increased compression.
+4. Changed: Removed RKAU support. (since it is no longer commonly used)
+
+Monkey's Audio 3.98a1
+
+1. Changed: Now natively using APE tag version 2 tagging. (updated spec for better streaming and international support)
+2. Changed: Using smaller frame sizes with Fast, Normal, and High for faster, smoother seeking.
+3. NEW: Added built-in MD5 checking, for super secure, super fast file verification.
+4. Changed: Using a new and improved file header format.
+5. NEW: Added "Insane" mode for when compression is all that matters.
+6. NEW: Introduced new GUI.
+	- full Unicode support
+	- few or no dependencies
+	- multi-thread friendly -- can process multiple files at once
+	- XML based external plugin architecture
 
 Monkey's Audio 3.97 (July 7, 2002)
 

@@ -6,16 +6,17 @@ BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, WPARAM wParam, L
 class CWAVInfoDialog
 {
 public:
-	CWAVInfoDialog();
+
+    CWAVInfoDialog();
 	~CWAVInfoDialog();
 
-	long ShowWAVInfoDialog(const char *pFilename, HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent);
+	long ShowWAVInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpTemplateName, HWND hWndParent);
 
 private:
 
 	static LRESULT CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 	long InitDialog(HWND hDlg);
-	char m_cFileName[MAX_PATH];
+	TCHAR m_cFileName[MAX_PATH];
 };
 
 #endif // #ifndef APE_WAVINFODIALOG_H

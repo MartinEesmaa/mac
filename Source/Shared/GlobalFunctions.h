@@ -16,6 +16,6 @@ int WriteSafe(CIO * pIO, void * pBuffer, int nBytes);
 /*************************************************************************************
 Checks for the existence of a file
 *************************************************************************************/
-BOOL FileExists(const char * pFilename);
+BOOL FileExists(wchar_t * pFilename);
 
 #endif // #ifndef APE_GLOBALFUNCTIONS_H

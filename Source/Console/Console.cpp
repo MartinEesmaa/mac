@@ -4,12 +4,13 @@ MAC Console Frontend (MAC.exe)
 Pretty simple and straightforward console front end.  If somebody ever wants to add 
 more functionality like tagging, auto-verify, etc., that'd be excellent.
 
-Copyrighted (c) 2000 - 2002 Matthew T. Ashland.  All Rights Reserved.
+Copyrighted (c) 2000 - 2003 Matthew T. Ashland.  All Rights Reserved.
 ***************************************************************************************/
 #include "All.h"
 #include <stdio.h>
 #include "GlobalFunctions.h"
 #include "MACLib.h"
+#include "CharacterHelper.h"
 
 // defines
 #define COMPRESS_MODE		0
@@ -33,6 +34,7 @@ void DisplayProperUsage(FILE * pFile)
 	fprintf(pFile, "    Compress (normal): '-c2000'\n");
 	fprintf(pFile, "    Compress (high): '-c3000'\n");
 	fprintf(pFile, "    Compress (extra high): '-c4000'\n");
+	fprintf(pFile, "    Compress (insane): '-c5000'\n");
 	fprintf(pFile, "    Decompress: '-d'\n");
 	fprintf(pFile, "    Verify: '-v'\n");
 	fprintf(pFile, "    Convert: '-nXXXX'\n\n");
@@ -66,10 +68,10 @@ void CALLBACK ProgressCallback(int nPercentageDone)
 /***************************************************************************************
 Main (the main function)
 ***************************************************************************************/
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
 	// variable declares
-	char * pInputFilename, * pOutputFilename;
+	CSmartPtr<wchar_t> spInputFilename; CSmartPtr<wchar_t> spOutputFilename;
 	int nRetVal = ERROR_UNDEFINED;
 	int nMode = UNDEFINED_MODE;
 	int nCompressionLevel;
@@ -86,16 +88,17 @@ int main(int argc, char *argv[])
 	}
 
 	// store the input file
-	pInputFilename = argv[1];
+	spInputFilename.Assign(GetUTF16FromANSI(argv[1]), TRUE);
 	
+	// store the output file
+	spOutputFilename.Assign(GetUTF16FromANSI(argv[2]), TRUE);
+
 	// verify that the input file exists
-	if (!FileExists(pInputFilename))
+	if (!FileExists(spInputFilename))
 	{
 		fprintf(stderr, "Input File Not Found...\n\n");
 		exit(-1);
 	}
-
-	pOutputFilename = argv[2];
 
 	// if the output file equals '-v', then use this as the next argument
 	char cMode[256];
@@ -136,7 +139,9 @@ int main(int argc, char *argv[])
 	if (nMode == COMPRESS_MODE || nMode == CONVERT_MODE) 
 	{
 		nCompressionLevel = atoi(&cMode[2]);
-		if (nCompressionLevel != 1000 && nCompressionLevel != 2000 && nCompressionLevel != 3000 && nCompressionLevel != 4000) 
+		if (nCompressionLevel != 1000 && nCompressionLevel != 2000 && 
+			nCompressionLevel != 3000 && nCompressionLevel != 4000 &&
+			nCompressionLevel != 5000) 
 		{
 			DisplayProperUsage(stderr);
 			return -1;
@@ -151,28 +156,29 @@ int main(int argc, char *argv[])
 	if (nMode == COMPRESS_MODE) 
 	{
 		char cCompressionLevel[16];
-		if (nCompressionLevel == 1000) { strcpy(cCompressionLevel, "fast");	}
-		if (nCompressionLevel == 2000) { strcpy(cCompressionLevel, "normal");	}
-		if (nCompressionLevel == 3000) { strcpy(cCompressionLevel, "high");	}
-		if (nCompressionLevel == 4000) { strcpy(cCompressionLevel, "extra high");	}
+		if (nCompressionLevel == 1000) { strcpy(cCompressionLevel, "fast"); }
+		if (nCompressionLevel == 2000) { strcpy(cCompressionLevel, "normal"); }
+		if (nCompressionLevel == 3000) { strcpy(cCompressionLevel, "high"); }
+		if (nCompressionLevel == 4000) { strcpy(cCompressionLevel, "extra high"); }
+		if (nCompressionLevel == 5000) { strcpy(cCompressionLevel, "insane"); }
 
 		fprintf(stderr, "Compressing (%s)...\n", cCompressionLevel);
-		nRetVal = CompressFile(pInputFilename, pOutputFilename, nCompressionLevel, &nPercentageDone, ProgressCallback, &nKillFlag);
+		nRetVal = CompressFileW(spInputFilename, spOutputFilename, nCompressionLevel, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}
 	else if (nMode == DECOMPRESS_MODE) 
 	{
 		fprintf(stderr, "Decompressing...\n");
-		nRetVal = DecompressFile(pInputFilename, pOutputFilename, &nPercentageDone, ProgressCallback, &nKillFlag);
+		nRetVal = DecompressFileW(spInputFilename, spOutputFilename, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}	
 	else if (nMode == VERIFY_MODE) 
 	{
 		fprintf(stderr, "Verifying...\n");
-		nRetVal = VerifyFile(pInputFilename, &nPercentageDone, ProgressCallback, &nKillFlag);
+		nRetVal = VerifyFileW(spInputFilename, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}	
 	else if (nMode == CONVERT_MODE) 
 	{
 		fprintf(stderr, "Converting...\n");
-		nRetVal = ConvertFile(pInputFilename, pOutputFilename, nCompressionLevel, &nPercentageDone, ProgressCallback, &nKillFlag);
+		nRetVal = ConvertFileW(spInputFilename, spOutputFilename, nCompressionLevel, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}
 
 	if (nRetVal == ERROR_SUCCESS) 

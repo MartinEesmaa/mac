@@ -1,19 +1,15 @@
 #include "MACDll.h"
-#include "WinFileIO.h"
-
 #include "resource.h"
+#include "WinFileIO.h"
 #include "APEInfoDialog.h"
 #include "WAVInfoDialog.h"
-
 #include "APEDecompress.h"
-
 #include "APECompressCreate.h"
 #include "APECompressCore.h"
-
 #include "APECompress.h"
-
 #include "APEInfo.h"
 #include "APETag.h"
+#include "CharacterHelper.h"
 
 int __stdcall GetVersionNumber()
 {
@@ -28,11 +24,11 @@ int __stdcall GetInterfaceCompatibility(int nVersion, BOOL bDisplayWarningsOnFai
 		nRetVal = -1;
 		if (bDisplayWarningsOnFailure)
 		{
-			char cMessage[1024];
-			sprintf(cMessage, "You system does not have a new enough version of Monkey's Audio installed.\n"
-				"Please visit www.monkeysaudio.com for the latest version.\n\n(version %.2f or later required)",
+			TCHAR cMessage[1024];
+			_stprintf(cMessage, _T("You system does not have a new enough version of Monkey's Audio installed.\n")
+				_T("Please visit www.monkeysaudio.com for the latest version.\n\n(version %.2f or later required)"),
 				float(nVersion) / float(1000));
-			MessageBox(hwndParent, cMessage, "Please Update Monkey's Audio", MB_OK | MB_ICONINFORMATION);
+			MessageBox(hwndParent, cMessage, _T("Please Update Monkey's Audio"), MB_OK | MB_ICONINFORMATION);
 		}
 	}
 	else if (nVersion < 3940)
@@ -40,58 +36,63 @@ int __stdcall GetInterfaceCompatibility(int nVersion, BOOL bDisplayWarningsOnFai
 		nRetVal = -1;
 		if (bDisplayWarningsOnFailure)
 		{
-			char cMessage[1024];
-			sprintf(cMessage, "This program is trying to use an old version of Monkey's Audio.\n"
-				"Please contact the author about updating their support for Monkey's Audio.\n\n"
-				"Monkey's Audio currently installed: %.2f\nProgram is searching for: %.2f",
+			TCHAR cMessage[1024];
+			_stprintf(cMessage, _T("This program is trying to use an old version of Monkey's Audio.\n")
+				_T("Please contact the author about updating their support for Monkey's Audio.\n\n")
+				_T("Monkey's Audio currently installed: %.2f\nProgram is searching for: %.2f"),
 				float(MAC_VERSION_NUMBER) / float(1000), float(nVersion) / float(1000));
-			MessageBox(hwndParent, cMessage, "Program Requires Updating", MB_OK | MB_ICONINFORMATION);
+			MessageBox(hwndParent, cMessage, _T("Program Requires Updating"), MB_OK | MB_ICONINFORMATION);
 		}
 	}
 
 	return nRetVal;
 }
 
-int __stdcall ShowFileInfoDialog(const char * pFilename, HWND HWndWindow)
+int __stdcall ShowFileInfoDialog(const str_ansi * pFilename, HWND hwndWindow)
 {
-	//make sure the file exists....
-	WIN32_FIND_DATA FD;
-	HANDLE h = INVALID_HANDLE_VALUE;
-	h = FindFirstFile(pFilename, &FD);
-	if (h == INVALID_HANDLE_VALUE) {
-		MessageBox(HWndWindow, "File not found...","File Info",MB_OK);
+   	// convert the filename
+	CSmartPtr<wchar_t> spFilename(GetUTF16FromANSI(pFilename), TRUE);
+
+	// make sure the file exists
+	WIN32_FIND_DATA FindData = { 0 };
+	HANDLE hFind = FindFirstFile(spFilename, &FindData);
+	if (hFind == INVALID_HANDLE_VALUE) 
+	{
+		MessageBox(hwndWindow, _T("File not found."), _T("File Info"), MB_OK);
 		return 0;
 	}
 	else 
 	{
-		FindClose(h);
+		FindClose(hFind);
 	}
-	
-	//see what type the file is
-	if ((_stricmp(&pFilename[strlen(pFilename) - 4],".ape") == 0) ||
-		(_stricmp(&pFilename[strlen(pFilename) - 4],".apl") == 0)) 
+    	
+    // see what type the file is
+	if ((_tcsicmp(&spFilename[_tcslen(spFilename) - 4], _T(".ape")) == 0) ||
+		(_tcsicmp(&spFilename[_tcslen(spFilename) - 4], _T(".apl")) == 0)) 
 	{
 		CAPEInfoDialog APEInfoDialog;
-		APEInfoDialog.ShowAPEInfoDialog(pFilename, GetModuleHandle("MACDll.dll"), (LPCSTR) IDD_APE_INFO, HWndWindow);
+		APEInfoDialog.ShowAPEInfoDialog(spFilename, GetModuleHandle(_T("MACDll.dll")), (LPCTSTR) IDD_APE_INFO, hwndWindow);
 		return 0;
 	}
-	else if (_stricmp(&pFilename[strlen(pFilename) - 4],".wav") == 0) 
+	else if (_tcsicmp(&spFilename[_tcslen(spFilename) - 4], _T(".wav")) == 0) 
 	{
 		CWAVInfoDialog WAVInfoDialog;
-		WAVInfoDialog.ShowWAVInfoDialog(pFilename, GetModuleHandle("MACDll.dll"), (LPCSTR) IDD_WAV_INFO, HWndWindow);
+		WAVInfoDialog.ShowWAVInfoDialog(spFilename, GetModuleHandle(_T("MACDll.dll")), (LPCTSTR) IDD_WAV_INFO, hwndWindow);
 		return 0;
 	}
 	else 
 	{
-		MessageBox(HWndWindow, "File type not supported... (only .ape, .apl, and .wav files currently supported)", "File Info: Unsupported File Type", MB_OK);
+		MessageBox(hwndWindow, _T("File type not supported. (only .ape, .apl, and .wav files currently supported)"), _T("File Info: Unsupported File Type"), MB_OK);
 		return 0;
 	};
 }
 
-int __stdcall TagFileSimple(const char * pFilename, const char * pArtist, const char * pAlbum, const char * pTitle, const char * pComment, const char * pGenre, const char * pYear, const char * pTrack, BOOL bClearFirst, BOOL bUseOldID3)
+int __stdcall TagFileSimple(const str_ansi * pFilename, const char * pArtist, const char * pAlbum, const char * pTitle, const char * pComment, const char * pGenre, const char * pYear, const char * pTrack, BOOL bClearFirst, BOOL bUseOldID3)
 {
+	CSmartPtr<wchar_t> spFilename(GetUTF16FromANSI(pFilename), TRUE);
+
 	IO_CLASS_NAME FileIO;
-	if (FileIO.Open(pFilename) != 0)
+	if (FileIO.Open(spFilename) != 0)
 		return -1;
 	
 	CAPETag APETag(&FileIO, TRUE);
@@ -99,13 +100,13 @@ int __stdcall TagFileSimple(const char * pFilename, const char * pArtist, const 
 	if (bClearFirst)
 		APETag.ClearFields();	
 	
-	APETag.SetField("Artist", pArtist);
-	APETag.SetField("Album", pAlbum);
-	APETag.SetField("Title", pTitle);
-	APETag.SetField("Genre", pGenre);
-	APETag.SetField("Year", pYear);
-	APETag.SetField("Comment", pComment);
-	APETag.SetField("Track", pTrack);
+	APETag.SetFieldString(APE_TAG_FIELD_ARTIST, pArtist, TRUE);
+	APETag.SetFieldString(APE_TAG_FIELD_ALBUM, pAlbum, TRUE);
+	APETag.SetFieldString(APE_TAG_FIELD_TITLE, pTitle, TRUE);
+	APETag.SetFieldString(APE_TAG_FIELD_GENRE, pGenre, TRUE);
+	APETag.SetFieldString(APE_TAG_FIELD_YEAR, pYear, TRUE);
+	APETag.SetFieldString(APE_TAG_FIELD_COMMENT, pComment, TRUE);
+	APETag.SetFieldString(APE_TAG_FIELD_TRACK, pTrack, TRUE);
 	
 	if (APETag.Save(bUseOldID3) != 0)
 	{
@@ -115,10 +116,12 @@ int __stdcall TagFileSimple(const char * pFilename, const char * pArtist, const 
 	return 0;
 }
 
-int __stdcall GetID3Tag(const char * pFilename, ID3_TAG * pID3Tag)
+int __stdcall GetID3Tag(const str_ansi * pFilename, ID3_TAG * pID3Tag)
 {
+	CSmartPtr<wchar_t> spFilename(GetUTF16FromANSI(pFilename), TRUE);
+
 	IO_CLASS_NAME FileIO;
-	if (FileIO.Open(pFilename) != 0)
+	if (FileIO.Open(spFilename) != 0)
 		return -1;
 	
 	CAPETag APETag(&FileIO, TRUE);
@@ -128,8 +131,10 @@ int __stdcall GetID3Tag(const char * pFilename, ID3_TAG * pID3Tag)
 
 int __stdcall RemoveTag(char * pFilename)
 {
+	CSmartPtr<wchar_t> spFilename(GetUTF16FromANSI(pFilename), TRUE);
+
 	int nErrorCode = ERROR_SUCCESS;
-	CSmartPtr<IAPEDecompress> spAPEDecompress(CreateIAPEDecompress(pFilename, &nErrorCode));
+	CSmartPtr<IAPEDecompress> spAPEDecompress(CreateIAPEDecompress(spFilename, &nErrorCode));
 	if (spAPEDecompress == NULL) return -1;
 	GET_TAG(spAPEDecompress)->Remove(FALSE);
 	return 0;
@@ -138,7 +143,13 @@ int __stdcall RemoveTag(char * pFilename)
 /*****************************************************************************************
 CAPEDecompress wrapper(s)
 *****************************************************************************************/
-APE_DECOMPRESS_HANDLE __stdcall c_APEDecompress_Create(const char * pFilename, int * pErrorCode)
+APE_DECOMPRESS_HANDLE __stdcall c_APEDecompress_Create(const str_ansi * pFilename, int * pErrorCode)
+{
+	CSmartPtr<wchar_t> spFilename(GetUTF16FromANSI(pFilename), TRUE);
+	return (APE_DECOMPRESS_HANDLE) CreateIAPEDecompress(spFilename, pErrorCode);
+}
+
+APE_DECOMPRESS_HANDLE __stdcall c_APEDecompress_CreateW(const str_utf16 * pFilename, int * pErrorCode)
 {
 	return (APE_DECOMPRESS_HANDLE) CreateIAPEDecompress(pFilename, pErrorCode);
 }
@@ -180,11 +191,16 @@ void __stdcall c_APECompress_Destroy(APE_COMPRESS_HANDLE hAPECompress)
 		delete pAPECompress;
 }
 
-int __stdcall c_APECompress_Start(APE_COMPRESS_HANDLE hAPECompress, const char * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel, const unsigned char * pHeaderData, int nHeaderBytes)
+int __stdcall c_APECompress_Start(APE_COMPRESS_HANDLE hAPECompress, const char * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
+{
+	CSmartPtr<wchar_t> spOutputFilename(GetUTF16FromANSI(pOutputFilename), TRUE);
+	return ((IAPECompress *) hAPECompress)->Start(spOutputFilename, pwfeInput, nMaxAudioBytes, nCompressionLevel, pHeaderData, nHeaderBytes);
+}
+
+int __stdcall c_APECompress_StartW(APE_COMPRESS_HANDLE hAPECompress, const str_utf16 * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
 {
 	return ((IAPECompress *) hAPECompress)->Start(pOutputFilename, pwfeInput, nMaxAudioBytes, nCompressionLevel, pHeaderData, nHeaderBytes);
 }
-
 
 int __stdcall c_APECompress_AddData(APE_COMPRESS_HANDLE hAPECompress, unsigned char * pData, int nBytes)
 {

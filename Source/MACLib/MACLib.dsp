@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /G6 /MT /W3 /GX /Ox /Ot /Og /Oi /Ob2 /I "..\Shared" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FR /YX"all.h" /FD /c
+# ADD CPP /nologo /G6 /MT /W3 /GX /Ox /Ot /Og /Oi /Ob2 /I "..\Shared" /D "WIN32" /D "NDEBUG" /D "_LIB" /D "_UNICODE" /D "UNICODE" /FR /YX"all.h" /FD /c
 # SUBTRACT CPP /Oa
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -52,8 +52,10 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 # Begin Special Build Tool
+ProjDir=.
 SOURCE="$(InputPath)"
-PreLink_Cmds=Assembly/Compile.bat
+PreLink_Desc=Building assembly...
+PreLink_Cmds=cd $(ProjDir)\Assembly	nasmw -d WIN32 -f win32 -o Assembly.obj Assembly.nas
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "MACLib - Win32 Debug"
@@ -69,7 +71,7 @@ PreLink_Cmds=Assembly/Compile.bat
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\Shared" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\Shared" /D "WIN32" /D "_DEBUG" /D "_LIB" /D "_UNICODE" /D "UNICODE" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -79,6 +81,12 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
+# Begin Special Build Tool
+ProjDir=.
+SOURCE="$(InputPath)"
+PreLink_Desc=Building assembly...
+PreLink_Cmds=cd $(ProjDir)\Assembly	nasmw -d WIN32 -f win32 -o Assembly.obj Assembly.nas
+# End Special Build Tool
 
 !ENDIF 
 
@@ -170,6 +178,10 @@ SOURCE=.\UnBitArrayBase.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\APEHeader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\APEInfo.cpp
 # End Source File
 # Begin Source File
@@ -202,11 +214,23 @@ SOURCE=..\Shared\WinFileIO.cpp
 # End Group
 # Begin Source File
 
+SOURCE=..\Shared\CharacterHelper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Shared\CircleBuffer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Shared\GlobalFunctions.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\MACProgressHelper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MD5.cpp
 # End Source File
 # Begin Source File
 
@@ -306,6 +330,10 @@ SOURCE=.\UnBitArrayBase.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\APEHeader.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\APEInfo.h
 # End Source File
 # Begin Source File
@@ -342,11 +370,23 @@ SOURCE=..\Shared\WinFileIO.h
 # End Group
 # Begin Source File
 
+SOURCE=..\Shared\CharacterHelper.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Shared\CircleBuffer.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\Shared\GlobalFunctions.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\MACProgressHelper.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\md5.h
 # End Source File
 # Begin Source File
 
@@ -409,6 +449,10 @@ SOURCE=..\Credits.txt
 # Begin Source File
 
 SOURCE=..\History.txt
+# End Source File
+# Begin Source File
+
+SOURCE="..\To Do.txt"
 # End Source File
 # Begin Source File
 

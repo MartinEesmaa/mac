@@ -6,10 +6,11 @@ BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, WPARAM wParam, L
 class CAPEInfoDialog
 {
 public:
+
 	CAPEInfoDialog();
 	~CAPEInfoDialog();
 
-	int ShowAPEInfoDialog(const char * pFilename, HINSTANCE hInstance, LPCSTR lpszTemplateName, HWND hWndParent);
+	int ShowAPEInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpszTemplateName, HWND hWndParent);
 
 private:
 

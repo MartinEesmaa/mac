@@ -9,28 +9,28 @@ extern "C" BOOL GetMMXAvailable(void)
 {
 #ifdef ENABLE_ASSEMBLY
 
-	unsigned long nRegisterEDX;
+    unsigned long nRegisterEDX;
 
-	try
-	{
-		__asm mov eax, 1
-		__asm CPUID
-		__asm mov nRegisterEDX, edx
-   	}
-	catch(...)
-	{
-		return FALSE;
-	}
+    try
+    {
+        __asm mov eax, 1
+        __asm CPUID
+        __asm mov nRegisterEDX, edx
+       }
+    catch(...)
+    {
+        return FALSE;
+    }
 
-	if (nRegisterEDX & 0x800000) 
-		RETURN_ON_EXCEPTION(__asm emms, FALSE)
-	else
-		return FALSE;
+    if (nRegisterEDX & 0x800000) 
+        RETURN_ON_EXCEPTION(__asm emms, FALSE)
+    else
+        return FALSE;
 
-	return TRUE;
+    return TRUE;
 
 #else
-	return FALSE;
+    return FALSE;
 #endif
 }
 
@@ -39,33 +39,33 @@ extern "C" BOOL GetMMXAvailable(void)
 
 int ReadSafe(CIO * pIO, void * pBuffer, int nBytes)
 {
-	unsigned int nBytesRead = 0;
-	int nRetVal = pIO->Read(pBuffer, nBytes, &nBytesRead);
-	if (nRetVal == ERROR_SUCCESS)
-	{
-		if (nBytes != int(nBytesRead))
-			nRetVal = ERROR_IO_READ;
-	}
+    unsigned int nBytesRead = 0;
+    int nRetVal = pIO->Read(pBuffer, nBytes, &nBytesRead);
+    if (nRetVal == ERROR_SUCCESS)
+    {
+        if (nBytes != int(nBytesRead))
+            nRetVal = ERROR_IO_READ;
+    }
 
-	return nRetVal;
+    return nRetVal;
 }
 
 int WriteSafe(CIO * pIO, void * pBuffer, int nBytes)
 {
-	unsigned int nBytesWritten = 0;
-	int nRetVal = pIO->Write(pBuffer, nBytes, &nBytesWritten);
-	if (nRetVal == ERROR_SUCCESS)
-	{
-		if (nBytes != int(nBytesWritten))
-			nRetVal = ERROR_IO_WRITE;
-	}
+    unsigned int nBytesWritten = 0;
+    int nRetVal = pIO->Write(pBuffer, nBytes, &nBytesWritten);
+    if (nRetVal == ERROR_SUCCESS)
+    {
+        if (nBytes != int(nBytesWritten))
+            nRetVal = ERROR_IO_WRITE;
+    }
 
-	return nRetVal;
+    return nRetVal;
 }
 
-BOOL FileExists(const char * pFilename)
+BOOL FileExists(wchar_t * pFilename)
 {    
-	if (0 == strcmp(pFilename, "-")  ||  0 == strcmp(pFilename, "/dev/stdin"))
+    if (0 == wcscmp(pFilename, L"-")  ||  0 == wcscmp(pFilename, L"/dev/stdin"))
         return TRUE;
 
 #ifdef _WIN32
@@ -84,15 +84,17 @@ BOOL FileExists(const char * pFilename)
 
 #else
 
-	struct stat b;
+    CSmartPtr<char> spANSI(GetANSIFromUTF16(pFilename), TRUE);
 
-	if (stat(pFilename, &b) != 0)
-		return FALSE;
+    struct stat b;
 
-	if (!S_ISREG(b.st_mode))
-		return FALSE;
+    if (stat(spANSI, &b) != 0)
+        return FALSE;
 
-	return TRUE;
+    if (!S_ISREG(b.st_mode))
+        return FALSE;
+
+    return TRUE;
 
 #endif
 }
