@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_NNFILTER_H
+#define APE_NNFILTER_H
 
 #include "RollBuffer.h"
 #define NN_WINDOW_ELEMENTS	512
@@ -8,7 +9,7 @@ class CNNFilter
 {
 public:
 
-	CNNFilter(int nOrder, int nShift);
+	CNNFilter(int nOrder, int nShift, int nVersion);
 	~CNNFilter();
 
 	int Compress(int nInput);
@@ -19,6 +20,7 @@ private:
 
 	int m_nOrder;
 	int m_nShift;
+	int m_nVersion;
 	BOOL m_bMMXAvailable;
 
 	CRollBuffer<short> m_rbInput;
@@ -26,7 +28,13 @@ private:
 
 	short * m_paryM;
 
-	__inline void Adapt(short * pM, short * pAdapt, int nDirection, int nOrder);
-	__inline int CalculateDotProduct(short * pA, short * pB, int nOrder);
-	__inline short GetSaturatedShortFromInt(int nValue);
+	inline short GetSaturatedShortFromInt(int nValue) const
+	{
+		return short((nValue == short(nValue)) ? nValue : (nValue >> 31) ^ 0x7FFF);
+	}
+
+	inline int CalculateDotProductNoMMX(short * pA, short * pB, int nOrder);
+	inline void AdaptNoMMX(short * pM, short * pAdapt, int nDirection, int nOrder);
 };
+
+#endif // #ifndef APE_NNFILTER_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_UNBITARRAYBASE_H
+#define APE_UNBITARRAYBASE_H
 
 class IAPEDecompress;
 #include "BitArray.h"
@@ -49,3 +50,5 @@ protected:
 };
 
 CUnBitArrayBase * CreateUnBitArray(IAPEDecompress * pAPEDecompress, int nVersion);
+
+#endif // #ifndef APE_UNBITARRAYBASE_H

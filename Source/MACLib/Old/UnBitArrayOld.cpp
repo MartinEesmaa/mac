@@ -132,7 +132,8 @@ void CUnBitArrayOld::GenerateArrayOld(int* Output_Array, unsigned __int32 Number
 	//could use seek information to determine what the max was...
 	unsigned __int32 Max_Bits_Needed = Number_of_Elements * 50;
 
-	if (Minimum_nCurrentBitIndex_Array_Bytes > 0) {
+	if (Minimum_nCurrentBitIndex_Array_Bytes > 0) 
+	{
 		//this is actually probably double what is really needed
 		//we can only calculate the space needed for both arrays in multichannel
 		Max_Bits_Needed = ((Minimum_nCurrentBitIndex_Array_Bytes + 4) * 8);
@@ -141,16 +142,16 @@ void CUnBitArrayOld::GenerateArrayOld(int* Output_Array, unsigned __int32 Number
 	if (Max_Bits_Needed > GetBitsRemaining())
 		FillBitArray();
 
-	//unsigned int OriginalBit = m_nCurrentBitIndex;
-
 	//decode the first 5 elements (all k = 10)
     Max = (Number_of_Elements < 5) ? Number_of_Elements : 5;
-	for (q = 0; q < Max; q++) {
+	for (q = 0; q < Max; q++) 
+	{
 		Output_Array[q] = DecodeValueRiceUnsigned(10);
 	}
 	
 	//quit if that was all
-	if (Number_of_Elements <= 5) { 
+	if (Number_of_Elements <= 5) 
+	{ 
 		for (p2 = &Output_Array[0]; p2 < &Output_Array[Number_of_Elements]; p2++)
 			*p2 = (*p2 & 1) ? (*p2 >> 1) + 1 : -(*p2 >> 1);
 		return; 
@@ -162,264 +163,81 @@ void CUnBitArrayOld::GenerateArrayOld(int* Output_Array, unsigned __int32 Number
 
 	//work through the rest of the elements before the primary loop
 	Max = (Number_of_Elements < 64) ? Number_of_Elements : 64;
-	for (q = 5; q < Max; q++) {
+	for (q = 5; q < Max; q++) 
+	{
 		Output_Array[q] = DecodeValueRiceUnsigned(k);
 		K_Sum += Output_Array[q];
 		k = Get_K(K_Sum / (q  + 1) / 2);
 	}
 
 	//quit if that was all
-	if (Number_of_Elements <= 64) { 
+	if (Number_of_Elements <= 64) 
+	{ 
 		for (p2 = &Output_Array[0]; p2 < &Output_Array[Number_of_Elements]; p2++)
 			*p2 = (*p2 & 1) ? (*p2 >> 1) + 1 : -(*p2 >> 1);
 		return; 
 	}
 		
-	//set all of the variables up for the primary loop
+	// set all of the variables up for the primary loop
+	unsigned __int32 v, Bit_Array_Index;
 	k = Get_K(K_Sum >> 7);
 	kmin = K_SUM_MIN_BOUNDARY_OLD[k];
 	kmax = K_SUM_MAX_BOUNDARY_OLD[k];
-
-	unsigned __int32 *pBitArray = m_pBitArray;
-	//unsigned __int32 *Bit = &m_nCurrentBitIndex;
-	unsigned __int32 BitX = m_nCurrentBitIndex;
-
-	//the primary loop
-	//for (p1 = &Output_Array[64], p2 = &Output_Array[0]; p1 < &Output_Array[Number_of_Elements]; p1++, p2++) {
 	p1 = &Output_Array[64]; p2 = &Output_Array[0];
 
-#ifdef ENABLE_ASSEMBLY
-	//the primary loop
-	__asm 
+	// the primary loop
+	for (p1 = &Output_Array[64], p2 = &Output_Array[0]; p1 < &Output_Array[Number_of_Elements]; p1++, p2++) 
 	{
-
-		//push the registers
-		push eax
-		push ebx
-		push ecx
-		push edx
-		push esi
-		push edi
-		mov esi, DWORD PTR p1
-		mov edi, DWORD PTR p2
-
-		//test to see if we should continue
-		mov ebx, Number_of_Elements
-		mov eax, DWORD PTR Output_Array
-		shl ebx, 2
-		add eax, ebx
-		cmp esi, eax
-		jge LBL_DONE_MAIN_LOOP
-
-
-		//the start of the main loop
-		LBL_START_MAIN_LOOP:
-
-			///////////////////////////////////////////////////////////////////////////
-			//calculate the overflow
-			///////////////////////////////////////////////////////////////////////////
-
-			//load the values
-			mov eax, DWORD PTR pBitArray
-			mov ecx, BitX
-			mov edx, ecx
-			shr edx, 5
-			lea eax, DWORD PTR [eax+edx*4]
-			
-			and ecx, 31
-			
-			//get and mask the current value
-			mov ebx, [eax]
-			shl ebx, cl
-			shr ebx, cl
-			
-			//search for a "1"
-			bsr edx, ebx
-
-			//initialize the overflow
-			mov ebx, 32
-			
-			//quit if a "1" was found
-			jne LBL_OVERFLOW_DONE
-				
-				LBL_OVERFLOW_START:
-			
-				//increment the bit array pointer
-				add eax, 4
-
-				//increment the overflow
-				add ebx, 32
-
-				//search for a "1"
-				bsr edx, [eax]
-
-				je LBL_OVERFLOW_START
-				
-			LBL_OVERFLOW_DONE:
-
-
-			//increment the pointer to the bit array if necessary
-			cmp edx, 0
-			jne LBL_SKIP_BIT_ARRAY_POINTER_INCREMENT
-				add eax, 4
-			LBL_SKIP_BIT_ARRAY_POINTER_INCREMENT:
-				
-			//calculate the overflow
-			sub ebx, edx
-			sub ebx, ecx
-
-			//update the bit pointer
-			add BitX, ebx
-
-			//put the ((overflow - 1) << k) into the overflow variable
-			sub ebx, 1
-			mov ecx, k
-			shl ebx, cl
-
-			//move the shifted overflow into the "Value"
-			mov [esi], ebx
-
-			///////////////////////////////////////////////////////////////////////////
-			//calculate the remainder
-			///////////////////////////////////////////////////////////////////////////
-			cmp k, 0
-			je LBL_REMAINDER_DONE
-
-				//get the bit index for shifting
-				mov ecx, BitX
-				
-				//get the left and right values
-				mov ebx, [eax]
-				mov eax, [eax+4]
-				
-				//shift it left
-				shld ebx, eax, cl
-				
-				//shift it back right
-				mov ecx, 32
-				sub ecx, k
-				
-				shr ebx, cl
-				
-				//mov Remainder, ebx
-				add [esi], ebx
-
-				//update the bit pointer
-				mov ecx, k
-				add BitX, ecx
-
-			LBL_REMAINDER_DONE:
-
-			///////////////////////////////////////////////////////////////////////////
-			//update k sum and convert p2 to a signed value
-			///////////////////////////////////////////////////////////////////////////
-
-			//update K_Sum
-			mov edx, K_Sum
-			add edx, [esi]
-			sub edx, [edi]
-			mov K_Sum, edx
-
-			//convert p2 to signed
-			mov	eax, [edi]
-			test al, 1
-			je LBL_EVEN_SIGN
-				sar eax, 1
-				inc eax
-				jmp LBL_DONE_SIGN
-			LBL_EVEN_SIGN:
-				sar eax, 1
-				neg eax
-			LBL_DONE_SIGN:
-			mov [edi], eax
-
-			///////////////////////////////////////////////////////////////////////////
-			//update k
-			///////////////////////////////////////////////////////////////////////////
-			mov eax, k
-
-			cmp edx, kmin
-			jge LBL_TEST_MAX_K
-				dec eax
-				lea ecx, K_SUM_MIN_BOUNDARY_OLD[eax*4]
-				cmp edx, [ecx]
-
-				jge LBL_UPDATE_K
-				LBL_DECREASE_K_START:
-
-					dec eax
-					sub ecx, 4
-					cmp edx, [ecx]
-					jl LBL_DECREASE_K_START
-
-				jmp LBL_UPDATE_K
-
-			LBL_TEST_MAX_K:
-
-			cmp edx, kmax
-			jl LBL_TEST_K_DONE
-				inc eax
-				lea ecx, K_SUM_MAX_BOUNDARY_OLD[eax*4]
-
-				cmp edx, [ecx]
-				jl LBL_UPDATE_K
-				LBL_INCREASE_K_START:
-
-					inc eax
-					add ecx, 4
-					cmp edx, [ecx]
-					jge LBL_INCREASE_K_START
-
-			LBL_UPDATE_K:
-
-			//update k
-			mov k, eax
-			
-			//update k min and max
-			lea ecx, K_SUM_MIN_BOUNDARY_OLD[eax*4]
-			mov ebx, [ecx]
-			mov kmin, ebx
-			lea ecx, K_SUM_MAX_BOUNDARY_OLD[eax*4]
-			mov ebx, [ecx]
-			mov kmax, ebx
-
-			LBL_TEST_K_DONE:
-
-			///////////////////////////////////////////////////////////////////////////
-			//increment the pointers and test to see if we should continue
-			///////////////////////////////////////////////////////////////////////////
-			add esi, 4
-			add edi, 4
-
-			mov ebx, Number_of_Elements
-			mov eax, DWORD PTR Output_Array
-			shl ebx, 2
-			add eax, ebx
-			cmp esi, eax
-			jl LBL_START_MAIN_LOOP
-
-		LBL_DONE_MAIN_LOOP:
-
-		mov p1, esi
-		mov p2, edi
-
-		//pop the registers
-		pop edi
-		pop esi
-		pop edx
-		pop ecx
-		pop ebx
-		pop eax
-	}
-#else
-	#error "Assembly required by UnBitArrayOld.cpp."
-#endif
+		// plug through the string of 0's (the overflow)
+		unsigned __int32 Bit_Initial = m_nCurrentBitIndex;
+		while (!(m_pBitArray[m_nCurrentBitIndex >> 5] & Powers_of_Two_Reversed[m_nCurrentBitIndex++ & 31])) {}
 	
-	for (; p2 < &Output_Array[Number_of_Elements]; p2++) {
-		*p2 = (*p2 & 1) ? (*p2 >> 1) + 1 : -(*p2 >> 1);
+		// if k = 0, your done
+		if (k == 0) 
+		{
+			v = (m_nCurrentBitIndex - Bit_Initial - 1);
+		}
+		else 
+		{
+			// put the overflow value into v
+			v = (m_nCurrentBitIndex - Bit_Initial - 1) << k;
+    
+			// store the bit information and incement the bit pointer by 'k'
+			Bit_Array_Index = m_nCurrentBitIndex >> 5;
+			unsigned int Bit_Index = m_nCurrentBitIndex & 31;
+			m_nCurrentBitIndex += k;
+
+			//figure the extra bits on the left and the left value
+			int Left_Extra_Bits = (32 - k) - Bit_Index;
+			unsigned int Left_Value = m_pBitArray[Bit_Array_Index] & Powers_of_Two_Minus_One_Reversed[Bit_Index];
+			
+			if (Left_Extra_Bits >= 0) 
+				v |= (Left_Value >> Left_Extra_Bits);
+			else 
+				v |= (Left_Value << -Left_Extra_Bits) | (m_pBitArray[Bit_Array_Index + 1] >> (32 + Left_Extra_Bits));
+		}	
+
+		*p1 = v;
+		K_Sum += *p1 - *p2;
+
+		// convert *p2 to unsigned
+		*p2 = (*p2 % 2) ? (*p2 >> 1) + 1 : -(*p2 >> 1);
+
+		// adjust k if necessary
+		if ((K_Sum < kmin) || (K_Sum >= kmax)) 
+		{
+			if (K_Sum < kmin) 
+				while (K_Sum < K_SUM_MIN_BOUNDARY_OLD[--k]) {}
+			else
+				while (K_Sum >= K_SUM_MAX_BOUNDARY_OLD[++k]) {}
+
+			kmax = K_SUM_MAX_BOUNDARY_OLD[k];
+			kmin = K_SUM_MIN_BOUNDARY_OLD[k];
+		}
 	}
 
-	m_nCurrentBitIndex = BitX;
+	for (; p2 < &Output_Array[Number_of_Elements]; p2++)
+		*p2 = (*p2 & 1) ? (*p2 >> 1) + 1 : -(*p2 >> 1);
 }
 
 void CUnBitArrayOld::GenerateArray(int *pOutputArray, int nElements, int nBytesRequired) 

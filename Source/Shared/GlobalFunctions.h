@@ -1,14 +1,10 @@
-#pragma once
+#ifndef APE_GLOBALFUNCTIONS_H
+#define APE_GLOBALFUNCTIONS_H
 
 /*************************************************************************************
 Definitions
 *************************************************************************************/
 class CIO;
-
-/*************************************************************************************
-Checks for MMX
-*************************************************************************************/
-BOOL GetMMXAvailable();
 
 /*************************************************************************************
 Read / Write from an IO source and return failure if the number of bytes specified
@@ -22,3 +18,4 @@ Checks for the existence of a file
 *************************************************************************************/
 BOOL FileExists(const char * pFilename);
 
+#endif // #ifndef APE_GLOBALFUNCTIONS_H

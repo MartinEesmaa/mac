@@ -1,13 +1,26 @@
-#pragma once
+#ifndef APE_ALL_H
+#define APE_ALL_H
+
+/*****************************************************************************************
+Cross platform building switch
+*****************************************************************************************/
+//#define BUILD_CROSS_PLATFORM
 
 /*****************************************************************************************
 Global includes
 *****************************************************************************************/
-#include <windows.h>
+#ifndef BUILD_CROSS_PLATFORM
+	#include <windows.h>
+#endif
 
-#ifdef _WINDOWS_
+#ifdef _WIN32
 	#include <mmsystem.h>
 #else
+	#include <unistd.h>
+	#include <time.h>
+	#include <sys/time.h>
+	#include <sys/types.h>
+	#include <sys/stat.h>
 	#include "NoWindows.h"
 #endif
 
@@ -21,51 +34,52 @@ Global includes
 /*****************************************************************************************
 Global compiler settings (useful for porting)
 *****************************************************************************************/
-#define BACKWARDS_COMPATIBILITY
-#define ENABLE_ASSEMBLY
-
-#ifdef BACKWARDS_COMPATIBILITY 
-	#ifndef ENABLE_ASSEMBLY
-		#error "Monkey's Audio requires assembly for backwards compatibility."
-	#endif
+#ifndef BUILD_CROSS_PLATFORM
+	#define ENABLE_ASSEMBLY
 #endif
+
+#define BACKWARDS_COMPATIBILITY
 
 #define ENABLE_COMPRESSION_MODE_FAST
 #define ENABLE_COMPRESSION_MODE_NORMAL
 #define ENABLE_COMPRESSION_MODE_HIGH
 #define ENABLE_COMPRESSION_MODE_EXTRA_HIGH
 
-#ifdef _WINDOWS_
+#ifdef _WIN32
 	#define IO_USE_WIN_FILE_IO
-	#define IO_HEADER_FILE			"WinFileIO.h"
-	#define IO_CLASS_NAME			CWinFileIO
-	#define DLLEXPORT	__declspec( dllexport )
-	#define SLEEP(MILLISECONDS)	::Sleep(MILLISECONDS)
-	#define MESSAGEBOX(PARENT, TEXT, CAPTION, TYPE) MessageBox(PARENT, TEXT, CAPTION, TYPE)
-	#define PUMP_MESSAGE_LOOP { MSG Msg; while (PeekMessage(&Msg, NULL, 0, 0, PM_REMOVE) != 0) { TranslateMessage(&Msg); DispatchMessage(&Msg); } }
-	#define ODS OutputDebugString
-	#define TICK_COUNT GetTickCount()
+	#define IO_HEADER_FILE								"WinFileIO.h"
+	#define IO_CLASS_NAME								CWinFileIO
+	#define DLLEXPORT									__declspec(dllexport)
+	#define SLEEP(MILLISECONDS)							::Sleep(MILLISECONDS)
+	#define MESSAGEBOX(PARENT, TEXT, CAPTION, TYPE)		MessageBox(PARENT, TEXT, CAPTION, TYPE)
+	#define PUMP_MESSAGE_LOOP							{ MSG Msg; while (PeekMessage(&Msg, NULL, 0, 0, PM_REMOVE) != 0) { TranslateMessage(&Msg); DispatchMessage(&Msg); } }
+	#define ODS											OutputDebugString
+	#define TICK_COUNT_TYPE								unsigned long
+	#define TICK_COUNT_READ(VARIABLE)					VARIABLE = GetTickCount()
+	#define TICK_COUNT_FREQ								1000
 #else
 	#define IO_USE_STD_LIB_FILE_IO
-	#define IO_HEADER_FILE			"StdLibFileIO.h"
-	#define IO_CLASS_NAME			CStdLibFileIO
+	#define IO_HEADER_FILE								"StdLibFileIO.h"
+	#define IO_CLASS_NAME								CStdLibFileIO
 	#define DLLEXPORT
-	#define SLEEP(MILLISECONDS)
+	#define SLEEP(MILLISECONDS)							{ struct timespec t; t.tv_sec = (MILLISECONDS) / 1000; t.tv_nsec = (MILLISECONDS) % 1000 * 1000000; nanosleep(&t, NULL); }
 	#define MESSAGEBOX(PARENT, TEXT, CAPTION, TYPE)
 	#define PUMP_MESSAGE_LOOP
-	#define ODS printf
-	#define TICK_COUNT 0
+	#define ODS											printf
+	#define TICK_COUNT_TYPE								unsigned long long
+	#define TICK_COUNT_READ(VARIABLE)					{ struct timeval t; gettimeofday(&t, NULL); VARIABLE = t.tv_sec * 1000000LLU + t.tv_usec; }
+	#define TICK_COUNT_FREQ								1000000
 #endif
 
 /*****************************************************************************************
 Global Defines
 *****************************************************************************************/
-#define MAC_VERSION_NUMBER						3960
-#define MAC_VERSION_STRING						"3.96b1"
-#define PLUGIN_NAME								"Monkey's Audio Player v3.96b1"
-#define MJ_PLUGIN_NAME							"APE Plugin (v3.96b1)"
-#define CONSOLE_NAME							"--- Monkey's Audio Console Front End (v 3.96b1) (c) Matthew T. Ashland ---\n"
-#define PLUGIN_ABOUT							"Monkey's Audio Player v3.96b1\nCopyrighted (c) 2000-2002 by Matthew T. Ashland"
+#define MAC_VERSION_NUMBER						3970
+#define MAC_VERSION_STRING						"3.97"
+#define PLUGIN_NAME								"Monkey's Audio Player v3.97"
+#define MJ_PLUGIN_NAME							"APE Plugin (v3.97)"
+#define CONSOLE_NAME							"--- Monkey's Audio Console Front End (v 3.97) (c) Matthew T. Ashland ---\n"
+#define PLUGIN_ABOUT							"Monkey's Audio Player v3.97\nCopyrighted (c) 2000-2002 by Matthew T. Ashland"
 #define MAC_DLL_INTERFACE_VERSION_NUMBER		1000
 
 /*****************************************************************************************
@@ -79,7 +93,7 @@ Macros
 #define SAFE_VOID_CLASS_DELETE(POINTER, Class) { Class *pClass = (Class *) POINTER; if (pClass) { delete pClass; POINTER = NULL; } }
 #define SAFE_FILE_CLOSE(HANDLE) if (HANDLE != INVALID_HANDLE_VALUE) { CloseHandle(HANDLE); HANDLE = INVALID_HANDLE_VALUE; }
 
-#define ODN(NUMBER) { char cNumber[16]; sprintf(cNumber, "%d\r\n", int(NUMBER)); ODS(cNumber); }
+#define ODN(NUMBER) { char cNumber[16]; sprintf(cNumber, "%d\n", int(NUMBER)); ODS(cNumber); }
 
 #define CATCH_ERRORS(CODE) try { CODE } catch(...) { }
 
@@ -97,6 +111,7 @@ Macros
 #define EXPAND_6_TIMES(CODE) CODE CODE CODE CODE CODE CODE
 #define EXPAND_7_TIMES(CODE) CODE CODE CODE CODE CODE CODE CODE
 #define EXPAND_8_TIMES(CODE) CODE CODE CODE CODE CODE CODE CODE CODE
+#define EXPAND_9_TIMES(CODE) CODE CODE CODE CODE CODE CODE CODE CODE CODE
 #define EXPAND_12_TIMES(CODE) CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE
 #define EXPAND_14_TIMES(CODE) CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE
 #define EXPAND_15_TIMES(CODE) CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE CODE
@@ -146,8 +161,8 @@ Error Codes
 #define ERROR_INSUFFICIENT_MEMORY					2000
 
 // dll errors (3000's)
-#define ERROR_LOADING_MAC_DLL						3000
-#define ERROR_LOADING_MAC_INFO_DLL					3001
+#define ERROR_LOADINGAPE_DLL						3000
+#define ERROR_LOADINGAPE_INFO_DLL					3001
 #define ERROR_LOADING_UNMAC_DLL						3002
 
 // general and misc errors
@@ -163,3 +178,29 @@ Error Codes
 // unknown error
 #define ERROR_UNDEFINED								-1
 
+#define ERROR_EXPLANATION \
+    { ERROR_IO_READ                               , "I/O read error" },							\
+    { ERROR_IO_WRITE                              , "I/O write error" },						\
+    { ERROR_INVALID_INPUT_FILE                    , "invalid input file" },						\
+    { ERROR_INVALID_OUTPUT_FILE                   , "invalid output file" },					\
+    { ERROR_INPUT_FILE_TOO_LARGE                  , "input file file too large" },				\
+    { ERROR_INPUT_FILE_UNSUPPORTED_BIT_DEPTH      , "input file unsupported bit depth" },		\
+    { ERROR_INPUT_FILE_UNSUPPORTED_SAMPLE_RATE    , "input file unsupported sample rate" },		\
+    { ERROR_INPUT_FILE_UNSUPPORTED_CHANNEL_COUNT  , "input file unsupported channel count" },	\
+    { ERROR_INPUT_FILE_TOO_SMALL                  , "input file too small" },					\
+    { ERROR_INVALID_CHECKSUM                      , "invalid checksum" },						\
+    { ERROR_DECOMPRESSING_FRAME                   , "decompressing frame" },					\
+    { ERROR_INITIALIZING_UNMAC                    , "initializing unmac" },						\
+    { ERROR_INVALID_FUNCTION_PARAMETER            , "invalid function parameter" },				\
+    { ERROR_UNSUPPORTED_FILE_TYPE                 , "unsupported file type" },					\
+    { ERROR_INSUFFICIENT_MEMORY                   , "insufficient memory" },					\
+    { ERROR_LOADINGAPE_DLL                        , "loading MAC.dll" },						\
+    { ERROR_LOADINGAPE_INFO_DLL                   , "loading MACinfo.dll" },					\
+    { ERROR_LOADING_UNMAC_DLL                     , "loading UnMAC.dll" },						\
+    { ERROR_USER_STOPPED_PROCESSING               , "user stopped processing" },				\
+    { ERROR_SKIPPED                               , "skipped..." },								\
+    { ERROR_BAD_PARAMETER                         , "bad parameter" },							\
+    { ERROR_APE_COMPRESS_TOO_MUCH_DATA            , "APE compress too much data" },				\
+    { ERROR_UNDEFINED                             , "undefined" },								\
+
+#endif // #ifndef APE_ALL_H

@@ -8,7 +8,8 @@ Notes:
 	-none
 *****************************************************************************************/
 
-#pragma once
+#ifndef APE_UNMAC_H
+#define APE_UNMAC_H
 
 #include "../BitArray.h"
 #include "../UnBitArrayBase.h"
@@ -99,3 +100,5 @@ public:
 
 	int				m_nBlocksProcessed;
 };
+
+#endif // #ifndef APE_UNMAC_H

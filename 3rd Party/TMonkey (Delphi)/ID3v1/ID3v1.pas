@@ -3,12 +3,13 @@
 { Audio Tools Library (Freeware)                                              }
 { Class TID3v1 - for manipulating with ID3v1 tags                             }
 {                                                                             }
-{ Copyright (c) 2001 by Jurgen Faul                                           }
+{ Copyright (c) 2001,2002 by Jurgen Faul                                      }
 { E-mail: jfaul@gmx.de                                                        }
 { http://jfaul.de/atl                                                         }
 {                                                                             }
 { Version 1.0 (25 July 2001)                                                  }
-{   - Full support for ID3v1.0 & ID3v1.1 tags (read/write)                    }
+{   - Reading & writing support for ID3v1.x tags                              }
+{   - Tag info: title, artist, album, track, year, genre, comment             }
 {                                                                             }
 { *************************************************************************** }
 

@@ -10,9 +10,10 @@
 CAPELink::CAPELink(const char * pFilename)
 {
 	// empty
+	m_bIsLinkFile = FALSE;
 	m_nStartBlock = 0;
 	m_nFinishBlock = 0;
-	m_cImageFile[0] = 0;
+	m_cImageFilename[0] = 0;
 
 	// open the file
 	IO_CLASS_NAME ioLinkFile;
@@ -26,11 +27,35 @@ CAPELink::CAPELink(const char * pFilename)
 		ioLinkFile.Read(spBuffer.GetPtr(), 1023, &nBytesRead);
 		spBuffer[nBytesRead] = 0;
 
+		// call the other constructor (uses a buffer instead of opening the file)
+		ParseData(spBuffer, pFilename);
+	}
+}
+
+CAPELink::CAPELink(const char * pData, const char * pFilename)
+{
+	ParseData(pData, pFilename);
+}
+
+CAPELink::~CAPELink()
+{
+}
+
+void CAPELink::ParseData(const char * pData, const char * pFilename)
+{
+	// empty
+	m_bIsLinkFile = FALSE;
+	m_nStartBlock = 0;
+	m_nFinishBlock = 0;
+	m_cImageFilename[0] = 0;
+
+	if (pData != NULL)
+	{
 		// parse out the information
-		char * pHeader = strstr(spBuffer.GetPtr(), APE_LINK_HEADER);
-		char * pImageFile = strstr(spBuffer.GetPtr(), APE_LINK_IMAGE_FILE_TAG);
-		char * pStartBlock = strstr(spBuffer.GetPtr(), APE_LINK_START_BLOCK_TAG);
-		char * pFinishBlock = strstr(spBuffer.GetPtr(), APE_LINK_FINISH_BLOCK_TAG);
+		char * pHeader = strstr(pData, APE_LINK_HEADER);
+		char * pImageFile = strstr(pData, APE_LINK_IMAGE_FILE_TAG);
+		char * pStartBlock = strstr(pData, APE_LINK_START_BLOCK_TAG);
+		char * pFinishBlock = strstr(pData, APE_LINK_FINISH_BLOCK_TAG);
 
 		if (pHeader && pImageFile && pStartBlock && pFinishBlock)
 		{
@@ -56,17 +81,37 @@ CAPELink::CAPELink(const char * pFilename)
 					char cImagePath[MAX_PATH + 1];
 					strcpy(cImagePath, pFilename);
 					strcpy(strrchr(cImagePath, '\\') + 1, cImageFile);
-					strcpy(m_cImageFile, cImagePath);
+					strcpy(m_cImageFilename, cImagePath);
 				}
 				else
 				{
-					strcpy(m_cImageFile, cImageFile);
+					strcpy(m_cImageFilename, cImageFile);
 				}
+
+				// this is a valid link file
+				m_bIsLinkFile = TRUE;
 			}
 		}
 	}
 }
 
-CAPELink::~CAPELink()
+int CAPELink::GetStartBlock()
 {
+	return m_nStartBlock;
 }
+
+int CAPELink::GetFinishBlock()
+{
+	return m_nFinishBlock;
+}
+
+const char * CAPELink::GetImageFilename()
+{
+	return m_cImageFilename;
+}
+
+BOOL CAPELink::GetIsLinkFile()
+{
+	return m_bIsLinkFile;
+}
+

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_IO_H
+#define APE_IO_H
 
 #ifndef FILE_BEGIN
 	#define FILE_BEGIN		0
@@ -45,4 +46,4 @@ public:
 	virtual int GetName(char * pBuffer) = 0;
 };
 
-
+#endif // #ifndef APE_IO_H

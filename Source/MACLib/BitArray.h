@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_BITARRAY_H
+#define APE_BITARRAY_H
 
 #include "IO.h"
 
@@ -48,15 +49,11 @@ private:
 	CIO	*						m_pIO;
 	unsigned __int32			m_nCurrentBitIndex;
 	RANGE_CODER_STRUCT_COMPRESS	m_RangeCoderInfo;
-	
-	// functions
-	__inline void NormalizeRangeCoder();
-	__inline void EncodeFast(int nRangeWidth, int nRangeTotal, int nShift);
-	__inline void PutC(unsigned char ucValue);
-	__inline void EncodeDirect(int nValue, int nShift);
 
 #ifdef BUILD_RANGE_TABLE
 	void OutputRangeTable();
 #endif
 	
 };
+
+#endif // #ifndef APE_BITARRAY_H

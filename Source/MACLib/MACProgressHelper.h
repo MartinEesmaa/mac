@@ -1,13 +1,5 @@
-// MACProgressHelper.h: interface for the CMACProgressHelper class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_MACPROGRESSHELPER_H__5ACFF299_B004_4A19_85D9_CC49296D5611__INCLUDED_)
-#define AFX_MACPROGRESSHELPER_H__5ACFF299_B004_4A19_85D9_CC49296D5611__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef APE_MACPROGRESSHELPER_H
+#define APE_MACPROGRESSHELPER_H
 
 #define KILL_FLAG_CONTINUE		0
 #define KILL_FLAG_PAUSE			-1
@@ -39,4 +31,5 @@ private:
 	int						*m_pKillFlag;
 };
 
-#endif // !defined(AFX_MACPROGRESSHELPER_H__5ACFF299_B004_4A19_85D9_CC49296D5611__INCLUDED_)
+#endif // #ifndef APE_MACPROGRESSHELPER_H
+

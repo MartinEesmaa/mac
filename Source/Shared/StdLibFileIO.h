@@ -1,13 +1,15 @@
 #ifdef IO_USE_STD_LIB_FILE_IO
 
-#pragma once
+#ifndef APE_STDLIBFILEIO_H
+#define APE_STDLIBFILEIO_H
 
 #include "IO.h"
 
 class CStdLibFileIO : public CIO
 {
 public:
-	//construction / destruction
+
+	// construction / destruction
 	CStdLibFileIO();
 	~CStdLibFileIO();
 
@@ -33,6 +35,7 @@ public:
 	int GetPosition();
 	int GetSize();
 	int GetName(char * pBuffer);
+    int GetHandle();
 
 private:
 	
@@ -41,6 +44,7 @@ private:
 	FILE * m_pFile;
 };
 
+#endif // #ifndef APE_STDLIBFILEIO_H
 
-#endif // IO_USE_STD_LIB_FILE_IO
+#endif // #ifdef IO_USE_STD_LIB_FILE_IO
 

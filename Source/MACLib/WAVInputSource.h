@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_WAVINPUTSOURCE_H
+#define APE_WAVINPUTSOURCE_H
 
 #include "IO.h"
 
@@ -60,3 +61,4 @@ Input souce creation
 *************************************************************************************/
 CInputSource * CreateInputSource(const char * pSourceName, WAVEFORMATEX * pwfeSource, int * pTotalBlocks, int * pHeaderBytes, int * pTerminatingBytes, int * pErrorCode = NULL);
 
+#endif // #ifndef APE_WAVINPUTSOURCE_H

@@ -9,6 +9,7 @@
 #include "UnMAC.h"
 #include "../Prepare.h"
 #include "../UnBitArray.h"
+#include "../Assembly/Assembly.h"
 
 CAPEDecompressCore::CAPEDecompressCore(CIO * pIO, IAPEDecompress * pAPEDecompress)
 {

@@ -66,17 +66,20 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const char * pFilename, int * pE
 	{
 		// "link" file (.apl linked large APE file)
 		CAPELink APELink(pFilename);
-		CAPETag * pAPETag = new CAPETag(pFilename, TRUE);
-
-		pAPEInfo = new CAPEInfo(&nErrorCode, APELink.m_cImageFile, pAPETag);
-		nStartBlock = APELink.m_nStartBlock; nFinishBlock = APELink.m_nFinishBlock;
+		if (APELink.GetIsLinkFile())
+		{
+			pAPEInfo = new CAPEInfo(&nErrorCode, APELink.GetImageFilename(), new CAPETag(pFilename, TRUE));
+			nStartBlock = APELink.GetStartBlock(); nFinishBlock = APELink.GetFinishBlock();
+		}
 	}
 	else if ((_stricmp(pExtension, ".mac") == 0) || (_stricmp(pExtension, ".ape") == 0))
 	{
 		// plain .ape file
 		pAPEInfo = new CAPEInfo(&nErrorCode, pFilename);
 	}
-	else
+
+	// fail if we couldn't get the file information
+	if (pAPEInfo == NULL)
 	{
 		if (pErrorCode) *pErrorCode = ERROR_INVALID_INPUT_FILE;
 		return NULL;
@@ -93,6 +96,15 @@ IAPEDecompress * __stdcall CreateIAPEDecompressEx(CIO * pIO, int * pErrorCode)
 	int nErrorCode = ERROR_UNDEFINED;
 	CAPEInfo * pAPEInfo = new CAPEInfo(&nErrorCode, pIO);
 	IAPEDecompress * pAPEDecompress = CreateIAPEDecompressCore(pAPEInfo, -1, -1, &nErrorCode);
+	if (pErrorCode) *pErrorCode = nErrorCode;
+	return pAPEDecompress;
+}
+
+
+IAPEDecompress * __stdcall CreateIAPEDecompressEx2(CAPEInfo * pAPEInfo, int nStartBlock, int nFinishBlock, int * pErrorCode)
+{
+	int nErrorCode = ERROR_SUCCESS;
+	IAPEDecompress * pAPEDecompress = CreateIAPEDecompressCore(pAPEInfo, nStartBlock, nFinishBlock, &nErrorCode);
 	if (pErrorCode) *pErrorCode = nErrorCode;
 	return pAPEDecompress;
 }

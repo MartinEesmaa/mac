@@ -221,10 +221,6 @@ int CAntiPredictorExtraHighHelper::ConventionalDotProduct(short *bip, short *bbm
 	__asm add eax, 8											\
 	__asm add edi, 8
 
-#else
-	#error "Assembly required by Anti-Predictor.cpp."
-#endif
-
 int CAntiPredictorExtraHighHelper::MMXDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op, int nNumberOfIterations) 
 {
 	int Dot_Product;
@@ -393,6 +389,8 @@ LBL_SUBTRACT_AGAIN:
 	
 	return Dot_Product;
 }
+
+#endif // #ifdef ENABLE_ASSEMBLY
 
 #endif // #ifdef ENABLE_COMPRESSION_MODE_EXTRA_HIGH
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_NEWPREDICTOR_H
+#define APE_NEWPREDICTOR_H
 
 #include "Predictor.h"
 
@@ -30,38 +31,26 @@ public:
 protected:
 
 	// buffer information
-//	CRollBuffer<int> m_rbBufferA;
-//	CRollBuffer<int> m_rbBufferB;
-
-	CRollBufferFast<int, WINDOW_BLOCKS, 8> m_rbPredictionA;
-	CRollBufferFast<int, WINDOW_BLOCKS, 8> m_rbPredictionB;
-
-	CRollBufferFast<int, WINDOW_BLOCKS, 8> m_rbAdaptA;
-	CRollBufferFast<int, WINDOW_BLOCKS, 8> m_rbAdaptB;
+	CRollBufferFast<int, WINDOW_BLOCKS, 10> m_rbPrediction;
+	CRollBufferFast<int, WINDOW_BLOCKS, 9> m_rbAdapt;
 
 	CScaledFirstOrderFilter<31, 5> m_Stage1FilterA;
 	CScaledFirstOrderFilter<31, 5> m_Stage1FilterB;
 
 	// adaption
-	int m_aryMA[M_COUNT];
-	int m_aryMB[M_COUNT];
-	
+	int m_aryM[9];
+
 	// other
 	int m_nCurrentIndex;
-	int m_nLastValueA;
-//	int m_nLastValueB;
 	CNNFilter * m_pNNFilter;
 	CNNFilter * m_pNNFilter1;
 
-//	BOOL m_bFirst;
 };
-
-
 
 class CPredictorDecompressNormal3930to3950 : public IPredictorDecompress
 {
 public:
-	CPredictorDecompressNormal3930to3950(int nCompressionLevel);
+	CPredictorDecompressNormal3930to3950(int nCompressionLevel, int nVersion);
 	virtual ~CPredictorDecompressNormal3930to3950();
 
 	int DecompressValue(int nInput, int);
@@ -88,7 +77,7 @@ protected:
 class CPredictorDecompress3950toCurrent : public IPredictorDecompress
 {
 public:
-	CPredictorDecompress3950toCurrent(int nCompressionLevel);
+	CPredictorDecompress3950toCurrent(int nCompressionLevel, int nVersion);
 	virtual ~CPredictorDecompress3950toCurrent();
 
 	int DecompressValue(int nA, int nB = 0);
@@ -113,7 +102,9 @@ protected:
 	// other
 	int m_nCurrentIndex;
 	int m_nLastValueA;
+	int m_nVersion;
 	CNNFilter * m_pNNFilter;
 	CNNFilter * m_pNNFilter1;
 };
 
+#endif // #ifndef APE_NEWPREDICTOR_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_UNBITARRAY_H
+#define APE_UNBITARRAY_H
 
 #include "UnBitArrayBase.h"
 #include "BitArray.h"
@@ -49,3 +50,5 @@ private:
 
 	
 };
+
+#endif // #ifndef APE_UNBITARRAY_H

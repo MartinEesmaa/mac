@@ -101,6 +101,64 @@ int CBitArray::OutputBitArray(BOOL bFinalize)
 }
 
 /************************************************************************************
+Range coding macros -- ugly, but outperform inline's (every cycle counte here)
+************************************************************************************/
+#define PUTC(VALUE) m_pBitArray[m_nCurrentBitIndex >> 5] |= ((VALUE) & 0xFF) << (24 - (m_nCurrentBitIndex & 31)); m_nCurrentBitIndex += 8;
+#define PUTC_NOCAP(VALUE) m_pBitArray[m_nCurrentBitIndex >> 5] |= (VALUE) << (24 - (m_nCurrentBitIndex & 31)); m_nCurrentBitIndex += 8;
+
+#define NORMALIZE_RANGE_CODER																	\
+	while (m_RangeCoderInfo.range <= BOTTOM_VALUE)												\
+	{																							\
+		if (m_RangeCoderInfo.low < (0xFF << SHIFT_BITS))										\
+		{																						\
+			PUTC(m_RangeCoderInfo.buffer);														\
+			for ( ; m_RangeCoderInfo.help; m_RangeCoderInfo.help--) { PUTC_NOCAP(0xFF); }		\
+			m_RangeCoderInfo.buffer = (m_RangeCoderInfo.low >> SHIFT_BITS);						\
+		}																						\
+		else if (m_RangeCoderInfo.low & TOP_VALUE)												\
+		{																						\
+			PUTC(m_RangeCoderInfo.buffer + 1);													\
+			m_nCurrentBitIndex += (m_RangeCoderInfo.help * 8);									\
+			m_RangeCoderInfo.help = 0;															\
+			m_RangeCoderInfo.buffer = (m_RangeCoderInfo.low >> SHIFT_BITS);						\
+		}																						\
+		else																					\
+		{																						\
+			m_RangeCoderInfo.help++;															\
+		}																						\
+																								\
+		m_RangeCoderInfo.low = (m_RangeCoderInfo.low << 8) & (TOP_VALUE - 1);					\
+		m_RangeCoderInfo.range <<= 8;															\
+	}			
+
+#define ENCODE_FAST(RANGE_WIDTH, RANGE_TOTAL, SHIFT)											\
+	NORMALIZE_RANGE_CODER																		\
+	const int nTemp = m_RangeCoderInfo.range >> (SHIFT);										\
+	m_RangeCoderInfo.range = nTemp * (RANGE_WIDTH);												\
+	m_RangeCoderInfo.low += nTemp * (RANGE_TOTAL);	
+
+#define ENCODE_DIRECT(VALUE, SHIFT)																\
+	NORMALIZE_RANGE_CODER																		\
+	m_RangeCoderInfo.range = m_RangeCoderInfo.range >> (SHIFT);									\
+	m_RangeCoderInfo.low += m_RangeCoderInfo.range * (VALUE);
+
+/************************************************************************************
+Directly encode bits to the bitstream
+************************************************************************************/
+int CBitArray::EncodeBits(unsigned int nValue, int nBits)
+{
+	// make sure there is room for the data
+	// this is a little slower than ensuring a huge block to start with, but it's safer
+	if (m_nCurrentBitIndex > REFILL_BIT_THRESHOLD)
+	{
+		RETURN_ON_ERROR(OutputBitArray())
+	}
+	
+	ENCODE_DIRECT(nValue, nBits);
+	return 0;
+}
+
+/************************************************************************************
 Encodes an unsigned int to the bit array (no rice coding)
 ************************************************************************************/
 int CBitArray::EncodeUnsignedLong(unsigned int n) 
@@ -131,88 +189,12 @@ int CBitArray::EncodeUnsignedLong(unsigned int n)
 }
 
 /************************************************************************************
-Directly encode bits to the bitstream
-************************************************************************************/
-int CBitArray::EncodeBits(unsigned int nValue, int nBits)
-{
-	// make sure there is room for the data
-	// this is a little slower than ensuring a huge block to start with, but it's safer
-	if (m_nCurrentBitIndex > REFILL_BIT_THRESHOLD)
-	{
-		RETURN_ON_ERROR(OutputBitArray())
-	}
-	
-	EncodeDirect(nValue, nBits);
-	return 0;
-}
-
-/************************************************************************************
 Advance to a byte boundary (for frame alignment)
 ************************************************************************************/
 void CBitArray::AdvanceToByteBoundary() 
 {
 	while (m_nCurrentBitIndex % 8)
 		m_nCurrentBitIndex++;
-}
-
-/************************************************************************************
-Range encoding
-************************************************************************************/
-__inline void CBitArray::PutC(unsigned char ucValue)
-{
-	m_pBitArray[m_nCurrentBitIndex >> 5] |= ucValue << (24 - (m_nCurrentBitIndex & 31));
-	m_nCurrentBitIndex += 8;
-}
-
-#define PUTC(VALUE) m_pBitArray[m_nCurrentBitIndex >> 5] |= ((VALUE) & 0xFF) << (24 - (m_nCurrentBitIndex & 31)); m_nCurrentBitIndex += 8;
-#define PUTC_NOCAP(VALUE) m_pBitArray[m_nCurrentBitIndex >> 5] |= (VALUE) << (24 - (m_nCurrentBitIndex & 31)); m_nCurrentBitIndex += 8;
-
-__inline void CBitArray::NormalizeRangeCoder()
-{
-	while (m_RangeCoderInfo.range <= BOTTOM_VALUE)
-	{   
-		if (m_RangeCoderInfo.low < (0xFF << SHIFT_BITS))  // no carry possible --> output
-		{   
-			PUTC(m_RangeCoderInfo.buffer);
-			for ( ; m_RangeCoderInfo.help; m_RangeCoderInfo.help--) { PUTC_NOCAP(0xFF); }
-			m_RangeCoderInfo.buffer = (m_RangeCoderInfo.low >> SHIFT_BITS) & 0xFF;
-		} 
-		else if (m_RangeCoderInfo.low & TOP_VALUE) // carry now, no future carry
-		{
-			PUTC(m_RangeCoderInfo.buffer + 1);
-			m_nCurrentBitIndex += (m_RangeCoderInfo.help * 8);
-			m_RangeCoderInfo.help = 0;
-			m_RangeCoderInfo.buffer = (m_RangeCoderInfo.low >> SHIFT_BITS) & 0xFF;
-		} 
-		else
-		{
-			m_RangeCoderInfo.help++;
-		}
-
-		m_RangeCoderInfo.range <<= 8;
-		m_RangeCoderInfo.low = (m_RangeCoderInfo.low << 8) & (TOP_VALUE - 1);
-	}		
-}
-
-__inline void CBitArray::EncodeFast(int nRangeWidth, int nRangeTotal, int nShift)
-{
-	// normalize
-	NormalizeRangeCoder();
-
-	// code the value
-	const int nTemp = m_RangeCoderInfo.range >> nShift;
-	m_RangeCoderInfo.low += nTemp * nRangeTotal;
-	m_RangeCoderInfo.range = nTemp * nRangeWidth;
-}
-
-__inline void CBitArray::EncodeDirect(int nValue, int nShift)
-{
-	// normalize
-	NormalizeRangeCoder();
-
-	// code the value
-	m_RangeCoderInfo.range = m_RangeCoderInfo.range >> nShift;
-	m_RangeCoderInfo.low += m_RangeCoderInfo.range * nValue;
 }
 
 /************************************************************************************
@@ -249,7 +231,7 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
 	// store the overflow
 	if (nOverflow < (MODEL_ELEMENTS - 1))
 	{
-		EncodeFast(RANGE_WIDTH[nOverflow], RANGE_TOTAL[nOverflow], RANGE_OVERFLOW_SHIFT);
+		ENCODE_FAST(RANGE_WIDTH[nOverflow], RANGE_TOTAL[nOverflow], RANGE_OVERFLOW_SHIFT);
 
 		#ifdef BUILD_RANGE_TABLE
 			g_aryOverflows[nOverflow]++;
@@ -259,7 +241,7 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
 	else
 	{
 		// store the "special" overflow (tells that perfect k is encoded next)
-		EncodeFast(RANGE_WIDTH[MODEL_ELEMENTS - 1], RANGE_TOTAL[MODEL_ELEMENTS - 1], RANGE_OVERFLOW_SHIFT);
+		ENCODE_FAST(RANGE_WIDTH[MODEL_ELEMENTS - 1], RANGE_TOTAL[MODEL_ELEMENTS - 1], RANGE_OVERFLOW_SHIFT);
 
 		#ifdef BUILD_RANGE_TABLE
 			g_aryOverflows[MODEL_ELEMENTS - 1]++;
@@ -269,21 +251,21 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
 		// store the "perfect" k
 		int nPerfectK = 0;
 		while ((nEncode >> nPerfectK) > 0) { nPerfectK++; }
-		EncodeDirect(nPerfectK, 5);
+		ENCODE_DIRECT(nPerfectK, 5);
 		nTempK = nPerfectK;
 		nValue = nEncode;
 	}
 	
 	if (nTempK <= 16)
 	{
-		EncodeDirect(nValue, nTempK);
+		ENCODE_DIRECT(nValue, nTempK);
 	}
 	else
 	{
 		const int nX1 = nValue & 0xFFFF;
 		const int nX2 = nValue >> 16;
-		EncodeDirect(nX1, 16);
-		EncodeDirect(nX2, nTempK - 16);
+		ENCODE_DIRECT(nX1, 16);
+		ENCODE_DIRECT(nX2, nTempK - 16);
 	}
 
 	return 0;
@@ -316,28 +298,32 @@ Finalize
 ************************************************************************************/
 void CBitArray::Finalize()
 {
-	NormalizeRangeCoder();
+	NORMALIZE_RANGE_CODER
 
 	unsigned int nTemp = (m_RangeCoderInfo.low >> SHIFT_BITS) + 1;
 
     if (nTemp > 0xFF) // we have a carry
     {
-		PutC(m_RangeCoderInfo.buffer + 1);
+		PUTC(m_RangeCoderInfo.buffer + 1);
 		for(; m_RangeCoderInfo.help; m_RangeCoderInfo.help--)
-			PutC(0);
+		{
+			PUTC(0);
+		}
     } 
 	else  // no carry
     {
-		PutC(m_RangeCoderInfo.buffer);
+		PUTC(m_RangeCoderInfo.buffer);
 		for(; m_RangeCoderInfo.help; m_RangeCoderInfo.help--)
-			PutC(0xFF);
+		{
+			PUTC(((unsigned char) 0xFF));
+		}
     }
 
 	// we must output these bytes so the decoder can properly work at the end of the stream
-    PutC(nTemp & 0xFF);
-    PutC(0);
-	PutC(0);
-	PutC(0);
+    PUTC(nTemp & 0xFF);
+    PUTC(0);
+	PUTC(0);
+	PUTC(0);
 }
 
 /************************************************************************************
@@ -396,7 +382,7 @@ void CBitArray::OutputRangeTable()
 		sprintf(buf, "%d,", aryTotal[z]);
 		OutputDebugString(buf);
 	}
-	ODS("};\r\n");
+	ODS("};\n");
 
 	sprintf(buf, "const unsigned __int32 RANGE_WIDTH[%d] = {", MODEL_ELEMENTS);
 	ODS(buf);
@@ -405,6 +391,6 @@ void CBitArray::OutputRangeTable()
 		sprintf(buf, "%d,", aryWidth[z]);
 		OutputDebugString(buf);
 	}
-	ODS("};\r\n\r\n");
+	ODS("};\n\n");
 }
 #endif // #ifdef BUILD_RANGE_TABLE

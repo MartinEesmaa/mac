@@ -18,7 +18,8 @@ WARNING:
 	everything gets finalized.  Use them at your own risk
 *****************************************************************************************/
 
-#pragma once
+#ifndef APE_APEINFO_H
+#define APE_APEINFO_H
 
 #include "IO.h"
 #include "APETag.h"
@@ -71,7 +72,7 @@ public:
 	
 	// construction and destruction
 	CAPEInfo(int * pErrorCode, const char * pFilename, CAPETag * pTag = NULL);
-	CAPEInfo(int * pErrorCode, CIO *pIO, CAPETag * pTag = NULL);
+	CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag = NULL);
 	virtual ~CAPEInfo();
 
 	// query for information
@@ -91,7 +92,9 @@ private:
 	CSmartPtr<unsigned char> m_spWaveHeaderData;
 	CSmartPtr<unsigned __int32> m_spSeekByteTable;
 	CSmartPtr<unsigned char> m_spSeekBitTable;
-	int m_nExtraHeaderBytes; //used for ID3v2, etc.
+	int m_nExtraHeaderBytes; // used for ID3v2, etc.
 	int	m_nSeekTableElements;
 	APE_FILE_INFO	m_APEFileInfo;
 };
+
+#endif // #ifndef APE_APEINFO_H

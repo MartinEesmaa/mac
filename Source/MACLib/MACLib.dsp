@@ -51,6 +51,10 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PreLink_Cmds=Assembly/Compile.bat
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "MACLib - Win32 Debug"
 
@@ -391,12 +395,24 @@ SOURCE=..\Shared\All.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Assembly\Assembly.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\MACLib.h
 # End Source File
 # End Group
 # Begin Source File
 
+SOURCE=..\Credits.txt
+# End Source File
+# Begin Source File
+
 SOURCE=..\History.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\Assembly\Assembly.obj
 # End Source File
 # End Target
 # End Project

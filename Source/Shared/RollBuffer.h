@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_ROLLBUFFER_H
+#define APE_ROLLBUFFER_H
 
 template <class TYPE> class CRollBuffer
 {
@@ -115,3 +116,5 @@ protected:
 	TYPE * m_pData;
 	TYPE * m_pCurrent;
 };
+
+#endif // #ifndef APE_ROLLBUFFER_H

@@ -1,5 +1,5 @@
-#ifndef _apedecompress_h_
-#define _apedecompress_h_
+#ifndef APE_APEDECOMPRESS_H
+#define APE_APEDECOMPRESS_H
 
 #include "APEDecompress.h"
 
@@ -62,5 +62,4 @@ protected:
 	int m_nLastX;
 };
 
-#endif //_apedecompress_h_
-
+#endif // #ifndef APE_APEDECOMPRESS_H

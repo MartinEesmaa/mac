@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_APECOMPRESSCORE_H
+#define APE_APECOMPRESSCORE_H
 
 #include "APECompress.h"
 #include "BitArray.h"
@@ -41,3 +42,5 @@ private:
 
 	int Prepare(unsigned char * pInputData, int nInputBytes, int * pSpecialCodes);
 };
+
+#endif // #ifndef APE_APECOMPRESSCORE_H

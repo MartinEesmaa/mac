@@ -2,9 +2,13 @@
 #include "GlobalFunctions.h"
 #include "IO.h"
 
-BOOL GetMMXAvailable() 
+/*
+#ifndef __GNUC_IA32__
+
+extern "C" BOOL GetMMXAvailable(void)
 {
 #ifdef ENABLE_ASSEMBLY
+
 	unsigned long nRegisterEDX;
 
 	try
@@ -24,10 +28,14 @@ BOOL GetMMXAvailable()
 		return FALSE;
 
 	return TRUE;
+
 #else
 	return FALSE;
 #endif
 }
+
+#endif // #ifndef __GNUC_IA32__
+*/
 
 int ReadSafe(CIO * pIO, void * pBuffer, int nBytes)
 {
@@ -56,20 +64,35 @@ int WriteSafe(CIO * pIO, void * pBuffer, int nBytes)
 }
 
 BOOL FileExists(const char * pFilename)
-{
-#ifdef _WINDOWS_
-	BOOL bFound = FALSE;
+{    
+	if (0 == strcmp(pFilename, "-")  ||  0 == strcmp(pFilename, "/dev/stdin"))
+        return TRUE;
 
-	WIN32_FIND_DATA WFD;
-	HANDLE hFind = FindFirstFile(pFilename, &WFD);
-	if (hFind != INVALID_HANDLE_VALUE)
-	{
-		bFound = TRUE;
-		CloseHandle(hFind);
-	}
+#ifdef _WIN32
 
-	return bFound;
+    BOOL bFound = FALSE;
+
+    WIN32_FIND_DATA WFD;
+    HANDLE hFind = FindFirstFile(pFilename, &WFD);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        bFound = TRUE;
+        CloseHandle(hFind);
+    }
+
+    return bFound;
+
 #else
+
+	struct stat b;
+
+	if (stat(pFilename, &b) != 0)
+		return FALSE;
+
+	if (!S_ISREG(b.st_mode))
+		return FALSE;
+
 	return TRUE;
+
 #endif
 }

@@ -19,29 +19,29 @@ Copyrighted (c) 2000 - 2002 Matthew T. Ashland.  All Rights Reserved.
 #define UNDEFINED_MODE		-1
 
 // global variables
-unsigned __int32 g_nInitialTickCount = 0;
+TICK_COUNT_TYPE g_nInitialTickCount = 0;
 
 /***************************************************************************************
 Displays the proper usage for MAC.exe
 ***************************************************************************************/
-void DisplayProperUsage() 
+void DisplayProperUsage(FILE * pFile) 
 {
-	printf("Proper Usage: [EXE] [Input File] [Output File] [Mode]\r\n\r\n");
+	fprintf(pFile, "Proper Usage: [EXE] [Input File] [Output File] [Mode]\n\n");
 
-	printf("Modes: \r\n");
-	printf("\tCompress (fast): '-c1000'\r\n");
-	printf("\tCompress (normal): '-c2000'\r\n");
-	printf("\tCompress (high): '-c3000'\r\n");
-	printf("\tCompress (extra high): '-c4000'\r\n");
-	printf("\tDecompress: '-d'\r\n");
-	printf("\tVerify: '-v'\r\n");
-	printf("\tConvert: '-nXXXX'\r\n\r\n");
+	fprintf(pFile, "Modes: \n");
+	fprintf(pFile, "    Compress (fast): '-c1000'\n");
+	fprintf(pFile, "    Compress (normal): '-c2000'\n");
+	fprintf(pFile, "    Compress (high): '-c3000'\n");
+	fprintf(pFile, "    Compress (extra high): '-c4000'\n");
+	fprintf(pFile, "    Decompress: '-d'\n");
+	fprintf(pFile, "    Verify: '-v'\n");
+	fprintf(pFile, "    Convert: '-nXXXX'\n\n");
 
-	printf("Examples:\r\n");
-	printf("\tCompress: mac.exe \"Metallica - One.wav\" \"Metallica - One.ape\" -c2000\r\n");
-	printf("\tDecompress: mac.exe \"Metallica - One.ape\" \"Metallica - One.wav\" -d\r\n");
-	printf("\tVerify: mac.exe \"Metallica - One.ape\" -v\r\n");
-	printf("\t(note: int filenames must be put inside of quotations)\r\n");
+	fprintf(pFile, "Examples:\n");
+	fprintf(pFile, "    Compress: mac.exe \"Metallica - One.wav\" \"Metallica - One.ape\" -c2000\n");
+	fprintf(pFile, "    Decompress: mac.exe \"Metallica - One.ape\" \"Metallica - One.wav\" -d\n");
+	fprintf(pFile, "    Verify: mac.exe \"Metallica - One.ape\" -v\n");
+	fprintf(pFile, "    (note: int filenames must be put inside of quotations)\n");
 }
 
 /***************************************************************************************
@@ -49,11 +49,18 @@ Progress callback
 ***************************************************************************************/
 void CALLBACK ProgressCallback(int nPercentageDone)
 {
-	double dProgress = double(nPercentageDone) / 1000;
-	double dElapsedMS = (TICK_COUNT - g_nInitialTickCount);
+    // get the current tick count
+	TICK_COUNT_TYPE  nTickCount;
+	TICK_COUNT_READ(nTickCount);
 
-	double dSecondsRemaining = (((dElapsedMS * 100) / dProgress) - dElapsedMS) / 1000;
-	printf("Progress: %.1f%% (%.1f seconds remaining)          \r", dProgress, dSecondsRemaining);	
+	// calculate the progress
+	double dProgress = nPercentageDone / 1.e5;											// [0...1]
+	double dElapsed = (double) (nTickCount - g_nInitialTickCount) / TICK_COUNT_FREQ;	// seconds
+	double dRemaining = dElapsed * ((1.0 / dProgress) - 1.0);							// seconds
+
+	// output the progress
+	fprintf(stderr, "Progress: %.1f%% (%.1f seconds remaining, %.1f seconds total)          \r", 
+		dProgress * 100, dRemaining, dElapsed);
 }
 
 /***************************************************************************************
@@ -63,18 +70,18 @@ int main(int argc, char *argv[])
 {
 	// variable declares
 	char * pInputFilename, * pOutputFilename;
-	int nRetVal;
+	int nRetVal = ERROR_UNDEFINED;
 	int nMode = UNDEFINED_MODE;
 	int nCompressionLevel;
 	int nPercentageDone;
 		
 	// output the header
-	printf(CONSOLE_NAME);
+	fprintf(stderr, CONSOLE_NAME);
 	
 	// make sure there are at least four arguments (could be more for EAC compatibility)
 	if (argc < 3) 
 	{
-		DisplayProperUsage();
+		DisplayProperUsage(stderr);
 		exit(-1);
 	}
 
@@ -84,7 +91,7 @@ int main(int argc, char *argv[])
 	// verify that the input file exists
 	if (!FileExists(pInputFilename))
 	{
-		printf("Input File Not Found...\r\n\r\n");
+		fprintf(stderr, "Input File Not Found...\n\n");
 		exit(-1);
 	}
 
@@ -99,7 +106,7 @@ int main(int argc, char *argv[])
 		// verify is the only mode that doesn't use at least the third argument
 		if (argc < 4) 
 		{
-			DisplayProperUsage();
+			DisplayProperUsage(stderr);
 			exit(-1);
 		}
 
@@ -121,23 +128,23 @@ int main(int argc, char *argv[])
 	// error check the mode
 	if (nMode == UNDEFINED_MODE) 
 	{
-		DisplayProperUsage();
+		DisplayProperUsage(stderr);
 		exit(-1);
 	}
 
 	// get and error check the compression level
 	if (nMode == COMPRESS_MODE || nMode == CONVERT_MODE) 
 	{
-		nCompressionLevel = atol(&cMode[2]);
+		nCompressionLevel = atoi(&cMode[2]);
 		if (nCompressionLevel != 1000 && nCompressionLevel != 2000 && nCompressionLevel != 3000 && nCompressionLevel != 4000) 
 		{
-			DisplayProperUsage();
-			exit(-1);
+			DisplayProperUsage(stderr);
+			return -1;
 		}
 	}
 
 	// set the initial tick count
-	g_nInitialTickCount = TICK_COUNT;
+	TICK_COUNT_READ(g_nInitialTickCount);
 	
 	// process
 	int nKillFlag = 0;
@@ -149,32 +156,29 @@ int main(int argc, char *argv[])
 		if (nCompressionLevel == 3000) { strcpy(cCompressionLevel, "high");	}
 		if (nCompressionLevel == 4000) { strcpy(cCompressionLevel, "extra high");	}
 
-		printf("Compressing (%s)...\r\n", cCompressionLevel);
+		fprintf(stderr, "Compressing (%s)...\n", cCompressionLevel);
 		nRetVal = CompressFile(pInputFilename, pOutputFilename, nCompressionLevel, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}
 	else if (nMode == DECOMPRESS_MODE) 
 	{
-		printf("Decompressing...\r\n");
+		fprintf(stderr, "Decompressing...\n");
 		nRetVal = DecompressFile(pInputFilename, pOutputFilename, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}	
 	else if (nMode == VERIFY_MODE) 
 	{
-		printf("Verifying...\r\n");
+		fprintf(stderr, "Verifying...\n");
 		nRetVal = VerifyFile(pInputFilename, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}	
 	else if (nMode == CONVERT_MODE) 
 	{
-		printf("Converting...\r\n");
+		fprintf(stderr, "Converting...\n");
 		nRetVal = ConvertFile(pInputFilename, pOutputFilename, nCompressionLevel, &nPercentageDone, ProgressCallback, &nKillFlag);
 	}
 
 	if (nRetVal == ERROR_SUCCESS) 
-		printf("\r\nSuccess...\r\n");
+		fprintf(stderr, "\nSuccess...\n");
 	else 
-		printf("\r\nError: %i\r\n", nRetVal);
+		fprintf(stderr, "\nError: %i\n", nRetVal);
 
-	exit(nRetVal);
-
-	// we don't actually get here to return anything, but main(...) needs a return value with some compilers
 	return nRetVal;
 }

@@ -54,13 +54,13 @@ int CAPEDecompress::InitializeDecompressor()
 
 	if (GetInfo(APE_INFO_FILE_VERSION) >= 3950)
 	{
-		m_spNewPredictorX.Assign(new CPredictorDecompress3950toCurrent(GetInfo(APE_INFO_COMPRESSION_LEVEL)));
-		m_spNewPredictorY.Assign(new CPredictorDecompress3950toCurrent(GetInfo(APE_INFO_COMPRESSION_LEVEL)));
+		m_spNewPredictorX.Assign(new CPredictorDecompress3950toCurrent(GetInfo(APE_INFO_COMPRESSION_LEVEL), GetInfo(APE_INFO_FILE_VERSION)));
+		m_spNewPredictorY.Assign(new CPredictorDecompress3950toCurrent(GetInfo(APE_INFO_COMPRESSION_LEVEL), GetInfo(APE_INFO_FILE_VERSION)));
 	}
 	else
 	{
-		m_spNewPredictorX.Assign(new CPredictorDecompressNormal3930to3950(GetInfo(APE_INFO_COMPRESSION_LEVEL)));
-		m_spNewPredictorY.Assign(new CPredictorDecompressNormal3930to3950(GetInfo(APE_INFO_COMPRESSION_LEVEL)));
+		m_spNewPredictorX.Assign(new CPredictorDecompressNormal3930to3950(GetInfo(APE_INFO_COMPRESSION_LEVEL), GetInfo(APE_INFO_FILE_VERSION)));
+		m_spNewPredictorY.Assign(new CPredictorDecompressNormal3930to3950(GetInfo(APE_INFO_COMPRESSION_LEVEL), GetInfo(APE_INFO_FILE_VERSION)));
 	}
 	
 	// seek to the beginning

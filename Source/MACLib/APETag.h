@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_APETAG_H
+#define APE_APETAG_H
 
 #include "IO.h"
 
@@ -182,3 +183,6 @@ private:
 	BOOL			m_bHasID3Tag;
 	int				m_nRetrieveFieldIndex;
 };
+
+#endif // #ifndef APE_APETAG_H
+

@@ -5,17 +5,23 @@
 {                                                                             }
 { Uses:                                                                       }
 {   - Class TID3v1                                                            }
+{   - Class TID3v2                                                            }
+{   - Class TAPEtag                                                           }
 {                                                                             }
-{ Copyright (c) 2001 by Jurgen Faul                                           }
+{ Copyright (c) 2001,2002 by Jurgen Faul                                      }
 { E-mail: jfaul@gmx.de                                                        }
 { http://jfaul.de/atl                                                         }
+{                                                                             }
+{ Version 1.2 (21 April 2002)                                                 }
+{   - Class TID3v2: support for ID3v2 tags                                    }
+{   - Class TAPEtag: support for APE tags                                     }
 {                                                                             }
 { Version 1.1 (11 September 2001)                                             }
 {   - Added property Samples                                                  }
 {   - Removed WAV header information                                          }
 {                                                                             }
 { Version 1.0 (7 September 2001)                                              }
-{   - Full support for Monkey's Audio files                                   }
+{   - Support for Monkey's Audio files                                        }
 {   - Class TID3v1: reading & writing support for ID3v1.x tags                }
 {                                                                             }
 { *************************************************************************** }
@@ -25,7 +31,7 @@ unit Monkey;
 interface
 
 uses
-  Classes, SysUtils, ID3v1;
+  Classes, SysUtils, ID3v1, ID3v2, APEtag;
 
 const
   { Compression level codes }
@@ -73,7 +79,9 @@ type
       { Private declarations }
       FFileLength: Integer;
       FHeader: MonkeyHeader;
-      FTag: TID3v1;
+      FID3v1: TID3v1;
+      FID3v2: TID3v2;
+      FAPEtag: TAPEtag;
       procedure FResetData;
       function FGetValid: Boolean;
       function FGetVersion: string;
@@ -92,7 +100,9 @@ type
       function ReadFromFile(const FileName: string): Boolean;   { Load header }
       property FileLength: Integer read FFileLength;    { File length (bytes) }
       property Header: MonkeyHeader read FHeader;     { Monkey's Audio header }
-      property Tag: TID3v1 read FTag;                              { File tag }
+      property ID3v1: TID3v1 read FID3v1;                    { ID3v1 tag data }
+      property ID3v2: TID3v2 read FID3v2;                    { ID3v2 tag data }
+      property APEtag: TAPEtag read FAPEtag;                   { APE tag data }
       property Valid: Boolean read FGetValid;          { True if header valid }
       property Version: string read FGetVersion;            { Encoder version }
       property Compression: string read FGetCompression;  { Compression level }
@@ -113,7 +123,9 @@ begin
   { Reset data }
   FFileLength := 0;
   FillChar(FHeader, SizeOf(FHeader), 0);
-  FTag.ResetData;
+  FID3v1.ResetData;
+  FID3v2.ResetData;
+  FAPEtag.ResetData;
 end;
 
 { --------------------------------------------------------------------------- }
@@ -236,7 +248,9 @@ constructor TMonkey.Create;
 begin
   { Create object }
   inherited;
-  FTag := TID3v1.Create;
+  FID3v1 := TID3v1.Create;
+  FID3v2 := TID3v2.Create;
+  FAPEtag := TAPEtag.Create;
   FResetData;
 end;
 
@@ -245,7 +259,9 @@ end;
 destructor TMonkey.Destroy;
 begin
   { Destroy object }
-  FTag.Free;
+  FID3v1.Free;
+  FID3v2.Free;
+  FAPEtag.Free;
   inherited;
 end;
 
@@ -258,13 +274,16 @@ begin
   try
     { Reset data and search for file tag }
     FResetData;
-    if not FTag.ReadFromFile(FileName) then raise Exception.Create('');
+    if (not FID3v1.ReadFromFile(FileName)) or
+      (not FID3v2.ReadFromFile(FileName)) or
+      (not FAPEtag.ReadFromFile(FileName)) then raise Exception.Create('');
     { Set read-access, open file and get file length }
     AssignFile(SourceFile, FileName);
     FileMode := 0;
     Reset(SourceFile, 1);
     FFileLength := FileSize(SourceFile);
     { Read Monkey's Audio header data }
+    Seek(SourceFile, ID3v2.Size);
     BlockRead(SourceFile, FHeader, SizeOf(FHeader));
     if FHeader.Flags and MONKEY_FLAG_PEAK_LEVEL = 0 then
       FHeader.PeakLevel := 0;

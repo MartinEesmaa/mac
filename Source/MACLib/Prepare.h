@@ -1,5 +1,5 @@
-#ifndef _prepare_h_
-#define _prepare_h_
+#ifndef APE_PREPARE_H
+#define APE_PREPARE_H
 
 #define SPECIAL_FRAME_MONO_SILENCE			1
 #define SPECIAL_FRAME_LEFT_SILENCE			1
@@ -35,4 +35,4 @@ public:
 };
 
 
-#endif //_prepare_h_
+#endif // #ifndef APE_PREPARE_H

@@ -1,8 +1,11 @@
-#pragma once
+#ifndef APE_SMARTPTR_H
+#define APE_SMARTPTR_H
 
 // disable the operator -> on UDT warning
-#pragma warning( push )
-#pragma warning( disable : 4284 )
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4284)
+#endif
 
 /*************************************************************************************************
 CSmartPtr - a simple smart pointer class that can automatically initialize and free memory
@@ -79,4 +82,8 @@ public:
 	__inline void * operator =(void *) const;
 };
 
-#pragma warning( pop )
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#endif _MSC_VER
+
+#endif // #ifndef APE_SMARTPTR_H

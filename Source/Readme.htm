@@ -11,7 +11,7 @@
 
 <p align="center"><font size="4" face="Verdana">Monkey's Audio Source Code
 Readme<br>
-</font><font face="Verdana" size="2">(last updated March 16, 2002)</font></p>
+</font><font face="Verdana" size="2">(last updated July 7, 2002)</font></p>
 <p><b><font size="2" face="Verdana">Introduction</font></b></p>
 <p><font size="2" face="Verdana">First off, just to be clear, you have to fully
 agree with the included license agreement before using / viewing any of the
@@ -34,44 +34,31 @@ to re-link to MACLib once in a while.</font></p>
 <p><b><font size="2" face="Verdana">Things that it'd be great if you worked on</font></b></p>
 <p><font face="Verdana" size="2">1. It would be nice to have makefiles for gcc
 or any other compilers that people commonly use.</font></p>
-<p><font size="2" face="Verdana">2. Porting of the assembly in CNNFilter to
-compile (and run) with gcc.</font></p>
-<p><font size="2" face="Verdana">3. Pour through the code and look for bone-head
+<p><font size="2" face="Verdana">2. Pour through the code and look for bone-head
 maneuvers.</font></p>
-<p><font size="2" face="Verdana">4. Submit any necessary changes for
+<p><font size="2" face="Verdana">3. Submit any necessary changes for
 cross-platform compilation.&nbsp;</font></p>
-<p><font size="2" face="Verdana">5. XMMS, Lame DLL, PocketPC, etc. plugins /
+<p><font size="2" face="Verdana">4. XMMS, Lame DLL, PocketPC, etc. plugins /
 implementations.</font></p>
-<p><font size="2" face="Verdana">6. A console front-end that doesn't suck. (more
+<p><font size="2" face="Verdana">5. A console front-end that doesn't suck. (more
 options, etc.)&nbsp; Also, don't worry about maintaining compatibility with the
 current parameter passing scheme -- just use whatever makes sense.</font></p>
 <p><b><font size="2" face="Verdana">Tips for building MACLib outside of Windows</font></b></p>
 <p><font face="Verdana" size="2">1. in &quot;Shared/All.h&quot; do this:</font></p>
 <ul>
-  <li><font size="2" face="Verdana">comment out #include &lt;windows.h&gt;
-    (&quot;Shared/NoWindows.h&quot; will automatically be included then)&nbsp;</font></li>
-  <li><font size="2" face="Verdana">comment out </font><font face="Verdana" size="2"> BACKWARDS_COMPATIBILITY and ENABLE_ASSEMBLY
-    so that MACLib won't require any of the files in the &quot;MACLib/Old&quot;
-    directory</font></li>
+  <li><font size="2" face="Verdana">#define BUILD_CROSS_PLATFORM</font></li>
   <li><font face="Verdana" size="2">look through &quot;Shared/All.h&quot; and
     &quot;Shared/NoWindows.h&quot; to make sure all the defines are acceptable</font></li>
 </ul>
-<p><font face="Verdana" size="2">2. As noted above, you'll probably have to
-disable backwards compatibility for now.&nbsp; Some of the old code depends on
-large assembly functions, and those are tricky to build outside of MSVC.</font></p>
-<p><font face="Verdana" size="2">3. With </font><font face="Verdana" size="2"> ENABLE_ASSEMBLY
-turned off, compression (and decompression of new files) will run at between 1/2
-to 1/3 of the speed.&nbsp; CNNFilter is the culprit... target it first if you
-want more speed, or want to try to make the assembly work.</font></p>
+<p><font face="Verdana" size="2">2. You need to use NASM to build the assembly
+if you want it. (helps speed a lot)&nbsp; Check out &quot;MacLib/Assembly/...&quot;
+for more information.</font></p>
 <p><b><font size="2" face="Verdana">Known non-Windows problems (help fixing them
 would be great)</font></b></p>
-<p><font face="Verdana" size="2">1. CStdLibFileIO is lacking an implementation
-for Delete(...) and SetEOF(...)</font></p>
-<p><font size="2" face="Verdana">2. The macros SLEEP, PUMP_MESSAGE_LOOP, TICK_COUNT,
-MESSAGEBOX, and a few others don't work.</font></p>
+<p><font size="2" face="Verdana">2. The macros PUMP_MESSAGE_LOOP, MESSAGEBOX, and a few others don't work.</font></p>
 <p>&nbsp;</p>
 <p align="center" style="margin:0in;margin-bottom:.0001pt;text-align:center"><font face="Verdana" size="2">-
-All materials and programs copyrighted ©2000-2002 by Matthew T. Ashland -</font></p>
+All materials and programs copyrighted ï¿½2000-2002 by Matthew T. Ashland -</font></p>
 <p align="center" style="margin:0in;margin-bottom:.0001pt;text-align:center"><font face="Verdana" size="2">-
 All rights reserved. -</font></p>
 

@@ -26,7 +26,8 @@ http://www.monkeysaudio.com/cgi-bin/YaBB/YaBB.cgi -> Developers
 or, if necessary, email @ monkeysaudio.com
 *****************************************************************************************/
 
-#pragma once
+#ifndef APE_MACLIB_H
+#define APE_MACLIB_H
 
 /*****************************************************************************************
 Defines
@@ -99,6 +100,7 @@ Classes (fully defined elsewhere)
 *************************************************************************************************/
 class CIO;
 class CInputSource;
+class CAPEInfo;
 
 /*************************************************************************************************
 IAPEDecompress fields - used when querying for information
@@ -368,6 +370,7 @@ extern "C"
 {
 	IAPEDecompress * __stdcall CreateIAPEDecompress(const char * pFilename, int * pErrorCode = NULL);
 	IAPEDecompress * __stdcall CreateIAPEDecompressEx(CIO * pIO, int * pErrorCode = NULL);
+	IAPEDecompress * __stdcall CreateIAPEDecompressEx2(CAPEInfo * pAPEInfo, int nStartBlock = -1, int nFinishBlock = -1, int * pErrorCode = NULL);
 	IAPECompress * __stdcall CreateIAPECompress(int * pErrorCode = NULL);
 }
 
@@ -386,3 +389,5 @@ extern "C"
 	DLLEXPORT int __stdcall FillWaveFormatEx(WAVEFORMATEX * pWaveFormatEx, int nSampleRate = 44100, int nBitsPerSample = 16, int nChannels = 2);
 	DLLEXPORT int __stdcall FillWaveHeader(WAVE_HEADER * pWAVHeader, int nAudioBytes, WAVEFORMATEX * pWaveFormatEx, int nTerminatingBytes = 0);
 }
+
+#endif // #ifndef APE_MACLIB_H

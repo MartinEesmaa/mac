@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_ANTIPREDICTOR_H
+#define APE_ANTIPREDICTOR_H
 
 class CAntiPredictor;
 
@@ -170,7 +171,10 @@ class CAntiPredictorExtraHighHelper
 {
 public:
 	int ConventionalDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op, int nNumberOfIterations);
+
+#ifdef ENABLE_ASSEMBLY
 	int MMXDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op, int nNumberOfIterations);
+#endif // #ifdef ENABLE_ASSEMBLY
 };
 
 
@@ -235,33 +239,14 @@ private:
 /*****************************************************************************************
 Extra high anti-predictor
 *****************************************************************************************/
-/*
-class CAntiPredictorExtraHigh3800To3830 : public CAntiPredictor {
-
-public:
-
-	//functions
-	void AntiPredict(int *pInputArray, int *pOutputArray, int NumberOfElements, BOOL bMMXAvailable, int CPULoadBalancingFactor);
-
-private:
-	__inline int MMXDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op, int nNumberOfIterations);
-//	__inline int ConventionalDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op);
-
-};
-*/
-/*****************************************************************************************
-Extra high anti-predictor
-*****************************************************************************************/
 class CAntiPredictorExtraHigh3800ToCurrent : public CAntiPredictor {
 
 public:
 
 	//functions
 	void AntiPredict(int *pInputArray, int *pOutputArray, int NumberOfElements, BOOL bMMXAvailable, int CPULoadBalancingFactor, int nVersion);
-
-private:
-//	__inline int MMXDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op);
-//	__inline int ConventionalDotProduct(short *bip, short *bbm, short *pIPAdaptFactor, int op);
 };
 
 #endif // #ifdef ENABLE_COMPRESSION_MODE_EXTRA_HIGH
+
+#endif // #ifndef APE_ANTIPREDICTOR_H

@@ -265,7 +265,7 @@ void CAntiPredictorExtraHigh3800ToCurrent::AntiPredict(int *pInputArray, int *pO
 		IPShort[q] = short(*ip);
 		IPAdaptFactor[q] = ((ip[0] >> 30) & 2) - 1;
 
-
+#ifdef ENABLE_ASSEMBLY
 		if (bMMXAvailable && (Original != 0))
 		{
 			*ip -= (Helper.MMXDotProduct(&IPShort[q-nFirstElement], &bm[0], &IPAdaptFactor[q-nFirstElement], Original, nFilterStageElements) >> nFilterStageShift);
@@ -274,6 +274,9 @@ void CAntiPredictorExtraHigh3800ToCurrent::AntiPredict(int *pInputArray, int *pO
 		{
 			*ip -= (Helper.ConventionalDotProduct(&IPShort[q-nFirstElement], &bm[0], &IPAdaptFactor[q-nFirstElement], Original, nFilterStageElements) >> nFilterStageShift);
 		}
+#else
+		*ip -= (Helper.ConventionalDotProduct(&IPShort[q-nFirstElement], &bm[0], &IPAdaptFactor[q-nFirstElement], Original, nFilterStageElements) >> nFilterStageShift);
+#endif
 
 		IPShort[q] = short(*ip);
 		IPAdaptFactor[q] = ((ip[0] >> 30) & 2) - 1;

@@ -1,6 +1,7 @@
-#ifndef _WINDOWS_
+#ifndef _WIN32
 
-#pragma once
+#ifndef APE_NOWINDOWS_H
+#define APE_NOWINDOWS_H
 
 #define FALSE	0
 #define TRUE	1
@@ -55,4 +56,6 @@ typedef const WAVEFORMATEX FAR *LPCWAVEFORMATEX;
 
 #endif // #ifndef _WAVEFORMATEX_
 
-#endif // #ifndef _WINDOWS_
+#endif // #ifndef APE_NOWINDOWS_H
+
+#endif // #ifndef _WIN32

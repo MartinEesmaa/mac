@@ -1,5 +1,5 @@
-#ifndef _apecompresscreate_h_
-#define _apecompresscreate_h_
+#ifndef APE_APECOMPRESSCREATE_H
+#define APE_APECOMPRESSCREATE_H
 
 #include "APECompress.h"
 
@@ -40,4 +40,4 @@ private:
 
 };
 
-#endif //_apecompresscreate_h_
+#endif // #ifndef APE_APECOMPRESSCREATE_H

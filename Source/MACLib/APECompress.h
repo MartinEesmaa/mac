@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_APECOMPRESS_H
+#define APE_APECOMPRESS_H
 
 #include "MACLib.h"
 class CAPECompressCreate;
@@ -50,3 +51,5 @@ private:
 	WAVEFORMATEX	m_wfeInput;
 
 };
+
+#endif // #ifndef APE_APECOMPRESS_H

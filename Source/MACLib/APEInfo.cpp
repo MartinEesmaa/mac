@@ -35,13 +35,23 @@ CAPEInfo::CAPEInfo(int * pErrorCode, const char * pFilename, CAPETag * pTag)
 
 	// get the tag (do this second so that we don't do it on failure)
 	if (pTag == NULL)
-		m_spAPETag.Assign(new CAPETag(m_spIO, TRUE));
+	{
+		// we don't want to analyze right away for non-local files
+		// since a single I/O object is shared, we can't tag and read at the same time (i.e. in multiple threads)
+		BOOL bAnalyzeNow = TRUE;
+		if ((_strnicmp(pFilename, "http://", 7) == 0) || (_strnicmp(pFilename, "m01p://", 7) == 0))
+			bAnalyzeNow = FALSE;
+
+		m_spAPETag.Assign(new CAPETag(m_spIO, bAnalyzeNow));
+	}
 	else
+	{
 		m_spAPETag.Assign(pTag);
+	}
 
 }
 
-CAPEInfo::CAPEInfo(int * pErrorCode, CIO *pIO, CAPETag * pTag)
+CAPEInfo::CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag)
 {
 	*pErrorCode = ERROR_SUCCESS;
 	CloseFile();

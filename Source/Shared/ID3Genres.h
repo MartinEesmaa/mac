@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APE_ID3GENRES_H
+#define APE_ID3GENRES_H
 
 #define GENRE_UNDEFINED		255
 #define GENRE_COUNT			148
@@ -22,3 +23,5 @@ const char * const g_ID3Genre [] =
     "Terror", "Indie", "BritPop", "Black Punk", "Polsk Punk", "Beat", "Christian Gangsta", "Heavy Metal", "Black Metal",
     "Crossover", "Contemporary C", "Christian Rock", "Merengue", "Salsa", "Thrash Metal", "Anime", "JPop", "SynthPop"
 };
+
+#endif // #ifndef APE_ID3GENRES_H
