@@ -1,0 +1,319 @@
+# Microsoft Developer Studio Generated Dependency File, included by MACLib.mak
+
+.\APECompress.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\APECompressCreate.h"\
+	".\MACLib.h"\
+	".\WAVInputSource.h"\
+	
+
+.\APECompressCore.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\RollBuffer.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\APECompressCore.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\NewPredictor.h"\
+	".\NNFilter.h"\
+	".\Predictor.h"\
+	".\Prepare.h"\
+	".\ScaledFirstOrderFilter.h"\
+	
+
+.\APECompressCreate.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\APECompressCore.h"\
+	".\APECompressCreate.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	
+
+.\BitArray.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\BitArray.h"\
+	
+
+".\Old\Anti-Predictor.cpp" : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\MACLib.h"\
+	".\Old\Anti-Predictor.h"\
+	
+
+.\Old\AntiPredictorExtraHigh.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\Old\Anti-Predictor.h"\
+	
+
+.\Old\AntiPredictorFast.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\Old\Anti-Predictor.h"\
+	
+
+.\Old\AntiPredictorHigh.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\Old\Anti-Predictor.h"\
+	
+
+.\Old\AntiPredictorNormal.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\Old\Anti-Predictor.h"\
+	
+
+.\Old\APEDecompressCore.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\GlobalFunctions.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\Old\Anti-Predictor.h"\
+	".\Old\UnMAC.h"\
+	".\Prepare.h"\
+	".\UnBitArray.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\Old\APEDecompressOld.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEDecompress.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\Old\APEDecompressOld.h"\
+	".\Old\UnMAC.h"\
+	".\Prepare.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\Old\UnBitArrayOld.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\Old\UnBitArrayOld.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\Old\UnMAC.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\GlobalFunctions.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\RollBuffer.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\NewPredictor.h"\
+	".\NNFilter.h"\
+	".\Old\Anti-Predictor.h"\
+	".\Old\UnMAC.h"\
+	".\Predictor.h"\
+	".\Prepare.h"\
+	".\ScaledFirstOrderFilter.h"\
+	".\UnBitArray.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\APEDecompress.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\RollBuffer.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEDecompress.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\NewPredictor.h"\
+	".\NNFilter.h"\
+	".\Predictor.h"\
+	".\Prepare.h"\
+	".\ScaledFirstOrderFilter.h"\
+	".\UnBitArray.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\UnBitArray.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\UnBitArray.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\UnBitArrayBase.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\Old\UnBitArrayOld.h"\
+	".\UnBitArray.h"\
+	".\UnBitArrayBase.h"\
+	
+
+.\APEInfo.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\MACLib.h"\
+	
+
+.\APELink.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APEInfo.h"\
+	".\APELink.h"\
+	".\APETag.h"\
+	".\MACLib.h"\
+	
+
+.\APETag.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\ID3Genres.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APETag.h"\
+	
+
+.\WAVInputSource.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\GlobalFunctions.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\MACLib.h"\
+	".\WAVInputSource.h"\
+	
+
+..\Shared\StdLibFileIO.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	"..\Shared\StdLibFileIO.h"\
+	
+
+..\Shared\WinFileIO.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	"..\Shared\WinFileIO.h"\
+	
+
+..\Shared\GlobalFunctions.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\GlobalFunctions.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	
+
+.\MACProgressHelper.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\MACProgressHelper.h"\
+	
+
+.\Prepare.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\Prepare.h"\
+	
+
+.\NNFilter.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\GlobalFunctions.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\RollBuffer.h"\
+	"..\Shared\SmartPtr.h"\
+	".\NNFilter.h"\
+	
+
+.\NewPredictor.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\RollBuffer.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\MACLib.h"\
+	".\NewPredictor.h"\
+	".\NNFilter.h"\
+	".\Predictor.h"\
+	".\ScaledFirstOrderFilter.h"\
+	
+
+.\APESimple.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\GlobalFunctions.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\APEDecompress.h"\
+	".\APEInfo.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\MACProgressHelper.h"\
+	".\Prepare.h"\
+	".\UnBitArrayBase.h"\
+	".\WAVInputSource.h"\
+	
+
+.\MACLib.cpp : \
+	"..\Shared\All.h"\
+	"..\Shared\NoWindows.h"\
+	"..\Shared\SmartPtr.h"\
+	".\APECompress.h"\
+	".\APECompressCore.h"\
+	".\APECompressCreate.h"\
+	".\APEDecompress.h"\
+	".\APEInfo.h"\
+	".\APELink.h"\
+	".\APETag.h"\
+	".\BitArray.h"\
+	".\MACLib.h"\
+	".\Old\APEDecompressOld.h"\
+	".\Old\UnMAC.h"\
+	".\Prepare.h"\
+	".\UnBitArrayBase.h"\
+	
