@@ -1,0 +1,34 @@
+History:
+
+
+
+Monkey's Audio 3.97 (July 7, 2002)
+
+1. Changed: "Save File List Between Sessions" now on by default in front end.
+2. Changed: Replaced usage of "#pragma once" with more non-MS compiler friendly alterternative.
+3. NEW: MakeAPL now supports command line APL generation. (pass a .CUE file (no wildcards yet) -- operates in silent mode using existing settings)
+4. Changed: Assembly support no longer required for backwards compatibility. (thanks Torgeir Strand Henriksen)
+5. Changed: Several non-Windows buildability issues.
+6. Changed: Using NASM to compile all assembly code. (aids cross-platform buildability)
+7. Changed: Encapsulated the APELink code.
+8. Changed: Tags aren't analyzed immediately when opening an http:// or m01p:// stream.
+9. Changed: Added more functionality to the APL parser.
+10. Changed: Added CreateIAPEDecompressEx2(...) to allow the creation of a ranged decoder.
+
+Monkey's Audio 3.96 (April 7, 2002)
+
+1. Fixed: WAV analysis could hang on invalid wav files.
+2. Changed: Monkey's Audio would try to analyze files with file extensions not related to Monkey's Audio.
+3. NEW: Added APE_DECOMPRESS_AVERAGE_BITRATE field so APL's can report the bitrate for the region they represent.
+4. Changed: Improved overall non-Windows build-ability. (MACLib.lib doesn't require <windows.h> to build)
+5. Changed: APL parser no longer requires Windows.
+6. Fixed: APE tagging code would fail to save tags for files with existing ID3v1 tags.
+7. Fixed: MakeAPL would not run on Win95 / 98.
+8. Changed: More non-Windows build-ability issues.
+9. Changed: Minor assembly optimizations. (like a 2% performance improvement)
+10. Changed: MACLib now builds with gcc under Linux. (no backwards compatibility or assembly support yet)
+11. Fixed: Bitstream fix / change that may have accounted for decompression failures in extremely rare cases.
+12. Changed: Slight NNFilter optimization. (thanks to Chun-Yu Shei)
+13. Changed: Turned off "Explorer" by default for the Monkey's Audio GUI. (doesn't work well under XP... will still leave it in for a while)
+14. Changed: Included the WavPack 3.93.
+15. Changed: Changed the history reporting method.
