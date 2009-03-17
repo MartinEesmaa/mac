@@ -7,9 +7,18 @@ EXPORTS
 	DecompressFile
 	ConvertFile
 	VerifyFile
+    CompressFileW
+    DecompressFileW
+    ConvertFileW
+    VerifyFileW
+    CompressFileW2
+    DecompressFileW2
+    ConvertFileW2
+    VerifyFileW2
 
 	; interface wrappers
 	c_APEDecompress_Create
+	c_APEDecompress_CreateW
 	c_APEDecompress_Destroy
 	c_APEDecompress_GetData
 	c_APEDecompress_Seek
@@ -18,6 +27,7 @@ EXPORTS
 	c_APECompress_Create
 	c_APECompress_Destroy
 	c_APECompress_Start
+	c_APECompress_StartW
 	c_APECompress_AddData
 	c_APECompress_GetBufferBytesAvailable
 	c_APECompress_LockBuffer
@@ -34,5 +44,25 @@ EXPORTS
 	GetID3Tag
 	FillWaveHeader
 	FillWaveFormatEx
+	
+	; Winamp
+	winampGetInModule2
+	winampGetExtendedFileInfo
 
-
+    ; CoolEdit
+    QueryCoolFilter
+	OpenFilterOutput
+	CloseFilterOutput
+	WriteFilterOutput
+	OpenFilterInput
+	CloseFilterInput
+	ReadFilterInput
+    FilterUnderstandsFormat
+	FilterGetOptions
+	FilterOptions
+	FilterGetFileSize
+	FilterOptionsString
+	DIALOGMsgProc
+	FilterGetFirstSpecialData
+	FilterGetNextSpecialData
+	FilterWriteSpecialData

@@ -15,42 +15,104 @@
 
 #define BLOCKS_PER_DECODE               9216
 
-int DecompressCore(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nOutputMode, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag);
+int DecompressCore(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nOutputMode, int nCompressionLevel, IAPEProgressCallback * pProgressCallback);
+
+/*****************************************************************************************
+Simple progress callback (for legacy support)
+*****************************************************************************************/
+class CAPEProgressCallbackLegacy : public IAPEProgressCallback
+{
+public:
+
+	CAPEProgressCallbackLegacy(int * pProgress, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+	{
+		m_pProgress = pProgress;
+		m_ProgressCallback = ProgressCallback;
+		m_pKillFlag = pKillFlag;
+	}
+
+	virtual void Progress(int nPercentageDone)
+	{
+		if (m_pProgress != NULL)
+			*m_pProgress = nPercentageDone;
+
+		if (m_ProgressCallback != NULL)
+			m_ProgressCallback(nPercentageDone);
+	}
+
+	virtual int GetKillFlag()
+	{
+		return (m_pKillFlag == NULL) ? KILL_FLAG_CONTINUE : *m_pKillFlag;
+	}
+
+private:
+
+	int * m_pProgress;
+	APE_PROGRESS_CALLBACK m_ProgressCallback;
+	int * m_pKillFlag;
+};
 
 /*****************************************************************************************
 ANSI wrappers
 *****************************************************************************************/
 int __stdcall CompressFile(const str_ansi * pInputFilename, const str_ansi * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-    CSmartPtr<str_utf16> spInputFile(GetUTF16FromANSI(pInputFilename), TRUE);
-    CSmartPtr<str_utf16> spOutputFile(GetUTF16FromANSI(pOutputFilename), TRUE);
+    CSmartPtr<str_utf16> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
+    CSmartPtr<str_utf16> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), TRUE);
     return CompressFileW(spInputFile, spOutputFile, nCompressionLevel, pPercentageDone, ProgressCallback, pKillFlag);
 }
 
 int __stdcall DecompressFile(const str_ansi * pInputFilename, const str_ansi * pOutputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-    CSmartPtr<str_utf16> spInputFile(GetUTF16FromANSI(pInputFilename), TRUE);
-    CSmartPtr<str_utf16> spOutputFile(GetUTF16FromANSI(pOutputFilename), TRUE);
+    CSmartPtr<str_utf16> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
+    CSmartPtr<str_utf16> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), TRUE);
     return DecompressFileW(spInputFile, pOutputFilename ? spOutputFile : NULL, pPercentageDone, ProgressCallback, pKillFlag);
 }
 
 int __stdcall ConvertFile(const str_ansi * pInputFilename, const str_ansi * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-    CSmartPtr<str_utf16> spInputFile(GetUTF16FromANSI(pInputFilename), TRUE);
-    CSmartPtr<str_utf16> spOutputFile(GetUTF16FromANSI(pOutputFilename), TRUE);
+    CSmartPtr<str_utf16> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
+    CSmartPtr<str_utf16> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), TRUE);
     return ConvertFileW(spInputFile, spOutputFile, nCompressionLevel, pPercentageDone, ProgressCallback, pKillFlag);
 }
 
 int __stdcall VerifyFile(const str_ansi * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible)
 {
-    CSmartPtr<str_utf16> spInputFile(GetUTF16FromANSI(pInputFilename), TRUE);
+    CSmartPtr<str_utf16> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
     return VerifyFileW(spInputFile, pPercentageDone, ProgressCallback, pKillFlag, FALSE);
+}
+
+/*****************************************************************************************
+Legacy callback wrappers
+*****************************************************************************************/
+int __stdcall CompressFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+{
+	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+	return CompressFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
+}
+
+int __stdcall VerifyFileW(const str_utf16 * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible)
+{
+	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+	return VerifyFileW2(pInputFilename, &ProgressCallbackLegacy, bQuickVerifyIfPossible);
+}
+
+int __stdcall DecompressFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+{
+	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+	return DecompressFileW2(pInputFilename, pOutputFilename, &ProgressCallbackLegacy);
+}
+
+int __stdcall ConvertFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+{
+	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+	return ConvertFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
 }
 
 /*****************************************************************************************
 Compress file
 *****************************************************************************************/
-int __stdcall CompressFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+int __stdcall CompressFileW2(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, IAPEProgressCallback * pProgressCallback)
 {
     // declare the variables
     int nFunctionRetVal = ERROR_SUCCESS;
@@ -86,7 +148,7 @@ int __stdcall CompressFileW(const str_utf16 * pInputFilename, const str_utf16 * 
         spBuffer.Delete();
 
         // set-up the progress
-        spMACProgressHelper.Assign(new CMACProgressHelper(nAudioBytes, pPercentageDone, ProgressCallback, pKillFlag));
+        spMACProgressHelper.Assign(new CMACProgressHelper(nAudioBytes, pProgressCallback));
 
         // master loop
         int nBytesLeft = nAudioBytes;
@@ -131,18 +193,16 @@ int __stdcall CompressFileW(const str_utf16 * pInputFilename, const str_utf16 * 
     return nFunctionRetVal;
 }
 
-
 /*****************************************************************************************
 Verify file
 *****************************************************************************************/
-int __stdcall VerifyFileW(const str_utf16 * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible)
+int __stdcall VerifyFileW2(const str_utf16 * pInputFilename, IAPEProgressCallback * pProgressCallback, BOOL bQuickVerifyIfPossible)
 {
     // error check the function parameters
     if (pInputFilename == NULL)
     {
         return ERROR_INVALID_FUNCTION_PARAMETER;
     }
-
 
     // return value
     int nRetVal = ERROR_UNDEFINED;
@@ -159,8 +219,14 @@ int __stdcall VerifyFileW(const str_utf16 * pInputFilename, int * pPercentageDon
             if (spAPEDecompress == NULL || nFunctionRetVal != ERROR_SUCCESS) throw(nFunctionRetVal);
 
             APE_FILE_INFO * pInfo = (APE_FILE_INFO *) spAPEDecompress->GetInfo(APE_INTERNAL_INFO);
-            if ((pInfo->nVersion < 3980) || (pInfo->spAPEDescriptor == NULL))
+            
+			// check version
+			if ((pInfo->nVersion < 3980) || (pInfo->spAPEDescriptor == NULL))
                 throw(ERROR_UPSUPPORTED_FILE_VERSION);
+
+			// make sure the MD5 is valid
+			if (pInfo->nMD5Invalid != FALSE)
+				throw(ERROR_UPSUPPORTED_FILE_VERSION);
         }
         catch(...)
         {
@@ -238,9 +304,8 @@ int __stdcall VerifyFileW(const str_utf16 * pInputFilename, int * pPercentageDon
     }
     else
     {
-        nRetVal = DecompressCore(pInputFilename, NULL, UNMAC_DECODER_OUTPUT_NONE, -1, pPercentageDone, ProgressCallback, pKillFlag);
+        nRetVal = DecompressCore(pInputFilename, NULL, UNMAC_DECODER_OUTPUT_NONE, -1, pProgressCallback);
     }
-
 
     return nRetVal;
 }
@@ -248,26 +313,26 @@ int __stdcall VerifyFileW(const str_utf16 * pInputFilename, int * pPercentageDon
 /*****************************************************************************************
 Decompress file
 *****************************************************************************************/
-int __stdcall DecompressFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+int __stdcall DecompressFileW2(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, IAPEProgressCallback * pProgressCallback)
 {
     if (pOutputFilename == NULL)
-        return VerifyFileW(pInputFilename, pPercentageDone, ProgressCallback, pKillFlag);
+        return VerifyFileW2(pInputFilename, pProgressCallback);
     else
-        return DecompressCore(pInputFilename, pOutputFilename, UNMAC_DECODER_OUTPUT_WAV, -1, pPercentageDone, ProgressCallback, pKillFlag);
+        return DecompressCore(pInputFilename, pOutputFilename, UNMAC_DECODER_OUTPUT_WAV, -1, pProgressCallback);
 }
 
 /*****************************************************************************************
 Convert file
 *****************************************************************************************/
-int __stdcall ConvertFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag) 
+int __stdcall ConvertFileW2(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, IAPEProgressCallback * pProgressCallback) 
 {
-    return DecompressCore(pInputFilename, pOutputFilename, UNMAC_DECODER_OUTPUT_APE, nCompressionLevel, pPercentageDone, ProgressCallback, pKillFlag);
+    return DecompressCore(pInputFilename, pOutputFilename, UNMAC_DECODER_OUTPUT_APE, nCompressionLevel, pProgressCallback);
 }
 
 /*****************************************************************************************
 Decompress a file using the specified output method
 *****************************************************************************************/
-int DecompressCore(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nOutputMode, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag) 
+int DecompressCore(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nOutputMode, int nCompressionLevel, IAPEProgressCallback * pProgressCallback) 
 {
     // error check the function parameters
     if (pInputFilename == NULL) 
@@ -312,7 +377,7 @@ int DecompressCore(const str_utf16 * pInputFilename, const str_utf16 * pOutputFi
         else if (nOutputMode == UNMAC_DECODER_OUTPUT_APE)
         {
             // quit if there is nothing to do
-            if (spAPEDecompress->GetInfo(APE_INFO_FILE_VERSION) == MAC_VERSION_NUMBER && spAPEDecompress->GetInfo(APE_INFO_COMPRESSION_LEVEL) == nCompressionLevel)
+            if (spAPEDecompress->GetInfo(APE_INFO_FILE_VERSION) == MAC_FILE_VERSION_NUMBER && spAPEDecompress->GetInfo(APE_INFO_COMPRESSION_LEVEL) == nCompressionLevel)
                 throw(ERROR_SKIPPED);
 
             // create and start the compressor
@@ -328,7 +393,7 @@ int DecompressCore(const str_utf16 * pInputFilename, const str_utf16 * pOutputFi
         int nBlocksLeft = spAPEDecompress->GetInfo(APE_DECOMPRESS_TOTAL_BLOCKS);
         
         // create the progress helper
-        spMACProgressHelper.Assign(new CMACProgressHelper(nBlocksLeft / BLOCKS_PER_DECODE, pPercentageDone, ProgressCallback, pKillFlag));
+        spMACProgressHelper.Assign(new CMACProgressHelper(nBlocksLeft / BLOCKS_PER_DECODE, pProgressCallback));
 
         // main decoding loop
         while (nBlocksLeft > 0)

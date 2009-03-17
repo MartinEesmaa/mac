@@ -55,7 +55,7 @@ public:
         return TRUE;
     }
 
-    inline void AddData(const void * pData, int nBytes)
+    __forceinline void AddData(const void * pData, int nBytes)
     {
         MD5Update(&m_MD5Context, (const unsigned char *) pData, nBytes);
         m_nTotalBytes += nBytes;

@@ -88,10 +88,10 @@ int main(int argc, char * argv[])
 	}
 
 	// store the input file
-	spInputFilename.Assign(GetUTF16FromANSI(argv[1]), TRUE);
+	spInputFilename.Assign(CAPECharacterHelper::GetUTF16FromANSI(argv[1]), TRUE);
 	
 	// store the output file
-	spOutputFilename.Assign(GetUTF16FromANSI(argv[2]), TRUE);
+	spOutputFilename.Assign(CAPECharacterHelper::GetUTF16FromANSI(argv[2]), TRUE);
 
 	// verify that the input file exists
 	if (!FileExists(spInputFilename))

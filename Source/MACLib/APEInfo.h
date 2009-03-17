@@ -53,6 +53,7 @@ struct APE_FILE_INFO
     int nDecompressedBitrate;                       // the kbps of the decompressed audio (i.e. 1440 kpbs for CD audio)
     int nJunkHeaderBytes;                           // used for ID3v2, etc.
     int nSeekTableElements;                         // the number of elements in the seek table(s)
+	int nMD5Invalid;                                // whether the MD5 is valid
 
     CSmartPtr<uint32> spSeekByteTable;              // the seek table (byte)
     CSmartPtr<unsigned char> spSeekBitTable;        // the seek table (bits -- legacy)
@@ -89,12 +90,13 @@ private:
     // internal functions
     int GetFileInformation(BOOL bGetTagInformation = TRUE);
     int CloseFile();
+	int CheckHeaderInformation();
     
     // internal variables
     BOOL m_bHasFileInformationLoaded;
     CSmartPtr<CIO> m_spIO;
     CSmartPtr<CAPETag> m_spAPETag;
-    APE_FILE_INFO    m_APEFileInfo;
+    APE_FILE_INFO m_APEFileInfo;
 };
 
 #endif // #ifndef APE_APEINFO_H

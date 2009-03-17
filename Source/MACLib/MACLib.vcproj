@@ -4,7 +4,9 @@
 	Version="7.10"
 	Name="MACLib"
 	SccProjectName="&quot;$/Monkey&apos;s Audio/MACLib&quot;, SCAAAAAA"
-	SccLocalPath=".">
+	SccAuxPath=""
+	SccLocalPath="."
+	SccProvider="MSSCCI:Microsoft Visual SourceSafe">
 	<Platforms>
 		<Platform
 			Name="Win32"/>
@@ -22,7 +24,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\Shared"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;UNICODE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/MACLib.pch"
@@ -74,15 +76,20 @@ nasmw -d WIN32 -f win32 -o Assembly.obj Assembly.nas
 			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
+				Optimization="2"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
-				OptimizeForProcessor="2"
+				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="TRUE"
+				OptimizeForProcessor="3"
 				AdditionalIncludeDirectories="..\Shared"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;UNICODE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				StringPooling="TRUE"
 				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="TRUE"
+				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="all.h"
 				PrecompiledHeaderFile=".\Release/MACLib.pch"
@@ -868,6 +875,9 @@ nasmw -d WIN32 -f win32 -o Assembly.obj Assembly.nas
 			</File>
 			<File
 				RelativePath="MACLib.h">
+			</File>
+			<File
+				RelativePath="..\Shared\WindowsEnvironment.h">
 			</File>
 			<Filter
 				Name="Compress (h)"

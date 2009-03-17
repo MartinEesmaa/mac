@@ -7,21 +7,21 @@
 struct RIFF_HEADER 
 {
     char cRIFF[4];            // the characters 'RIFF' indicating that it's a RIFF file
-    unsigned long nBytes;    // the number of bytes following this header
+    unsigned long nBytes;     // the number of bytes following this header
 };
 
 struct DATA_TYPE_ID_HEADER 
 {
-    char cDataTypeID[4];    // should equal 'WAVE' for a WAV file
+    char cDataTypeID[4];      // should equal 'WAVE' for a WAV file
 };
 
 struct WAV_FORMAT_HEADER
 {
     unsigned short nFormatTag;            // the format of the WAV...should equal 1 for a PCM file
-    unsigned short nChannels;            // the number of channels
-    unsigned long nSamplesPerSecond;    // the number of samples per second
+    unsigned short nChannels;             // the number of channels
+    unsigned long nSamplesPerSecond;      // the number of samples per second
     unsigned long nBytesPerSecond;        // the bytes per second
-    unsigned short nBlockAlign;            // block alignment
+    unsigned short nBlockAlign;           // block alignment
     unsigned short nBitsPerSample;        // the number of bits per sample
 };
 

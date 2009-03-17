@@ -1,5 +1,51 @@
 History:
 
+Monkey's Audio 4.05
+
+1. Fixed: Directshow filter would fail to register on some systems.
+2. Changed: Added CompressFileW2, DecompressFileW2, etc. functions that take a C++ interface as a callback for easier usage in multi-threaded environments. (as opposed to the old static function callback)
+
+Monkey's Audio 4.04
+
+1. Fixed: Directshow filter had an unnecessary dependence on a MSVC system dll.
+
+Monkey's Audio 4.03
+
+1. Changed: Added a help link to the help menu to show the included help file.
+
+Monkey's Audio 4.02
+
+1. NEW: Includes Directshow filter for decoding APE files in any DirectShow compatible player like Windows Media Player, Zoom, etc.
+2. Fixed: Corrupt APE files could cause decoder crashes in rare cases.
+3. Changed: Updated builder that gets better compression, making for a smaller download.
+
+Monkey's Audio 4.01 Beta 3
+
+1. Fixed: Added handling to correct any APE files where the APEv2 tag got appended as terminating WAV data after conversion. (fixed a long time ago -- this just deals with any afflicted files)
+
+Monkey's Audio 4.01 Beta 2
+
+1. Fixed: File > Exit would not close the program.
+2. Fixed: Typo on the options dialog "Leave source file intact" option.
+3. Fixed: APX files that weren't NULL terminated could cause a crash.
+4. Fixed: Files that were skipped would show "Error" instead of "Skipped" in the status column.
+5. Changed: Improved the error reporting in the status column after a failure.
+6. Fixed: Possible small memory leak (100 bytes) on missing file decompression / conversion errors.
+7. Changed: Increased the statusbar size to better hold batches of 100+ GBs of files.
+8. Changed: The file list will scroll to show newly started files during processing.
+9. Fixed: Adding or removing files from the file list is no longer allowed during processing.
+10. Changed: Pausing processing no longer distorts the time estimation.
+11. Fixed: Some operations would not pause properly. (external encoders, etc.)
+12. Fixed: The list control would flicker more than necessary when working with long lists of files.
+
+Monkey's Audio 4.01 Beta 1
+
+1. Fixed: Corrupt / invalid APEv2 tags could cause problems in some cases.
+2. Fixed: APL creation could use track boundaries that were off by 1/44100th of a second in some cases.
+3. Fixed: APL creation would not properly report errors when the CUE file didn't point to an existing APE file.
+4. Fixed: In very rare cases, decoding an old APE file could cause an invalid decompression error.
+5. Fixed: When converting from APE -> APE, the APEv2 tag could get appended as WAV data to the new file. (instead of as a file tag)
+
 Monkey's Audio 3.99 Update 4
 
 1. Fixed: Decoder could erroneously report a CRC error on the last frame of some files.
@@ -42,10 +88,10 @@ Monkey's Audio 3.98a1
 4. Changed: Using a new and improved file header format.
 5. NEW: Added "Insane" mode for when compression is all that matters.
 6. NEW: Introduced new GUI.
-	- full Unicode support
-	- few or no dependencies
-	- multi-thread friendly -- can process multiple files at once
-	- XML based external plugin architecture
+    - full Unicode support
+    - few or no dependencies
+    - multi-thread friendly -- can process multiple files at once
+    - XML based external plugin architecture
 
 Monkey's Audio 3.97 (July 7, 2002)
 

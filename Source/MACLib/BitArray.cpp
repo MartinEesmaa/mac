@@ -216,25 +216,14 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
     
     // convert to unsigned
     nEncode = (nEncode > 0) ? nEncode * 2 - 1 : -nEncode * 2;
-    
-    int nOriginalKSum = BitArrayState.nKSum;
-
-    // get the working k
-    int nTempK = (BitArrayState.k) ? BitArrayState.k - 1 : 0;
-    
-    // update nKSum
-    BitArrayState.nKSum += ((nEncode + 1) / 2) - ((BitArrayState.nKSum + 16) >> 5);
-
-    // update k
-    if (BitArrayState.nKSum < K_SUM_MIN_BOUNDARY[BitArrayState.k]) 
-        BitArrayState.k--;
-    else if (BitArrayState.nKSum >= K_SUM_MIN_BOUNDARY[BitArrayState.k + 1]) 
-        BitArrayState.k++;
 
     // figure the pivot value
-    int nPivotValue = max(nOriginalKSum / 32, 1);
+    int nPivotValue = max(BitArrayState.nKSum / 32, 1);
     int nOverflow = nEncode / nPivotValue;
     int nBase = nEncode - (nOverflow * nPivotValue);
+
+    // update nKSum
+    BitArrayState.nKSum += ((nEncode + 1) / 2) - ((BitArrayState.nKSum + 16) >> 5);
 
     // store the overflow
     if (nOverflow < (MODEL_ELEMENTS - 1))
@@ -298,7 +287,6 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
         }
         else
         {
-
             NORMALIZE_RANGE_CODER
             const int nTemp = m_RangeCoderInfo.range / nPivotValue;
             m_RangeCoderInfo.range = nTemp;
@@ -326,9 +314,8 @@ void CBitArray::FlushBitArray()
 
 void CBitArray::FlushState(BIT_ARRAY_STATE & BitArrayState) 
 {
-    // k and ksum
-    BitArrayState.k = 10;
-    BitArrayState.nKSum = (1 << BitArrayState.k) * 16;
+    // ksum
+    BitArrayState.nKSum = (1 << 10) * 16;
 }
 
 /************************************************************************************
