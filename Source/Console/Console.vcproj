@@ -5,7 +5,9 @@
 	Name="Console"
 	ProjectGUID="{CC3FC224-9557-45F3-9B8F-C29AE1DBCE82}"
 	SccProjectName="&quot;$/Monkey&apos;s Audio/Console&quot;, GKAAAAAA"
-	SccLocalPath=".">
+	SccAuxPath=""
+	SccLocalPath="."
+	SccProvider="MSSCCI:Microsoft Visual SourceSafe">
 	<Platforms>
 		<Platform
 			Name="Win32"/>
@@ -54,8 +56,7 @@
 				TypeLibraryName=".\Debug/Console.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="copy Debug\MAC.exe C:\MAC\Application\MAC.exe"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -86,12 +87,19 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				InlineFunctionExpansion="1"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="TRUE"
+				OptimizeForProcessor="3"
 				AdditionalIncludeDirectories="..\MACLib\,..\Shared\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
+				DisableLanguageExtensions="FALSE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/Console.pch"
 				AssemblerListingLocation=".\Release/"
@@ -117,8 +125,7 @@
 				TypeLibraryName=".\Release/Console.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="copy Release\MAC.exe D:\Data\MAC\Application\MAC.exe"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

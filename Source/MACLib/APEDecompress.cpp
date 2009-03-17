@@ -33,6 +33,7 @@ CAPEDecompress::CAPEDecompress(int * pErrorCode, CAPEInfo * pAPEInfo, int nStart
     m_nCurrentFrameBufferBlock = 0;
     m_nFrameBufferFinishedBlocks = 0;
     m_bErrorDecodingCurrentFrame = FALSE;
+    m_nErrorDecodingCurrentFrameOutputSilenceBlocks = 0;
 
     // set the "real" start and finish blocks
     m_nStartBlock = (nStartBlock < 0) ? 0 : min(nStartBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
@@ -165,21 +166,41 @@ int CAPEDecompress::FillFrameBuffer()
 {
     int nRetVal = ERROR_SUCCESS;
 
-     // determine the maximum blocks we can decode
+    // determine the maximum blocks we can decode
     // note that we won't do end capping because we can't use data
     // until EndFrame(...) successfully handles the frame
     // that means we may decode a little extra in end capping cases
     // but this allows robust error handling of bad frames
-    int nMaxBlocks = m_cbFrameBuffer.MaxAdd() / m_nBlockAlign;
 
     // loop and decode data
-    int nBlocksLeft = nMaxBlocks;
+    int nBlocksLeft = m_cbFrameBuffer.MaxAdd() / m_nBlockAlign;
     while (nBlocksLeft > 0)
     {
+        // output silence from previous error
+        if (m_nErrorDecodingCurrentFrameOutputSilenceBlocks > 0)
+        {
+            // output silence
+            int nOutputSilenceBlocks = min(m_nErrorDecodingCurrentFrameOutputSilenceBlocks, nBlocksLeft);
+            unsigned char cSilence = (GetInfo(APE_INFO_BITS_PER_SAMPLE) == 8) ? 127 : 0;
+            for (int z = 0; z < nOutputSilenceBlocks * m_nBlockAlign; z++)
+            {
+                *m_cbFrameBuffer.GetDirectWritePointer() = cSilence;
+                m_cbFrameBuffer.UpdateAfterDirectWrite(1);
+            }
+
+            // decrement
+            m_nErrorDecodingCurrentFrameOutputSilenceBlocks -= nOutputSilenceBlocks;
+            nBlocksLeft -= nOutputSilenceBlocks;
+            if (nBlocksLeft <= 0)
+                break;
+        }
+
+        // get frame size
         int nFrameBlocks = GetInfo(APE_INFO_FRAME_BLOCKS, m_nCurrentFrame);
         if (nFrameBlocks < 0)
             break;
 
+        // analyze
         int nFrameOffsetBlocks = m_nCurrentFrameBufferBlock % GetInfo(APE_INFO_BLOCKS_PER_FRAME);
         int nFrameBlocksLeft = nFrameBlocks - nFrameOffsetBlocks;
         int nBlocksThisPass = min(nFrameBlocksLeft, nBlocksLeft);
@@ -187,9 +208,6 @@ int CAPEDecompress::FillFrameBuffer()
         // start the frame if we need to
         if (nFrameOffsetBlocks == 0)
             StartFrame();
-
-        // store the frame buffer bytes before we start
-        int nFrameBufferBytes = m_cbFrameBuffer.MaxGet();
 
         // decode data
         DecodeBlocksToFrameBuffer(nBlocksThisPass);
@@ -200,26 +218,29 @@ int CAPEDecompress::FillFrameBuffer()
             EndFrame();
             if (m_bErrorDecodingCurrentFrame)
             {
-                // remove any decoded data from the buffer
-                m_cbFrameBuffer.RemoveTail(m_cbFrameBuffer.MaxGet() - nFrameBufferBytes);
+                // get the number of blocks we've decoded for this frame
+                int nFrameBlocksDecoded = m_nCurrentFrameBufferBlock - (GetInfo(APE_INFO_BLOCKS_PER_FRAME) * (m_nCurrentFrame - 1));
+                int nFrameBytesDecoded = nFrameBlocksDecoded * m_nBlockAlign;
 
-                // add silence
-                unsigned char cSilence = (GetInfo(APE_INFO_BITS_PER_SAMPLE) == 8) ? 127 : 0;
-                for (int z = 0; z < nFrameBlocks * m_nBlockAlign; z++)
-                {
-                    *m_cbFrameBuffer.GetDirectWritePointer() = cSilence;
-                    m_cbFrameBuffer.UpdateAfterDirectWrite(1);
-                }
+                // remove any decoded data for this frame from the buffer
+                m_cbFrameBuffer.RemoveTail(nFrameBytesDecoded);
 
                 // seek to try to synchronize after an error
-                SeekToFrame(m_nCurrentFrame);
+                if (m_nCurrentFrame < GetInfo(APE_INFO_TOTAL_FRAMES))
+                    SeekToFrame(m_nCurrentFrame);
+
+                // output silence for the duration of the error frame (we can't just dump it to the
+                // frame buffer here since the frame buffer may not be large enough to hold the
+                // duration of the entire frame)
+                m_nErrorDecodingCurrentFrameOutputSilenceBlocks += nFrameBlocks;
 
                 // save the return value
                 nRetVal = ERROR_INVALID_CHECKSUM;
             }
         }
 
-        nBlocksLeft -= nBlocksThisPass;
+        // update the number of blocks that still fit in the buffer
+        nBlocksLeft = m_cbFrameBuffer.MaxAdd() / m_nBlockAlign;
     }
 
     return nRetVal;
@@ -229,6 +250,7 @@ void CAPEDecompress::DecodeBlocksToFrameBuffer(int nBlocks)
 {
     // decode the samples
     int nBlocksProcessed = 0;
+    int nFrameBufferBytes = m_cbFrameBuffer.MaxGet();
 
     try
     {
@@ -307,7 +329,13 @@ void CAPEDecompress::DecodeBlocksToFrameBuffer(int nBlocks)
         m_bErrorDecodingCurrentFrame = TRUE;
     }
 
-    m_nCurrentFrameBufferBlock += nBlocks;
+    // get actual blocks that have been decoded and added to the frame buffer
+    int nActualBlocks = (m_cbFrameBuffer.MaxGet() - nFrameBufferBytes) / m_nBlockAlign;
+    if (nBlocks != nActualBlocks)
+        m_bErrorDecodingCurrentFrame = TRUE;
+
+    // bump frame decode position
+    m_nCurrentFrameBufferBlock += nActualBlocks;
 }
 
 void CAPEDecompress::StartFrame()
@@ -317,6 +345,7 @@ void CAPEDecompress::StartFrame()
     // get the frame header
     m_nStoredCRC = m_spUnBitArray->DecodeValue(DECODE_VALUE_METHOD_UNSIGNED_INT);
     m_bErrorDecodingCurrentFrame = FALSE;
+    m_nErrorDecodingCurrentFrameOutputSilenceBlocks = 0;
 
     // get any 'special' codes if the file uses them (for silence, FALSE stereo, etc.)
     m_nSpecialCodes = 0;
@@ -352,7 +381,17 @@ void CAPEDecompress::EndFrame()
     m_nCRC = m_nCRC ^ 0xFFFFFFFF;
     m_nCRC >>= 1;
     if (m_nCRC != m_nStoredCRC)
+    {
+        // error
         m_bErrorDecodingCurrentFrame = TRUE;
+
+        // We didn't use to check the CRC of the last frame in MAC 3.98 and earlier.  This caused some confusion for one
+        // user that had a lot of 3.97 Extra High files that have CRC errors on the last frame.  They would verify
+        // with old versions, but not with newer versions.  It's still unknown what corrupted the user's files but since
+        // only the last frame was bad, it's likely to have been caused by a buggy tagger.
+        //if ((m_nCurrentFrame >= GetInfo(APE_INFO_TOTAL_FRAMES)) && (GetInfo(APE_INFO_FILE_VERSION) < 3990))
+        //    m_bErrorDecodingCurrentFrame = FALSE;
+    }
 }
 
 /*****************************************************************************************

@@ -32,7 +32,7 @@ CAPETagField::~CAPETagField()
     
 int CAPETagField::GetFieldSize()
 {
-    CSmartPtr<char> spFieldNameANSI(GetANSIFromUTF16(m_spFieldNameUTF16), TRUE); 
+    CSmartPtr<char> spFieldNameANSI(CAPECharacterHelper::GetANSIFromUTF16(m_spFieldNameUTF16), TRUE); 
     return (strlen(spFieldNameANSI) + 1) + m_nFieldValueBytes + 4 + 4;
 }
 
@@ -63,7 +63,7 @@ int CAPETagField::SaveField(char * pBuffer)
     *((int *) pBuffer) = m_nFieldFlags;
     pBuffer += 4;
     
-    CSmartPtr<char> spFieldNameANSI((char *) GetANSIFromUTF16(m_spFieldNameUTF16), TRUE); 
+    CSmartPtr<char> spFieldNameANSI((char *) CAPECharacterHelper::GetANSIFromUTF16(m_spFieldNameUTF16), TRUE); 
     strcpy(pBuffer, spFieldNameANSI);
     pBuffer += strlen(spFieldNameANSI) + 1;
 
@@ -333,7 +333,7 @@ int CAPETag::GetFieldString(const str_utf16 * pFieldName, str_ansi * pBuffer, in
     int nRetVal = GetFieldString(pFieldName, pUTF16, pBufferCharacters);
     if (nRetVal == ERROR_SUCCESS)
     {
-        CSmartPtr<str_ansi> spANSI(bUTF8Encode ? (str_ansi *) GetUTF8FromUTF16(pUTF16) : GetANSIFromUTF16(pUTF16), TRUE);
+        CSmartPtr<str_ansi> spANSI(bUTF8Encode ? (str_ansi *) CAPECharacterHelper::GetUTF8FromUTF16(pUTF16) : CAPECharacterHelper::GetANSIFromUTF16(pUTF16), TRUE);
         if (int(strlen(spANSI)) > nOriginalCharacters)
         {
             memset(pBuffer, 0, nOriginalCharacters * sizeof(str_ansi));
@@ -373,9 +373,9 @@ int CAPETag::GetFieldString(const str_utf16 * pFieldName, str_utf16 * pBuffer, i
             // get the value in UTF-16 format
             CSmartPtr<str_utf16> spUTF16;
             if (m_nAPETagVersion >= 2000)
-                spUTF16.Assign(GetUTF16FromUTF8((str_utf8 *) pAPETagField->GetFieldValue()), TRUE);
+                spUTF16.Assign(CAPECharacterHelper::GetUTF16FromUTF8((str_utf8 *) pAPETagField->GetFieldValue()), TRUE);
             else
-                spUTF16.Assign(GetUTF16FromANSI(pAPETagField->GetFieldValue()), TRUE);
+                spUTF16.Assign(CAPECharacterHelper::GetUTF16FromANSI(pAPETagField->GetFieldValue()), TRUE);
 
             // get the number of characters
             int nCharacters = (wcslen(spUTF16) + 1);
@@ -503,16 +503,20 @@ int CAPETag::LoadField(const char * pBuffer, int nMaximumBytes, int * pBytes)
     nLocation += 4;
     
     // safety check (so we can't get buffer overflow attacked)
+	BOOL bSafe = FALSE;
     int nMaximumRead = nMaximumBytes - 8 - nFieldValueSize;
-    BOOL bSafe = TRUE;
-    for (int z = 0; (z < nMaximumRead) && (bSafe == TRUE); z++)
-    {
-        int nCharacter = pBuffer[nLocation + z];
-        if (nCharacter == 0)
-            break;
-        if ((nCharacter < 0x20) || (nCharacter > 0x7E))
-            bSafe = FALSE;
-    }
+    if (nMaximumRead > 0)
+	{
+		bSafe = TRUE;
+		for (int z = 0; (z < nMaximumRead) && (bSafe == TRUE); z++)
+		{
+			int nCharacter = pBuffer[nLocation + z];
+			if (nCharacter == 0)
+				break;
+			if ((nCharacter < 0x20) || (nCharacter > 0x7E))
+				bSafe = FALSE;
+		}
+	}
     if (bSafe == FALSE)
         return -1;
 
@@ -521,7 +525,7 @@ int CAPETag::LoadField(const char * pBuffer, int nMaximumBytes, int * pBytes)
     CSmartPtr<str_utf8> spNameUTF8(new str_utf8 [nNameCharacters + 1], TRUE);
     memcpy(spNameUTF8, &pBuffer[nLocation], (nNameCharacters + 1) * sizeof(str_utf8));
     nLocation += nNameCharacters + 1;
-    CSmartPtr<str_utf16> spNameUTF16(GetUTF16FromUTF8(spNameUTF8.GetPtr()), TRUE);
+    CSmartPtr<str_utf16> spNameUTF16(CAPECharacterHelper::GetUTF16FromUTF8(spNameUTF8.GetPtr()), TRUE);
 
     // value
     CSmartPtr<char> spFieldBuffer(new char [nFieldValueSize], TRUE);
@@ -542,7 +546,7 @@ int CAPETag::SetFieldString(const str_utf16 * pFieldName, const str_utf16 * pFie
         return RemoveField(pFieldName);
 
     // UTF-8 encode the value and call the UTF-8 SetField(...)
-    CSmartPtr<str_utf8> spFieldValueUTF8(GetUTF8FromUTF16((str_utf16 *) pFieldValue), TRUE);
+    CSmartPtr<str_utf8> spFieldValueUTF8(CAPECharacterHelper::GetUTF8FromUTF16((str_utf16 *) pFieldValue), TRUE);
     return SetFieldString(pFieldName, (const char *) spFieldValueUTF8.GetPtr(), TRUE);
 }
 
@@ -555,7 +559,7 @@ int CAPETag::SetFieldString(const str_utf16 * pFieldName, const char * pFieldVal
     // get the length and call the binary SetField(...)
     if (bAlreadyUTF8Encoded == FALSE)
     {
-        CSmartPtr<char> spUTF8((char *) GetUTF8FromANSI(pFieldValue), TRUE);
+        CSmartPtr<char> spUTF8((char *) CAPECharacterHelper::GetUTF8FromANSI(pFieldValue), TRUE);
         int nFieldBytes = strlen(spUTF8.GetPtr());
         return SetFieldBinary(pFieldName, spUTF8.GetPtr(), nFieldBytes, TAG_FIELD_FLAG_DATA_TYPE_TEXT_UTF8);
     }
@@ -718,7 +722,7 @@ int CAPETag::GetFieldID3String(const str_utf16 * pFieldName, char * pBuffer, int
     int nBufferCharacters = 255; str_utf16 cBuffer[256] = {0};
     GetFieldString(pFieldName, cBuffer, &nBufferCharacters);
 
-    CSmartPtr<str_ansi> spBufferANSI(GetANSIFromUTF16(cBuffer), TRUE);
+    CSmartPtr<str_ansi> spBufferANSI(CAPECharacterHelper::GetANSIFromUTF16(cBuffer), TRUE);
 
     memset(pBuffer, 0, nBytes);
     strncpy(pBuffer, spBufferANSI.GetPtr(), nBytes);

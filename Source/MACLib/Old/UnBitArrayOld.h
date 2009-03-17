@@ -14,17 +14,17 @@ class CUnBitArrayOld : public CUnBitArrayBase
 public:
 
     // construction/destruction
-    CUnBitArrayOld(IAPEDecompress *pAPEDecompress, int nVersion);
+    CUnBitArrayOld(IAPEDecompress * pAPEDecompress, int nVersion, int nFurthestReadByte);
     ~CUnBitArrayOld();
     
     // functions
-    void GenerateArray(int *pOutputArray, int nElements, int nBytesRequired = -1);
+    void GenerateArray(int * pOutputArray, int nElements, int nBytesRequired = -1);
     unsigned int DecodeValue(DECODE_VALUE_METHOD DecodeMethod, int nParam1 = 0, int nParam2 = 0);
     
 private:
     
-    void GenerateArrayOld(int* pOutputArray, uint32 NumberOfElements, int MinimumBitArrayBytes);
-    void GenerateArrayRice(int* pOutputArray, uint32 NumberOfElements, int MinimumBitArrayBytes);
+    void GenerateArrayOld(int * pOutputArray, uint32 NumberOfElements, int MinimumBitArrayBytes);
+    void GenerateArrayRice(int * pOutputArray, uint32 NumberOfElements, int MinimumBitArrayBytes);
     
     uint32 DecodeValueRiceUnsigned(uint32 k);
     
@@ -34,9 +34,9 @@ private:
     uint32 m_nRefillBitThreshold;
     
     // functions
-    __inline int DecodeValueNew(BOOL bCapOverflow);
+    __forceinline int DecodeValueNew(BOOL bCapOverflow);
     uint32 GetBitsRemaining();
-    __inline uint32 Get_K(uint32 x);
+    __forceinline uint32 Get_K(uint32 x);
 };
 
 #endif

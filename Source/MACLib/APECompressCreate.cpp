@@ -1,7 +1,6 @@
 #include "All.h"
 #include "IO.h"
 #include "APECompressCreate.h"
-
 #include "APECompressCore.h"
 
 CAPECompressCreate::CAPECompressCreate()
@@ -124,7 +123,7 @@ int CAPECompressCreate::InitializeFile(CIO * pIO, const WAVEFORMATEX * pwfeInput
     APEDescriptor.cID[1] = 'A';
     APEDescriptor.cID[2] = 'C';
     APEDescriptor.cID[3] = ' ';
-    APEDescriptor.nVersion = MAC_VERSION_NUMBER;
+    APEDescriptor.nVersion = MAC_FILE_VERSION_NUMBER;
     
     APEDescriptor.nDescriptorBytes = sizeof(APEDescriptor);
     APEDescriptor.nHeaderBytes = sizeof(APEHeader);
@@ -163,7 +162,6 @@ int CAPECompressCreate::InitializeFile(CIO * pIO, const WAVEFORMATEX * pwfeInput
     return ERROR_SUCCESS;
 }
 
-
 int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalFrameBlocks, const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes, int nPeakLevel)
 {
     // store the tail position
@@ -173,9 +171,12 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     unsigned int nBytesWritten = 0;
     unsigned int nBytesRead = 0;
     int nRetVal = 0;
-    if (nTerminatingBytes > 0) 
+    if ((pTerminatingData != NULL) && (nTerminatingBytes > 0))
     {
-        m_spAPECompressCore->GetBitArray()->GetMD5Helper().AddData(pTerminatingData, nTerminatingBytes);
+        // update the MD5 sum to include the WAV terminating bytes
+        m_spAPECompressCore->GetBitArray()->GetMD5Helper().AddData(pTerminatingData, nWAVTerminatingBytes);
+
+        // write the entire chunk to the new file
         if (pIO->Write((void *) pTerminatingData, nTerminatingBytes, &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
     }
     
@@ -199,7 +200,7 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     // update the descriptor
     APEDescriptor.nAPEFrameDataBytes = nTailPosition - (APEDescriptor.nDescriptorBytes + APEDescriptor.nHeaderBytes + APEDescriptor.nSeekTableBytes + APEDescriptor.nHeaderDataBytes);
     APEDescriptor.nAPEFrameDataBytesHigh = 0;
-    APEDescriptor.nTerminatingDataBytes = nTerminatingBytes;
+    APEDescriptor.nTerminatingDataBytes = nWAVTerminatingBytes;
     
     // update the MD5
     m_spAPECompressCore->GetBitArray()->GetMD5Helper().AddData(&APEHeader, sizeof(APEHeader));

@@ -391,7 +391,6 @@ int CPrepare::UnprepareOld(int *pInputX, int *pInputY, int nBlocks, const WAVEFO
                     CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *R];
                     *L = (unsigned char) (*R + pInputY[SampleIndex]);
                     CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *L];
-
                 }
             }
         }
@@ -460,11 +459,9 @@ int CPrepare::UnprepareOld(int *pInputX, int *pInputY, int nBlocks, const WAVEFO
                     CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *R];
                 }
             }
-
         }
         else if (pWaveFormatEx->wBitsPerSample == 24) 
         {
-
             unsigned char *Buffer = (unsigned char *) &pRawData[0];
             int32 RV;
             for (int SampleIndex = 0; SampleIndex<nBlocks; SampleIndex++) 

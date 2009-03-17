@@ -77,7 +77,7 @@ BOOL FileExists(wchar_t * pFilename)
     if (hFind != INVALID_HANDLE_VALUE)
     {
         bFound = TRUE;
-        CloseHandle(hFind);
+        FindClose(hFind);
     }
 
     return bFound;

@@ -18,7 +18,8 @@ const uint32 K_SUM_MAX_BOUNDARY[32] = {32,64,128,256,512,1024,2048,4096,8192,163
 /***********************************************************************************
 Construction
 ***********************************************************************************/
-CUnBitArrayOld::CUnBitArrayOld(IAPEDecompress * pAPEDecompress, int nVersion) 
+CUnBitArrayOld::CUnBitArrayOld(IAPEDecompress * pAPEDecompress, int nVersion, int nFurthestReadByte) :
+	CUnBitArrayBase(nFurthestReadByte)
 {
     int nBitArrayBytes = 262144;
 
@@ -90,7 +91,7 @@ uint32 CUnBitArrayOld::DecodeValueRiceUnsigned(uint32 k)
 ////////////////////////////////////////////////////////////////////////////////////
 // Get the optimal k for a given value
 ////////////////////////////////////////////////////////////////////////////////////
-__inline uint32 CUnBitArrayOld::Get_K(uint32 x) 
+uint32 CUnBitArrayOld::Get_K(uint32 x) 
 {
     if (x == 0)    return 0;
 

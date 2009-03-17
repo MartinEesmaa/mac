@@ -6,16 +6,15 @@
 
 CAPECompress::CAPECompress()
 {
-    m_nBufferHead        = 0;
-    m_nBufferTail        = 0;
-    m_nBufferSize        = 0;
-    m_bBufferLocked        = FALSE;
-    m_bOwnsOutputIO        = FALSE;
-    m_pioOutput            = NULL;
+    m_nBufferHead = 0;
+    m_nBufferTail = 0;
+    m_nBufferSize = 0;
+    m_bBufferLocked = FALSE;
+    m_bOwnsOutputIO = FALSE;
+    m_pioOutput = NULL;
+    m_pBuffer = NULL;
 
     m_spAPECompressCreate.Assign(new CAPECompressCreate());
-
-    m_pBuffer = NULL;
 }
 
 CAPECompress::~CAPECompress()
