@@ -1,5 +1,7 @@
-#ifndef APE_HEADER_H
-#define APE_HEADER_H
+#pragma once
+
+namespace APE
+{
 
 /*****************************************************************************************
 APE header that all APE files have in common (old and new)
@@ -35,16 +37,13 @@ CAPEHeader - makes managing APE headers a little smoother (and the format change
 *****************************************************************************************/
 class CAPEHeader
 {
-
-public:
-    
+public:    
     CAPEHeader(CIO * pIO);
     ~CAPEHeader();
 
     int Analyze(APE_FILE_INFO * pInfo);
 
 protected:
-
     int AnalyzeCurrent(APE_FILE_INFO * pInfo);
     int AnalyzeOld(APE_FILE_INFO * pInfo);
 
@@ -53,5 +52,4 @@ protected:
     CIO * m_pIO;
 };
 
-#endif // #ifndef APE_HEADER_H
-
+}

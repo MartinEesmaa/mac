@@ -1,6 +1,6 @@
 /*****************************************************************************************
 APEInfo.h
-Copyright (C) 2000 by Matthew T. Ashland   All Rights Reserved.
+Copyright (C) 2000-2013 by Matthew T. Ashland   All Rights Reserved.
 
 Simple method for working with APE files... it encapsulates reading, writing and getting
 file information.  Just create a CAPEInfo class, call OpenFile(), and use the class methods
@@ -11,19 +11,16 @@ Notes:
     failure.  However, all of the file functions that are wrapped from the Win32 API
     return 0 on failure and some other number on success.  This applies to ReadFile, 
     WriteFile, SetFilePointer, etc...
-
-WARNING:
-    -This class driven system for using Monkey's Audio is still in development, so
-    I can't make any guarantees that the classes and libraries won't change before
-    everything gets finalized.  Use them at your own risk
 *****************************************************************************************/
 
-#ifndef APE_APEINFO_H
-#define APE_APEINFO_H
+#pragma once
 
 #include "IO.h"
 #include "APETag.h"
 #include "MACLib.h"
+
+namespace APE
+{
 
 /*****************************************************************************************
 APE_FILE_INFO - structure which describes most aspects of an APE file 
@@ -53,12 +50,12 @@ struct APE_FILE_INFO
     int nDecompressedBitrate;                       // the kbps of the decompressed audio (i.e. 1440 kpbs for CD audio)
     int nJunkHeaderBytes;                           // used for ID3v2, etc.
     int nSeekTableElements;                         // the number of elements in the seek table(s)
-	int nMD5Invalid;                                // whether the MD5 is valid
+    int nMD5Invalid;                                // whether the MD5 is valid
 
     CSmartPtr<uint32> spSeekByteTable;              // the seek table (byte)
     CSmartPtr<unsigned char> spSeekBitTable;        // the seek table (bits -- legacy)
     CSmartPtr<unsigned char> spWaveHeaderData;      // the pre-audio header data
-    CSmartPtr<APE_DESCRIPTOR> spAPEDescriptor;      // the descriptor (only with newer files)
+    CSmartPtr<APE_DESCRIPTOR> spAPEDescriptor; // the descriptor (only with newer files)
 };
 
 /*****************************************************************************************
@@ -79,24 +76,23 @@ public:
     
     // construction and destruction
     CAPEInfo(int * pErrorCode, const wchar_t * pFilename, CAPETag * pTag = NULL);
-    CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag = NULL);
+    CAPEInfo(int * pErrorCode, APE::CIO * pIO, CAPETag * pTag = NULL);
     virtual ~CAPEInfo();
 
     // query for information
     int GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1 = 0, int nParam2 = 0);
     
 private:
-
     // internal functions
     int GetFileInformation(BOOL bGetTagInformation = TRUE);
     int CloseFile();
-	int CheckHeaderInformation();
+    int CheckHeaderInformation();
     
     // internal variables
     BOOL m_bHasFileInformationLoaded;
-    CSmartPtr<CIO> m_spIO;
+    CSmartPtr<APE::CIO> m_spIO;
     CSmartPtr<CAPETag> m_spAPETag;
     APE_FILE_INFO m_APEFileInfo;
 };
 
-#endif // #ifndef APE_APEINFO_H
+}

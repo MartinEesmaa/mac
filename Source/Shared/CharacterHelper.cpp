@@ -1,6 +1,9 @@
 #include "All.h"
 #include "CharacterHelper.h"
 
+namespace APE
+{
+
 str_ansi * CAPECharacterHelper::GetANSIFromUTF8(const str_utf8 * pUTF8)
 {
     str_utf16 * pUTF16 = GetUTF16FromUTF8(pUTF8);
@@ -11,7 +14,7 @@ str_ansi * CAPECharacterHelper::GetANSIFromUTF8(const str_utf8 * pUTF8)
 
 str_ansi * CAPECharacterHelper::GetANSIFromUTF16(const str_utf16 * pUTF16)
 {
-    const int nCharacters = pUTF16 ? wcslen(pUTF16) : 0;
+    const int nCharacters = pUTF16 ? int(wcslen(pUTF16)) : 0;
     #ifdef _WIN32
         int nANSICharacters = (2 * nCharacters);
         str_ansi * pANSI = new str_ansi [nANSICharacters + 1];
@@ -30,7 +33,7 @@ str_ansi * CAPECharacterHelper::GetANSIFromUTF16(const str_utf16 * pUTF16)
 
 str_utf16 * CAPECharacterHelper::GetUTF16FromANSI(const str_ansi * pANSI)
 {
-    const int nCharacters = pANSI ? strlen(pANSI) : 0;
+    const int nCharacters = pANSI ? int(strlen(pANSI)) : 0;
     str_utf16 * pUTF16 = new str_utf16 [nCharacters + 1];
 
     #ifdef _WIN32
@@ -101,7 +104,7 @@ str_utf8 * CAPECharacterHelper::GetUTF8FromANSI(const str_ansi * pANSI)
 str_utf8 * CAPECharacterHelper::GetUTF8FromUTF16(const str_utf16 * pUTF16)
 {
     // get the size(s)
-    int nCharacters = wcslen(pUTF16);
+    int nCharacters = int(wcslen(pUTF16));
     int nUTF8Bytes = 0;
     for (int z = 0; z < nCharacters; z++)
     {
@@ -118,7 +121,7 @@ str_utf8 * CAPECharacterHelper::GetUTF8FromUTF16(const str_utf16 * pUTF16)
 
     // create the UTF-8 string
     int nUTF8Index = 0;
-    for (z = 0; z < nCharacters; z++)
+    for (int z = 0; z < nCharacters; z++)
     {
         if (pUTF16[z] < 0x0080)
         {
@@ -140,4 +143,6 @@ str_utf8 * CAPECharacterHelper::GetUTF8FromUTF16(const str_utf16 * pUTF16)
 
     // return the UTF-8 string
     return pUTF8;
+}
+
 }

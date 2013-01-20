@@ -2,6 +2,9 @@
 #include "APECompress.h"
 #include "NewPredictor.h"
     
+namespace APE
+{
+
 /*****************************************************************************************
 CPredictorCompressNormal
 *****************************************************************************************/
@@ -37,7 +40,6 @@ CPredictorCompressNormal::CPredictorCompressNormal(int nCompressionLevel)
         m_pNNFilter = new CNNFilter(1024 + 256, 15, MAC_FILE_VERSION_NUMBER);
         m_pNNFilter1 = new CNNFilter(256, 13, MAC_FILE_VERSION_NUMBER);
         m_pNNFilter2 = new CNNFilter(16, 11, MAC_FILE_VERSION_NUMBER);
-
     }
     else
     {
@@ -405,4 +407,6 @@ int CPredictorDecompress3950toCurrent::DecompressValue(int nA, int nB)
     m_nCurrentIndex++;
 
     return nRetVal;
+}
+
 }

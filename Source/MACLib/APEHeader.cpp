@@ -3,7 +3,8 @@
 #include "MACLib.h"
 #include "APEInfo.h"
 
-// TODO: should push and pop the file position
+namespace APE
+{
 
 CAPEHeader::CAPEHeader(CIO * pIO)
 {
@@ -12,7 +13,6 @@ CAPEHeader::CAPEHeader(CIO * pIO)
 
 CAPEHeader::~CAPEHeader()
 {
-
 }
 
 int CAPEHeader::FindDescriptor(BOOL bSeek)
@@ -268,7 +268,7 @@ int CAPEHeader::AnalyzeOld(APE_FILE_INFO * pInfo)
 
     m_pIO->Read((unsigned char *) pInfo->spSeekByteTable.GetPtr(), 4 * pInfo->nSeekTableElements, &nBytesRead);
 
-	// seek bit table (for older files)
+    // seek bit table (for older files)
     if (APEHeader.nVersion <= 3800) 
     {
         pInfo->spSeekBitTable.Assign(new unsigned char [pInfo->nSeekTableElements], TRUE);
@@ -278,4 +278,6 @@ int CAPEHeader::AnalyzeOld(APE_FILE_INFO * pInfo)
     }
 
     return ERROR_SUCCESS;
+}
+
 }

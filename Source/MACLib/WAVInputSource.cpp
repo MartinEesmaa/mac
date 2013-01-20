@@ -4,6 +4,9 @@
 #include "MACLib.h"
 #include "GlobalFunctions.h"
 
+namespace APE
+{
+
 struct RIFF_HEADER 
 {
     char cRIFF[4];            // the characters 'RIFF' indicating that it's a RIFF file
@@ -47,7 +50,7 @@ CInputSource * CreateInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
         pExtension--;
 
     // create the proper input source
-    if (wcsicmp(pExtension, L".wav") == 0)
+    if (_wcsicmp(pExtension, L".wav") == 0)
     {
         if (pErrorCode) *pErrorCode = ERROR_SUCCESS;
         return new CWAVInputSource(pSourceName, pwfeSource, pTotalBlocks, pHeaderBytes, pTerminatingBytes, pErrorCode);
@@ -99,7 +102,7 @@ CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
     }
     
     m_spIO.Assign(new IO_CLASS_NAME);
-    if (m_spIO->Open(pSourceName) != ERROR_SUCCESS)
+    if (m_spIO->Open(pSourceName, TRUE) != ERROR_SUCCESS)
     {
         m_spIO.Delete();
         if (pErrorCode) *pErrorCode = ERROR_INVALID_INPUT_FILE;
@@ -123,8 +126,6 @@ CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
 
 CWAVInputSource::~CWAVInputSource()
 {
-
-
 }
 
 int CWAVInputSource::AnalyzeSource()
@@ -276,4 +277,6 @@ int CWAVInputSource::GetTerminatingData(unsigned char * pBuffer)
     }
 
     return nRetVal;
+}
+
 }

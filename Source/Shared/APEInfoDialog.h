@@ -1,5 +1,4 @@
-#ifndef APE_APEINFODIALOG_H
-#define APE_APEINFODIALOG_H
+#pragma once
 
 BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
     
@@ -18,5 +17,3 @@ private:
     int FillGenreComboBox(HWND hDlg, int nComboBoxID, char * pSelectedGenre);
     IAPEDecompress * m_pAPEDecompress;
 };
-
-#endif // #ifndef APE_APEINFODIALOG_H

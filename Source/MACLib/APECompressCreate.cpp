@@ -3,6 +3,9 @@
 #include "APECompressCreate.h"
 #include "APECompressCore.h"
 
+namespace APE
+{
+
 CAPECompressCreate::CAPECompressCreate()
 {
     m_nMaxFrames = 0;
@@ -216,4 +219,6 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     if (pIO->Write(m_spSeekTable, m_nMaxFrames * 4, &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
     
     return ERROR_SUCCESS;
+}
+
 }

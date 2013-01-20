@@ -22,6 +22,8 @@
 #include <string.h>
 #include "MD5.h"
 
+namespace APE
+{
 
 #if __BYTE_ORDER == __BIG_ENDIAN
 /*
@@ -262,3 +264,4 @@ MD5Final ( uint8_t   digest [16],
     memset ( context, 0, sizeof (*context) );
 }
 
+}

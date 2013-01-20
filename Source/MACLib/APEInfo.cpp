@@ -8,6 +8,9 @@ CAPEInfo:
 #include "APECompress.h"
 #include "APEHeader.h"
 
+namespace APE
+{
+
 /*****************************************************************************************
 Construction
 *****************************************************************************************/
@@ -40,7 +43,7 @@ CAPEInfo::CAPEInfo(int * pErrorCode, const wchar_t * pFilename, CAPETag * pTag)
         // we don't want to analyze right away for non-local files
         // since a single I/O object is shared, we can't tag and read at the same time (i.e. in multiple threads)
         BOOL bAnalyzeNow = TRUE;
-        if ((wcsnicmp(pFilename, L"http://", 7) == 0) || (wcsnicmp(pFilename, L"m01p://", 7) == 0))
+        if ((_wcsnicmp(pFilename, L"http://", 7) == 0) || (_wcsnicmp(pFilename, L"m01p://", 7) == 0))
             bAnalyzeNow = FALSE;
 
         m_spAPETag.Assign(new CAPETag(m_spIO, bAnalyzeNow));
@@ -50,8 +53,8 @@ CAPEInfo::CAPEInfo(int * pErrorCode, const wchar_t * pFilename, CAPETag * pTag)
         m_spAPETag.Assign(pTag);
     }
 
-	// update
-	CheckHeaderInformation();
+    // update
+    CheckHeaderInformation();
 }
 
 CAPEInfo::CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag)
@@ -75,8 +78,8 @@ CAPEInfo::CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag)
     else
         m_spAPETag.Assign(pTag);
 
-	// update
-	CheckHeaderInformation();
+    // update
+    CheckHeaderInformation();
 }
 
 /*****************************************************************************************
@@ -112,30 +115,30 @@ Performs sanity checks on all of the header data.
 *****************************************************************************************/
 int CAPEInfo::CheckHeaderInformation()
 {
-	// Fixes a bug with MAC 3.99 where conversion from APE to APE could include the file tag
-	// as part of the WAV terminating data.  This sanity check fixes the problem.
-	if ((m_APEFileInfo.spAPEDescriptor != NULL) &&
-		(m_APEFileInfo.spAPEDescriptor->nTerminatingDataBytes > 0))
-	{
-		int nFileBytes = m_spIO->GetSize();
-		if (nFileBytes > 0)
-		{
-			nFileBytes -= m_spAPETag->GetTagBytes();
-			nFileBytes -= m_APEFileInfo.spAPEDescriptor->nDescriptorBytes;
-			nFileBytes -= m_APEFileInfo.spAPEDescriptor->nHeaderBytes;
-			nFileBytes -= m_APEFileInfo.spAPEDescriptor->nSeekTableBytes;
-			nFileBytes -= m_APEFileInfo.spAPEDescriptor->nHeaderDataBytes;
-			nFileBytes -= m_APEFileInfo.spAPEDescriptor->nAPEFrameDataBytes;
-			if (nFileBytes < m_APEFileInfo.nWAVTerminatingBytes)
-			{
-				m_APEFileInfo.nMD5Invalid = TRUE;
-				m_APEFileInfo.nWAVTerminatingBytes = nFileBytes;
-				m_APEFileInfo.spAPEDescriptor->nTerminatingDataBytes = nFileBytes;
-			}
-		}
-	}
+    // Fixes a bug with MAC 3.99 where conversion from APE to APE could include the file tag
+    // as part of the WAV terminating data.  This sanity check fixes the problem.
+    if ((m_APEFileInfo.spAPEDescriptor != NULL) &&
+        (m_APEFileInfo.spAPEDescriptor->nTerminatingDataBytes > 0))
+    {
+        int nFileBytes = m_spIO->GetSize();
+        if (nFileBytes > 0)
+        {
+            nFileBytes -= m_spAPETag->GetTagBytes();
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nDescriptorBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nHeaderBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nSeekTableBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nHeaderDataBytes;
+            nFileBytes -= m_APEFileInfo.spAPEDescriptor->nAPEFrameDataBytes;
+            if (nFileBytes < m_APEFileInfo.nWAVTerminatingBytes)
+            {
+                m_APEFileInfo.nMD5Invalid = TRUE;
+                m_APEFileInfo.nWAVTerminatingBytes = nFileBytes;
+                m_APEFileInfo.spAPEDescriptor->nTerminatingDataBytes = nFileBytes;
+            }
+        }
+    }
 
-	return ERROR_SUCCESS;
+    return ERROR_SUCCESS;
 }
 
 /*****************************************************************************************
@@ -393,4 +396,6 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
     }
 
     return nRetVal;
+}
+
 }

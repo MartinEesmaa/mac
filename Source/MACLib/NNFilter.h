@@ -1,14 +1,14 @@
-#ifndef APE_NNFILTER_H
-#define APE_NNFILTER_H
+#pragma once
+
+namespace APE
+{
 
 #include "RollBuffer.h"
 #define NN_WINDOW_ELEMENTS    512
-//#define NN_TEST_MMX
 
 class CNNFilter
 {
 public:
-
     CNNFilter(int nOrder, int nShift, int nVersion);
     ~CNNFilter();
 
@@ -17,15 +17,14 @@ public:
     void Flush();
 
 private:
-
     int m_nOrder;
     int m_nShift;
     int m_nVersion;
-    BOOL m_bMMXAvailable;
+    BOOL m_bSSEAvailable;
     int m_nRunningAverage;
 
-    CRollBuffer<short> m_rbInput;
-    CRollBuffer<short> m_rbDeltaM;
+    APE::CRollBuffer<short> m_rbInput;
+    APE::CRollBuffer<short> m_rbDeltaM;
 
     short * m_paryM;
 
@@ -34,8 +33,11 @@ private:
         return short((nValue == short(nValue)) ? nValue : (nValue >> 31) ^ 0x7FFF);
     }
 
-    __forceinline int CalculateDotProductNoMMX(short * pA, short * pB, int nOrder);
-    __forceinline void AdaptNoMMX(short * pM, short * pAdapt, int nDirection, int nOrder);
+    __forceinline void Adapt(short * pM, short * pAdapt, int nDirection, int nOrder);
+    __forceinline int CalculateDotProduct(short * pA, short * pB, int nOrder);
+    
+    __forceinline void AdaptSSE(short * pM, short * pAdapt, int nDirection, int nOrder);
+    __forceinline int CalculateDotProductSSE(short * pA, short * pB, int nOrder);
 };
 
-#endif // #ifndef APE_NNFILTER_H
+}

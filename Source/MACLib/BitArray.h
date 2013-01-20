@@ -1,8 +1,10 @@
-#ifndef APE_BITARRAY_H
-#define APE_BITARRAY_H
+#pragma once
 
 #include "IO.h"
 #include "MD5.h"
+
+namespace APE
+{
 
 //#define BUILD_RANGE_TABLE
 
@@ -16,15 +18,14 @@ struct RANGE_CODER_STRUCT_COMPRESS
 
 struct BIT_ARRAY_STATE
 {
-    uint32    nKSum;
+    uint32 nKSum;
 };
 
 class CBitArray
 {
-public:
-    
+public:    
     // construction / destruction
-    CBitArray(CIO *pIO);
+    CBitArray(APE::CIO *pIO);
     ~CBitArray();
 
     // encoding
@@ -43,19 +44,17 @@ public:
     void FlushBitArray();
     __forceinline CMD5Helper & GetMD5Helper() { return m_MD5; }
         
-private:
-    
+private:    
     // data members
-    uint32 *            m_pBitArray;
-    CIO    *                        m_pIO;
-    uint32            m_nCurrentBitIndex;
-    RANGE_CODER_STRUCT_COMPRESS    m_RangeCoderInfo;
-    CMD5Helper                    m_MD5;
+    uint32 * m_pBitArray;
+    CIO * m_pIO;
+    uint32 m_nCurrentBitIndex;
+    RANGE_CODER_STRUCT_COMPRESS m_RangeCoderInfo;
+    CMD5Helper m_MD5;
 
 #ifdef BUILD_RANGE_TABLE
     void OutputRangeTable();
 #endif
-    
 };
 
-#endif // #ifndef APE_BITARRAY_H
+}

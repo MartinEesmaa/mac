@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "All.h"
+using namespace APE;
 
 #include "WAVInfoDialog.h"
 #include "WAVInputSource.h"
@@ -46,13 +47,13 @@ Display the file info dialog
 ***************************************************************************************/
 long CWAVInfoDialog::ShowWAVInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpTemplateName, HWND hWndParent)
 {
-    //only allow one instance at a time
+    // only allow one instance at a time
     if (g_pWAVInfoDialog != NULL)
     {
         return -1;
     }
 
-    _tcscpy(m_cFileName, pFilename);
+    _tcscpy_s(m_cFileName, MAX_PATH - 1, pFilename);
     g_pWAVInfoDialog = this;
 
     DialogBoxParam(hInstance, lpTemplateName, hWndParent, (DLGPROC) DialogProc, 0);
@@ -84,31 +85,31 @@ long CWAVInfoDialog::InitDialog(HWND hDlg)
 
     SetDlgItemText(hDlg, FILE_NAME_STATIC, m_cFileName);
 
-    _stprintf(cTemp, _T("Sample Rate: %d"), wfeWAV.nSamplesPerSec);
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Sample Rate: %d"), wfeWAV.nSamplesPerSec);
     SetDlgItemText(hDlg, SAMPLE_RATE_STATIC, cTemp);
 
-    _stprintf(cTemp, _T("Channels: %d"), wfeWAV.nChannels);
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Channels: %d"), wfeWAV.nChannels);
     SetDlgItemText(hDlg, CHANNELS_STATIC, cTemp);
 
-    _stprintf(cTemp, _T("Bits Per Sample: %d"), int(wfeWAV.wBitsPerSample));
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Bits Per Sample: %d"), int(wfeWAV.wBitsPerSample));
     SetDlgItemText(hDlg, BITS_PER_SAMPLE_STATIC, cTemp);
 
     int nSeconds = nAudioBytes / wfeWAV.nAvgBytesPerSec; int nMinutes = nSeconds / 60; nSeconds = nSeconds % 60; int nHours = nMinutes / 60; nMinutes = nMinutes % 60;
-    if (nHours > 0)    _stprintf(cTemp, _T("Length: %d:%02d:%02d"), nHours, nMinutes, nSeconds);
-    else if (nMinutes > 0) _stprintf(cTemp, _T("Length: %d:%02d"), nMinutes, nSeconds);
-    else _stprintf(cTemp, _T("Length: 0:%02d"), nSeconds);
+    if (nHours > 0)    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Length: %d:%02d:%02d"), nHours, nMinutes, nSeconds);
+    else if (nMinutes > 0) _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Length: %d:%02d"), nMinutes, nSeconds);
+    else _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Length: 0:%02d"), nSeconds);
     SetDlgItemText(hDlg, TRACK_LENGTH_STATIC, cTemp);
 
-    _stprintf(cTemp, _T("Audio Bytes: %d"), nAudioBytes);
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Audio Bytes: %d"), nAudioBytes);
     SetDlgItemText(hDlg, AUDIO_BYTES_STATIC, cTemp);
 
-    _stprintf(cTemp, _T("Header Bytes: %d"), nHeaderBytes);
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Header Bytes: %d"), nHeaderBytes);
     SetDlgItemText(hDlg, HEADER_BYTES_STATIC, cTemp);
 
-    _stprintf(cTemp, _T("Terminating Bytes: %d"), nTerminatingBytes);
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("Terminating Bytes: %d"), nTerminatingBytes);
     SetDlgItemText(hDlg, TERMINATING_BYTES_STATIC, cTemp);
 
-    _stprintf(cTemp, _T("File Size: %.2f MB"), float(nAudioBytes + nHeaderBytes + nTerminatingBytes) / float(1024 * 1024));
+    _stprintf_s(cTemp, _countof(cTemp) - 1, _T("File Size: %.2f MB"), float(nAudioBytes + nHeaderBytes + nTerminatingBytes) / float(1024 * 1024));
     SetDlgItemText(hDlg, FILE_SIZE_STATIC, cTemp);
     
     return 0;

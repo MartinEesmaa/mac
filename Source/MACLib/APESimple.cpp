@@ -8,6 +8,7 @@
 #include "GlobalFunctions.h"
 #include "MD5.h"
 #include "CharacterHelper.h"
+using namespace APE;
 
 #define UNMAC_DECODER_OUTPUT_NONE       0
 #define UNMAC_DECODER_OUTPUT_WAV        1
@@ -23,33 +24,31 @@ Simple progress callback (for legacy support)
 class CAPEProgressCallbackLegacy : public IAPEProgressCallback
 {
 public:
+    CAPEProgressCallbackLegacy(int * pProgress, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
+    {
+        m_pProgress = pProgress;
+        m_ProgressCallback = ProgressCallback;
+        m_pKillFlag = pKillFlag;
+    }
 
-	CAPEProgressCallbackLegacy(int * pProgress, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
-	{
-		m_pProgress = pProgress;
-		m_ProgressCallback = ProgressCallback;
-		m_pKillFlag = pKillFlag;
-	}
+    virtual void Progress(int nPercentageDone)
+    {
+        if (m_pProgress != NULL)
+            *m_pProgress = nPercentageDone;
 
-	virtual void Progress(int nPercentageDone)
-	{
-		if (m_pProgress != NULL)
-			*m_pProgress = nPercentageDone;
+        if (m_ProgressCallback != NULL)
+            m_ProgressCallback(nPercentageDone);
+    }
 
-		if (m_ProgressCallback != NULL)
-			m_ProgressCallback(nPercentageDone);
-	}
-
-	virtual int GetKillFlag()
-	{
-		return (m_pKillFlag == NULL) ? KILL_FLAG_CONTINUE : *m_pKillFlag;
-	}
+    virtual int GetKillFlag()
+    {
+        return (m_pKillFlag == NULL) ? KILL_FLAG_CONTINUE : *m_pKillFlag;
+    }
 
 private:
-
-	int * m_pProgress;
-	APE_PROGRESS_CALLBACK m_ProgressCallback;
-	int * m_pKillFlag;
+    int * m_pProgress;
+    APE_PROGRESS_CALLBACK m_ProgressCallback;
+    int * m_pKillFlag;
 };
 
 /*****************************************************************************************
@@ -87,26 +86,26 @@ Legacy callback wrappers
 *****************************************************************************************/
 int __stdcall CompressFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
-	return CompressFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
+    CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+    return CompressFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
 }
 
 int __stdcall VerifyFileW(const str_utf16 * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible)
 {
-	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
-	return VerifyFileW2(pInputFilename, &ProgressCallbackLegacy, bQuickVerifyIfPossible);
+    CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+    return VerifyFileW2(pInputFilename, &ProgressCallbackLegacy, bQuickVerifyIfPossible);
 }
 
 int __stdcall DecompressFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
-	return DecompressFileW2(pInputFilename, pOutputFilename, &ProgressCallbackLegacy);
+    CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+    return DecompressFileW2(pInputFilename, pOutputFilename, &ProgressCallbackLegacy);
 }
 
 int __stdcall ConvertFileW(const str_utf16 * pInputFilename, const str_utf16 * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-	CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
-	return ConvertFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
+    CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
+    return ConvertFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
 }
 
 /*****************************************************************************************
@@ -220,13 +219,13 @@ int __stdcall VerifyFileW2(const str_utf16 * pInputFilename, IAPEProgressCallbac
 
             APE_FILE_INFO * pInfo = (APE_FILE_INFO *) spAPEDecompress->GetInfo(APE_INTERNAL_INFO);
             
-			// check version
-			if ((pInfo->nVersion < 3980) || (pInfo->spAPEDescriptor == NULL))
+            // check version
+            if ((pInfo->nVersion < 3980) || (pInfo->spAPEDescriptor == NULL))
                 throw(ERROR_UPSUPPORTED_FILE_VERSION);
 
-			// make sure the MD5 is valid
-			if (pInfo->nMD5Invalid != FALSE)
-				throw(ERROR_UPSUPPORTED_FILE_VERSION);
+            // make sure the MD5 is valid
+            if (pInfo->nMD5Invalid != FALSE)
+                throw(ERROR_UPSUPPORTED_FILE_VERSION);
         }
         catch(...)
         {

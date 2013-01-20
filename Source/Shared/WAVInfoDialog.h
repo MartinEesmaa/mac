@@ -1,5 +1,4 @@
-#ifndef APE_WAVINFODIALOG_H
-#define APE_WAVINFODIALOG_H
+#pragma once
 
 BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
     
@@ -18,5 +17,3 @@ private:
     long InitDialog(HWND hDlg);
     TCHAR m_cFileName[MAX_PATH];
 };
-
-#endif // #ifndef APE_WAVINFODIALOG_H

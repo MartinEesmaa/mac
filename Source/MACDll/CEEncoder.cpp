@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include "filters.h" 
 #include "resource.h"
-
-#include "maclib.h"
+#include "MACLib.h"
 #include "CharacterHelper.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +75,7 @@ __declspec(dllexport) HANDLE FAR PASCAL OpenFilterOutput(LPSTR lpstrFilename,lon
     *lpChunkSize = 16384 * wfeAudioFormat.nBlockAlign;
 
     CSmartPtr<wchar_t> spUTF16(CAPECharacterHelper::GetUTF16FromANSI(lpstrFilename), TRUE);
-    if (pAPEEncoder->pAPECompress->Start(spUTF16, &wfeAudioFormat, (long)(float)lSize*rate, nCompressLevel, NULL, CREATE_WAV_HEADER_ON_DECOMPRESSION) != 0)
+    if (pAPEEncoder->pAPECompress->Start(spUTF16, &wfeAudioFormat, (int) (double(lSize) * rate), nCompressLevel, NULL, CREATE_WAV_HEADER_ON_DECOMPRESSION) != 0)
     {
         SafeDeleteAPEEncoder(pAPEEncoder);
         return NULL;

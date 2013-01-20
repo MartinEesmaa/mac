@@ -1,8 +1,9 @@
-#ifndef APE_APECOMPRESSCREATE_H
-#define APE_APECOMPRESSCREATE_H
+#pragma once
 
 #include "APECompress.h"
 
+namespace APE
+{
 class CAPECompressCore;
 
 class CAPECompressCreate
@@ -23,21 +24,18 @@ public:
 
     int Finish(const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes);
     
-
-private:
-    
+private:    
     CSmartPtr<uint32> m_spSeekTable;
     int m_nMaxFrames;
 
     CSmartPtr<CIO> m_spIO;
     CSmartPtr<CAPECompressCore> m_spAPECompressCore;
     
-    WAVEFORMATEX    m_wfeInput;
-    int                m_nCompressionLevel;
-    int                m_nSamplesPerFrame;
-    int                m_nFrameIndex;
-    int                m_nLastFrameBlocks;
-
+    WAVEFORMATEX m_wfeInput;
+    int m_nCompressionLevel;
+    int m_nSamplesPerFrame;
+    int m_nFrameIndex;
+    int m_nLastFrameBlocks;
 };
 
-#endif // #ifndef APE_APECOMPRESSCREATE_H
+}

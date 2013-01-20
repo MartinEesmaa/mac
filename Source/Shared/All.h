@@ -1,5 +1,4 @@
-#ifndef APE_ALL_H
-#define APE_ALL_H
+#pragma once
 
 /*****************************************************************************************
 Cross platform building switch
@@ -10,15 +9,16 @@ Cross platform building switch
 Global includes
 *****************************************************************************************/
 #ifndef BUILD_CROSS_PLATFORM
-	#ifndef NO_DEFINE_ENVIRONMENT_VARIABLES
-		#include "WindowsEnvironment.h"
-	#endif
-	#include <windows.h>
+    #ifndef NO_DEFINE_ENVIRONMENT_VARIABLES
+        #include "WindowsEnvironment.h"
+    #endif
+    #include <windows.h>
 #endif
 
 #ifdef _WIN32
     #include <mmsystem.h>
     #include <tchar.h>
+    #include <assert.h>
 #else
     #include <unistd.h>
     #include <time.h>
@@ -38,18 +38,22 @@ Global includes
 /*****************************************************************************************
 Global compiler settings (useful for porting)
 *****************************************************************************************/
+// assembly code (helps performance, but limits portability)
 #ifndef BUILD_CROSS_PLATFORM
     #define ENABLE_ASSEMBLY
 #endif
 
-#define BACKWARDS_COMPATIBILITY
-
+// compression modes
 #define ENABLE_COMPRESSION_MODE_FAST
 #define ENABLE_COMPRESSION_MODE_NORMAL
 #define ENABLE_COMPRESSION_MODE_HIGH
 #define ENABLE_COMPRESSION_MODE_EXTRA_HIGH
 
+/*****************************************************************************************
+Global types and macros
+*****************************************************************************************/
 #ifdef _WIN32
+    typedef __int64                                     int64;
     typedef unsigned __int32                            uint32;
     typedef __int32                                     int32;
     typedef unsigned __int16                            uint16;
@@ -71,6 +75,13 @@ Global compiler settings (useful for porting)
     #define TICK_COUNT_TYPE                             unsigned long
     #define TICK_COUNT_READ(VARIABLE)                   VARIABLE = GetTickCount()
     #define TICK_COUNT_FREQ                             1000
+    #if !defined(ASSERT)
+        #if defined(_DEBUG)
+            #define ASSERT(e)                            assert(e)
+        #else
+            #define ASSERT(e)                            
+        #endif
+    #endif
 #else
     #define IO_USE_STD_LIB_FILE_IO
     #define IO_HEADER_FILE                              "StdLibFileIO.h"
@@ -83,19 +94,20 @@ Global compiler settings (useful for porting)
     #define TICK_COUNT_TYPE                             unsigned long long
     #define TICK_COUNT_READ(VARIABLE)                   { struct timeval t; gettimeofday(&t, NULL); VARIABLE = t.tv_sec * 1000000LLU + t.tv_usec; }
     #define TICK_COUNT_FREQ                             1000000
-	#define __forceinline								inline
+    #define __forceinline                                inline
+    #define ASSERT(e)                                    
 #endif
 
 /*****************************************************************************************
 Global defines
 *****************************************************************************************/
 #define MAC_FILE_VERSION_NUMBER                         3990
-#define MAC_VERSION_STRING                              _T("4.06")
-#define MAC_NAME                                        _T("Monkey's Audio 4.06")
-#define PLUGIN_NAME                                     "Monkey's Audio Player v4.06"
-#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.06)")
-#define CONSOLE_NAME                                    "--- Monkey's Audio Console Front End (v 4.06) (c) Matthew T. Ashland ---\n"
-#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.06\nCopyrighted (c) 2000-2009 by Matthew T. Ashland")
+#define MAC_VERSION_STRING                              _T("4.11")
+#define MAC_NAME                                        _T("Monkey's Audio 4.11")
+#define PLUGIN_NAME                                     "Monkey's Audio Player v4.11"
+#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.11)")
+#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.11) (c) Matthew T. Ashland ---\n")
+#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.11\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
 #define MAC_DLL_INTERFACE_VERSION_NUMBER                1000
 
 /*****************************************************************************************
@@ -224,6 +236,4 @@ Error Codes
     { ERROR_SKIPPED                               , _T("skipped") },                                \
     { ERROR_BAD_PARAMETER                         , _T("bad parameter") },                          \
     { ERROR_APE_COMPRESS_TOO_MUCH_DATA            , _T("APE compress too much data") },             \
-    { ERROR_UNDEFINED                             , _T("undefined") },                              \
-
-#endif // #ifndef APE_ALL_H
+    { ERROR_UNDEFINED                             , _T("undefined") },

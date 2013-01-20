@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "filters.h" 
 #include "resource.h"
-
 #include "all.h"
 #include "apeinfo.h"
 #include "apecompress.h"

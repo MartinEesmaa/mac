@@ -2,6 +2,9 @@
 #include "MACProgressHelper.h"
 #include "MACLib.h"
 
+namespace APE
+{
+
 CMACProgressHelper::CMACProgressHelper(int nTotalSteps, IAPEProgressCallback * pProgressCallback)
 {
     m_pProgressCallback = pProgressCallback;
@@ -37,7 +40,7 @@ void CMACProgressHelper::UpdateProgress(int nCurrentStep, BOOL bForceUpdate)
     {
         if (bForceUpdate || (nPercentageDone - m_nLastCallbackFiredPercentageDone) >= 1000)
         {
-			m_pProgressCallback->Progress(nPercentageDone);
+            m_pProgressCallback->Progress(nPercentageDone);
             m_nLastCallbackFiredPercentageDone = nPercentageDone;
         }
     }
@@ -66,4 +69,6 @@ int CMACProgressHelper::ProcessKillFlag(BOOL bSleep)
     }
 
     return ERROR_SUCCESS;
+}
+
 }

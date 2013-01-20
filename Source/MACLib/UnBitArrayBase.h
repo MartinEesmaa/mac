@@ -1,5 +1,7 @@
-#ifndef APE_UNBITARRAYBASE_H
-#define APE_UNBITARRAYBASE_H
+#pragma once
+
+namespace APE
+{
 
 class IAPEDecompress;
 class CIO;
@@ -20,9 +22,8 @@ enum DECODE_VALUE_METHOD
 class CUnBitArrayBase
 {
 public:
-
     // construction / destruction
-	CUnBitArrayBase(int nFurthestReadByte);
+    CUnBitArrayBase(int nFurthestReadByte);
     virtual ~CUnBitArrayBase();
     
     // functions
@@ -40,14 +41,13 @@ public:
     virtual void Finalize() { }
     
 protected:
-
     virtual int CreateHelper(CIO * pIO, int nBytes, int nVersion);
     virtual uint32 DecodeValueXBits(uint32 nBits);
     
-	uint32 m_nElements;
+    uint32 m_nElements;
     uint32 m_nBytes;
     uint32 m_nBits;
-	uint32 m_nGoodBytes;
+    uint32 m_nGoodBytes;
     
     int m_nVersion;
     CIO * m_pIO;
@@ -59,4 +59,4 @@ protected:
 
 CUnBitArrayBase * CreateUnBitArray(IAPEDecompress * pAPEDecompress, int nVersion);
 
-#endif // #ifndef APE_UNBITARRAYBASE_H
+}

@@ -1,5 +1,7 @@
-#ifndef APE_APETAG_H
-#define APE_APETAG_H
+#pragma once
+
+namespace APE
+{
 
 class CIO;
 
@@ -115,7 +117,6 @@ The footer at the end of APE tagged files (can also optionally be at the front o
 class APE_TAG_FOOTER
 {
 protected:
-
     char m_cID[8];              // should equal 'APETAGEX'    
     int m_nVersion;             // equals CURRENT_APE_TAG_VERSION
     int m_nSize;                // the complete size of the tag, including this footer (excludes header)
@@ -124,7 +125,6 @@ protected:
     char m_cReserved[8];        // reserved for later use (must be zero)
 
 public:
-
     APE_TAG_FOOTER(int nFields = 0, int nFieldBytes = 0)
     {
         memcpy(m_cID, "APETAGEX", 8);
@@ -148,6 +148,7 @@ public:
         BOOL bValid = (strncmp(m_cID, "APETAGEX", 8) == 0) && 
             (m_nVersion <= CURRENT_APE_TAG_VERSION) &&
             (m_nFields <= 65536) &&
+            (m_nSize >= APE_TAG_FOOTER_BYTES) &&
             (GetFieldBytes() <= (1024 * 1024 * 16));
         
         if (bValid && (bAllowHeader == FALSE) && GetIsHeader())
@@ -163,7 +164,6 @@ CAPETagField class (an APE tag is an array of these)
 class CAPETagField
 {
 public:
-
     // create a tag field (use nFieldBytes = -1 for null-terminated strings)
     CAPETagField(const str_utf16 * pFieldName, const void * pFieldValue, int nFieldBytes = -1, int nFlags = 0);
     
@@ -209,7 +209,6 @@ CAPETag class
 class CAPETag
 {
 public:
-
     // create an APE tag 
     // bAnalyze determines whether it will analyze immediately or on the first request
     // be careful with multiple threads / file pointer movement if you don't analyze immediately
@@ -243,6 +242,9 @@ public:
     // clear all the fields
     int ClearFields();
     
+    // see if we've been analyzed (we do lazy analysis)
+    BOOL GetAnalyzed() { return m_bAnalyzed; }
+
     // get the total tag bytes in the file from the last analyze
     // need to call Save() then Analyze() to update any changes
     int GetTagBytes();
@@ -264,7 +266,6 @@ public:
     void SetIgnoreReadOnly(BOOL bIgnoreReadOnly) { m_bIgnoreReadOnly = bIgnoreReadOnly; }
 
 private:
-
     // private functions
     int Analyze();
     int GetTagFieldIndex(const str_utf16 * pFieldName);
@@ -289,5 +290,4 @@ private:
     BOOL m_bIgnoreReadOnly;
 };
 
-#endif // #ifndef APE_APETAG_H
-
+}

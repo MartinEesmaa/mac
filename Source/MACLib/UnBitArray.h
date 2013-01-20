@@ -1,7 +1,9 @@
-#ifndef APE_UNBITARRAY_H
-#define APE_UNBITARRAY_H
+#pragma once
 
 #include "UnBitArrayBase.h"
+
+namespace APE
+{
 
 class IAPEDecompress;
 
@@ -15,9 +17,8 @@ struct RANGE_CODER_STRUCT_DECOMPRESS
 class CUnBitArray : public CUnBitArrayBase
 {
 public:
-
     // construction/destruction
-    CUnBitArray(CIO * pIO, int nVersion, int nFurthestReadByte);
+    CUnBitArray(APE::CIO * pIO, int nVersion, int nFurthestReadByte);
     ~CUnBitArray();
 
     unsigned int DecodeValue(DECODE_VALUE_METHOD DecodeMethod, int nParam1 = 0, int nParam2 = 0);
@@ -31,7 +32,6 @@ public:
     void Finalize();
     
 private:
-
     void GenerateArrayRange(int * pOutputArray, int nElements);
     
     // data 
@@ -42,8 +42,8 @@ private:
     
     // functions
     inline uint32 DecodeByte();
-	inline int RangeDecodeFast(int nShift);
+    inline int RangeDecodeFast(int nShift);
     inline int RangeDecodeFastWithUpdate(int nShift);
 };
 
-#endif // #ifndef APE_UNBITARRAY_H
+}

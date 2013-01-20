@@ -5,6 +5,9 @@ Includes
 #include "BitArray.h"
 #include "MD5.h"
 
+namespace APE
+{
+
 /************************************************************************************
 Declares
 ************************************************************************************/
@@ -419,3 +422,5 @@ void CBitArray::OutputRangeTable()
     ODS(_T("};\n\n"));
 }
 #endif // #ifdef BUILD_RANGE_TABLE
+
+}

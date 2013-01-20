@@ -1,16 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "afxres.h"
-
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
+#include <windows.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // English (U.S.) resources
@@ -27,8 +18,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,9,9,1
- PRODUCTVERSION 3,9,9,1
+ FILEVERSION 4,11,0,0
+ PRODUCTVERSION 4,11,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -46,12 +37,12 @@ BEGIN
             VALUE "Comments", "Console front-end for Monkey's Audio"
             VALUE "CompanyName", "Matthew T. Ashland"
             VALUE "FileDescription", "Monkey's Audio Console Front-End"
-            VALUE "FileVersion", "3.99"
+            VALUE "FileVersion", "4.11"
             VALUE "InternalName", "MAC"
-            VALUE "LegalCopyright", "Copyright © 2000-2004"
+            VALUE "LegalCopyright", "Copyright © 2000-2013"
             VALUE "OriginalFilename", "MAC.exe"
             VALUE "ProductName", "Monkey's Audio"
-            VALUE "ProductVersion", "3.99"
+            VALUE "ProductVersion", "4.11"
         END
     END
     BLOCK "VarFileInfo"
@@ -60,44 +51,6 @@ BEGIN
     END
 END
 
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
 

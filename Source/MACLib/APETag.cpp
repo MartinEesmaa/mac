@@ -5,10 +5,12 @@
 #include "IO.h"
 #include IO_HEADER_FILE
 
+namespace APE
+{
+
 /*****************************************************************************************
 CAPETagField
 *****************************************************************************************/
-
 CAPETagField::CAPETagField(const str_utf16 * pFieldName, const void * pFieldValue, int nFieldBytes, int nFlags)
 {
     // field name
@@ -33,7 +35,7 @@ CAPETagField::~CAPETagField()
 int CAPETagField::GetFieldSize()
 {
     CSmartPtr<char> spFieldNameANSI(CAPECharacterHelper::GetANSIFromUTF16(m_spFieldNameUTF16), TRUE); 
-    return (strlen(spFieldNameANSI) + 1) + m_nFieldValueBytes + 4 + 4;
+    return int(strlen(spFieldNameANSI)) + 1 + m_nFieldValueBytes + 4 + 4;
 }
 
 const str_utf16 * CAPETagField::GetFieldName()
@@ -76,7 +78,6 @@ int CAPETagField::SaveField(char * pBuffer)
 /*****************************************************************************************
 CAPETag
 *****************************************************************************************/
-
 CAPETag::CAPETag(const str_utf16 * pFilename, BOOL bAnalyze)
 {
     m_spIO.Assign(new IO_CLASS_NAME);
@@ -88,9 +89,7 @@ CAPETag::CAPETag(const str_utf16 * pFilename, BOOL bAnalyze)
     m_bIgnoreReadOnly = FALSE;
     
     if (bAnalyze)
-    {
         Analyze();
-    }
 }
 
 CAPETag::CAPETag(CIO * pIO, BOOL bAnalyze)
@@ -310,7 +309,7 @@ int CAPETag::GetTagFieldIndex(const str_utf16 * pFieldName)
 
     for (int z = 0; z < m_nFields; z++)
     {
-        if (wcsicmp(m_aryFields[z]->GetFieldName(), pFieldName) == 0)
+        if (_wcsicmp(m_aryFields[z]->GetFieldName(), pFieldName) == 0)
             return z;
     }
 
@@ -343,7 +342,7 @@ int CAPETag::GetFieldString(const str_utf16 * pFieldName, str_ansi * pBuffer, in
         else
         {
             strcpy(pBuffer, spANSI);
-            *pBufferCharacters = strlen(spANSI);
+            *pBufferCharacters = int(strlen(spANSI));
         }
     }
     
@@ -378,7 +377,7 @@ int CAPETag::GetFieldString(const str_utf16 * pFieldName, str_utf16 * pBuffer, i
                 spUTF16.Assign(CAPECharacterHelper::GetUTF16FromANSI(pAPETagField->GetFieldValue()), TRUE);
 
             // get the number of characters
-            int nCharacters = (wcslen(spUTF16) + 1);
+            int nCharacters = (int(wcslen(spUTF16)) + 1);
             if (nCharacters > *pBufferCharacters)
             {
                 // we'll fail here, because it's not clear what would get returned (null termination, size, etc.)
@@ -496,6 +495,8 @@ int CAPETag::LoadField(const char * pBuffer, int nMaximumBytes, int * pBytes)
     if (pBytes) *pBytes = 0;
 
     // size and flags
+    if (nMaximumBytes < 8)
+        return -1;
     int nLocation = 0;
     int nFieldValueSize = *((int *) &pBuffer[nLocation]);
     nLocation += 4;
@@ -503,25 +504,25 @@ int CAPETag::LoadField(const char * pBuffer, int nMaximumBytes, int * pBytes)
     nLocation += 4;
     
     // safety check (so we can't get buffer overflow attacked)
-	BOOL bSafe = FALSE;
+    BOOL bSafe = FALSE;
     int nMaximumRead = nMaximumBytes - 8 - nFieldValueSize;
     if (nMaximumRead > 0)
-	{
-		bSafe = TRUE;
-		for (int z = 0; (z < nMaximumRead) && (bSafe == TRUE); z++)
-		{
-			int nCharacter = pBuffer[nLocation + z];
-			if (nCharacter == 0)
-				break;
-			if ((nCharacter < 0x20) || (nCharacter > 0x7E))
-				bSafe = FALSE;
-		}
-	}
+    {
+        bSafe = TRUE;
+        for (int z = 0; (z < nMaximumRead) && (bSafe == TRUE); z++)
+        {
+            int nCharacter = pBuffer[nLocation + z];
+            if (nCharacter == 0)
+                break;
+            if ((nCharacter < 0x20) || (nCharacter > 0x7E))
+                bSafe = FALSE;
+        }
+    }
     if (bSafe == FALSE)
         return -1;
 
     // name
-    int nNameCharacters = strlen(&pBuffer[nLocation]);
+    int nNameCharacters = int(strlen(&pBuffer[nLocation]));
     CSmartPtr<str_utf8> spNameUTF8(new str_utf8 [nNameCharacters + 1], TRUE);
     memcpy(spNameUTF8, &pBuffer[nLocation], (nNameCharacters + 1) * sizeof(str_utf8));
     nLocation += nNameCharacters + 1;
@@ -560,12 +561,12 @@ int CAPETag::SetFieldString(const str_utf16 * pFieldName, const char * pFieldVal
     if (bAlreadyUTF8Encoded == FALSE)
     {
         CSmartPtr<char> spUTF8((char *) CAPECharacterHelper::GetUTF8FromANSI(pFieldValue), TRUE);
-        int nFieldBytes = strlen(spUTF8.GetPtr());
+        int nFieldBytes = int(strlen(spUTF8.GetPtr()));
         return SetFieldBinary(pFieldName, spUTF8.GetPtr(), nFieldBytes, TAG_FIELD_FLAG_DATA_TYPE_TEXT_UTF8);
     }
     else
     {
-        int nFieldBytes = strlen(pFieldValue);
+        int nFieldBytes = int(strlen(pFieldValue));
         return SetFieldBinary(pFieldName, pFieldValue, nFieldBytes, TAG_FIELD_FLAG_DATA_TYPE_TEXT_UTF8);
     }
 }
@@ -744,4 +745,6 @@ int CAPETag::CompareFields(const void * pA, const void * pB)
     CAPETagField * pFieldB = *((CAPETagField **) pB);
 
     return (pFieldA->GetFieldSize() - pFieldB->GetFieldSize());
+}
+
 }
