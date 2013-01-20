@@ -75,8 +75,8 @@ CWAVInputSource::CWAVInputSource(CIO * pIO, WAVEFORMATEX * pwfeSource, int * pTo
     
     m_spIO.Assign(pIO, FALSE, FALSE);
 
-    int nRetVal = AnalyzeSource();
-    if (nRetVal == ERROR_SUCCESS)
+    int nResult = AnalyzeSource();
+    if (nResult == ERROR_SUCCESS)
     {
         // fill in the parameters
         if (pwfeSource) memcpy(pwfeSource, &m_wfeSource, sizeof(WAVEFORMATEX));
@@ -87,7 +87,7 @@ CWAVInputSource::CWAVInputSource(CIO * pIO, WAVEFORMATEX * pwfeSource, int * pTo
         m_bIsValid = TRUE;
     }
     
-    if (pErrorCode) *pErrorCode = nRetVal;
+    if (pErrorCode) *pErrorCode = nResult;
 }
 
 CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwfeSource, int * pTotalBlocks, int * pHeaderBytes, int * pTerminatingBytes, int * pErrorCode)
@@ -109,8 +109,8 @@ CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
         return;
     }
 
-    int nRetVal = AnalyzeSource();
-    if (nRetVal == ERROR_SUCCESS)
+    int nResult = AnalyzeSource();
+    if (nResult == ERROR_SUCCESS)
     {
         // fill in the parameters
         if (pwfeSource) memcpy(pwfeSource, &m_wfeSource, sizeof(WAVEFORMATEX));
@@ -121,7 +121,7 @@ CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
         m_bIsValid = TRUE;
     }
     
-    if (pErrorCode) *pErrorCode = nRetVal;
+    if (pErrorCode) *pErrorCode = nResult;
 }
 
 CWAVInputSource::~CWAVInputSource()
@@ -231,7 +231,7 @@ int CWAVInputSource::GetHeaderData(unsigned char * pBuffer)
 {
     if (!m_bIsValid) return ERROR_UNDEFINED;
 
-    int nRetVal = ERROR_SUCCESS;
+    int nResult = ERROR_SUCCESS;
 
     if (m_nHeaderBytes > 0)
     {
@@ -244,20 +244,20 @@ int CWAVInputSource::GetHeaderData(unsigned char * pBuffer)
 
         if ((nReadRetVal != ERROR_SUCCESS) || (m_nHeaderBytes != int(nBytesRead)))
         {
-            nRetVal = ERROR_UNDEFINED;
+            nResult = ERROR_UNDEFINED;
         }
 
         m_spIO->Seek(nOriginalFileLocation, FILE_BEGIN);
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 int CWAVInputSource::GetTerminatingData(unsigned char * pBuffer)
 {
     if (!m_bIsValid) return ERROR_UNDEFINED;
 
-    int nRetVal = ERROR_SUCCESS;
+    int nResult = ERROR_SUCCESS;
 
     if (m_nTerminatingBytes > 0)
     {
@@ -270,13 +270,13 @@ int CWAVInputSource::GetTerminatingData(unsigned char * pBuffer)
 
         if ((nReadRetVal != ERROR_SUCCESS) || (m_nTerminatingBytes != int(nBytesRead)))
         {
-            nRetVal = ERROR_UNDEFINED;
+            nResult = ERROR_UNDEFINED;
         }
 
         m_spIO->Seek(nOriginalFileLocation, FILE_BEGIN);
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 }

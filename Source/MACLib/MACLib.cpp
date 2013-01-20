@@ -49,7 +49,7 @@ IAPEDecompress * CreateIAPEDecompressCore(CAPEInfo * pAPEInfo, int nStartBlock, 
     return pAPEDecompress;
 }
 
-IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utf16 * pFilename, int * pErrorCode)
+IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utfn * pFilename, int * pErrorCode)
 {
     // error check the parameters
     if ((pFilename == NULL) || (wcslen(pFilename) == 0))
@@ -64,7 +64,7 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utf16 * pFilename, int
     int nStartBlock = -1; int nFinishBlock = -1;
 
     // get the extension
-    const str_utf16 * pExtension = &pFilename[wcslen(pFilename)];
+    const str_utfn * pExtension = &pFilename[wcslen(pFilename)];
     while ((pExtension > pFilename) && (*pExtension != '.'))
         pExtension--;
 
@@ -130,7 +130,7 @@ IAPECompress * __stdcall CreateIAPECompress(int * pErrorCode)
     return new CAPECompress();
 }
 
-int __stdcall FillWaveFormatEx(WAVEFORMATEX * pWaveFormatEx, int nSampleRate, int nBitsPerSample, int nChannels)
+int __stdcall FillWaveFormatEx(APE::WAVEFORMATEX * pWaveFormatEx, int nSampleRate, int nBitsPerSample, int nChannels)
 {
     pWaveFormatEx->cbSize = 0;
     pWaveFormatEx->nSamplesPerSec = nSampleRate;
@@ -144,7 +144,7 @@ int __stdcall FillWaveFormatEx(WAVEFORMATEX * pWaveFormatEx, int nSampleRate, in
     return ERROR_SUCCESS;
 }
 
-int __stdcall FillWaveHeader(WAVE_HEADER * pWAVHeader, int nAudioBytes, WAVEFORMATEX * pWaveFormatEx, int nTerminatingBytes)
+int __stdcall FillWaveHeader(WAVE_HEADER * pWAVHeader, int nAudioBytes, APE::WAVEFORMATEX * pWaveFormatEx, int nTerminatingBytes)
 {
     try
     {

@@ -84,12 +84,12 @@ int CUnBitArrayBase::FillAndResetBitArray(int nFileLocation, int nNewBitIndex)
 
     // fill
     m_nCurrentBitIndex = m_nBits; // position at the end of the buffer
-    int nRetVal = FillBitArray();
+    int nResult = FillBitArray();
 
     // set bit index
     m_nCurrentBitIndex = nNewBitIndex;
 
-    return nRetVal;
+    return nResult;
 }
 
 int CUnBitArrayBase::FillBitArray() 
@@ -111,7 +111,7 @@ int CUnBitArrayBase::FillBitArray()
 
     // read the new data
     unsigned int nBytesRead = 0;
-    int nRetVal = m_pIO->Read((unsigned char *) (m_pBitArray + m_nElements - nBitArrayIndex), nBytesToRead, &nBytesRead);
+    int nResult = m_pIO->Read((unsigned char *) (m_pBitArray + m_nElements - nBitArrayIndex), nBytesToRead, &nBytesRead);
 
     // zero anything at the tail we didn't fill
     m_nGoodBytes = ((m_nElements - nBitArrayIndex) * 4) + nBytesRead;
@@ -122,7 +122,7 @@ int CUnBitArrayBase::FillBitArray()
     m_nCurrentBitIndex = m_nCurrentBitIndex & 31;
     
     // return
-    return (nRetVal == 0) ? 0 : ERROR_IO_READ;
+    return (nResult == 0) ? 0 : ERROR_IO_READ;
 }
 
 int CUnBitArrayBase::CreateHelper(CIO * pIO, int nBytes, int nVersion)

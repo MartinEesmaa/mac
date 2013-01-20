@@ -31,8 +31,6 @@ int CAPEHeader::FindDescriptor(BOOL bSeek)
     if (cID3v2Header[0] == 'I' && cID3v2Header[1] == 'D' && cID3v2Header[2] == '3') 
     {
         // why is it so hard to figure the lenght of an ID3v2 tag ?!?
-        unsigned int nLength = *((unsigned int *) &cID3v2Header[6]);
-
         unsigned int nSyncSafeLength = 0;
         nSyncSafeLength = (cID3v2Header[6] & 127) << 21;
         nSyncSafeLength += (cID3v2Header[7] & 127) << 14;
@@ -78,8 +76,8 @@ int CAPEHeader::FindDescriptor(BOOL bSeek)
     // scan until we hit the APE_DESCRIPTOR, the end of the file, or 1 MB later
     unsigned int nGoalID = (' ' << 24) | ('C' << 16) | ('A' << 8) | ('M');
     unsigned int nReadID = 0;
-    int nRetVal = m_pIO->Read(&nReadID, 4, &nBytesRead);
-    if (nRetVal != 0 || nBytesRead != 4) return ERROR_UNDEFINED;
+    int nResult = m_pIO->Read(&nReadID, 4, &nBytesRead);
+    if (nResult != 0 || nBytesRead != 4) return ERROR_UNDEFINED;
 
     nBytesRead = 1;
     int nScanBytes = 0;
@@ -114,7 +112,7 @@ int CAPEHeader::Analyze(APE_FILE_INFO * pInfo)
 {
     // error check
     if ((m_pIO == NULL) || (pInfo == NULL))
-        return ERROR_INVALID_PARAMETER;
+        return ERROR_BAD_PARAMETER;
 
     // variables
     unsigned int nBytesRead = 0;
@@ -132,20 +130,20 @@ int CAPEHeader::Analyze(APE_FILE_INFO * pInfo)
     if (CommonHeader.cID[0] != 'M' || CommonHeader.cID[1] != 'A' || CommonHeader.cID[2] != 'C' || CommonHeader.cID[3] != ' ')
         return ERROR_UNDEFINED;
 
-    int nRetVal = ERROR_UNDEFINED;
+    int nResult = ERROR_UNDEFINED;
 
     if (CommonHeader.nVersion >= 3980)
     {
         // current header format
-        nRetVal = AnalyzeCurrent(pInfo);
+        nResult = AnalyzeCurrent(pInfo);
     }
     else
     {
         // legacy support
-        nRetVal = AnalyzeOld(pInfo);
+        nResult = AnalyzeOld(pInfo);
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 int CAPEHeader::AnalyzeCurrent(APE_FILE_INFO * pInfo)

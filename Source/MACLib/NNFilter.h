@@ -20,13 +20,13 @@ private:
     int m_nOrder;
     int m_nShift;
     int m_nVersion;
-    BOOL m_bSSEAvailable;
     int m_nRunningAverage;
-
     APE::CRollBuffer<short> m_rbInput;
     APE::CRollBuffer<short> m_rbDeltaM;
-
     short * m_paryM;
+	#ifdef ENABLE_SSE_ASSEMBLY
+		BOOL m_bSSEAvailable;
+	#endif
 
     __forceinline short GetSaturatedShortFromInt(int nValue) const
     {
@@ -36,8 +36,10 @@ private:
     __forceinline void Adapt(short * pM, short * pAdapt, int nDirection, int nOrder);
     __forceinline int CalculateDotProduct(short * pA, short * pB, int nOrder);
     
-    __forceinline void AdaptSSE(short * pM, short * pAdapt, int nDirection, int nOrder);
-    __forceinline int CalculateDotProductSSE(short * pA, short * pB, int nOrder);
+	#ifdef ENABLE_SSE_ASSEMBLY
+		__forceinline void AdaptSSE(short * pM, short * pAdapt, int nDirection, int nOrder);
+		__forceinline int CalculateDotProductSSE(short * pA, short * pB, int nOrder);
+	#endif
 };
 
 }

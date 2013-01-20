@@ -31,8 +31,10 @@ APETag layout
 /*****************************************************************************************
 Notes
 
--When saving images, store the filename (no directory -- i.e. Cover.jpg) in UTF-8 followed 
+When saving images, store the filename (no directory -- i.e. Cover.jpg) in UTF-8 followed 
 by a null terminator, followed by the image data.
+
+What saving text lists, delimit the values with a NULL terminator.
 *****************************************************************************************/
 
 /*****************************************************************************************
@@ -165,7 +167,7 @@ class CAPETagField
 {
 public:
     // create a tag field (use nFieldBytes = -1 for null-terminated strings)
-    CAPETagField(const str_utf16 * pFieldName, const void * pFieldValue, int nFieldBytes = -1, int nFlags = 0);
+    CAPETagField(const str_utfn * pFieldName, const void * pFieldValue, int nFieldBytes = -1, int nFlags = 0);
     
     // destructor
     ~CAPETagField();
@@ -174,7 +176,7 @@ public:
     int GetFieldSize();
     
     // get the name of the field
-    const str_utf16 * GetFieldName();
+    const str_utfn * GetFieldName();
 
     // get the value of the field
     const char * GetFieldValue();
@@ -195,9 +197,8 @@ public:
     // set helpers (use with EXTREME caution)
     void SetFieldFlags(int nFlags) { m_nFieldFlags = nFlags; }
 
-private:
-        
-    CSmartPtr<str_utf16> m_spFieldNameUTF16;
+private:        
+    CSmartPtr<str_utfn> m_spFieldNameUTF16;
     CSmartPtr<char> m_spFieldValue;
     int m_nFieldFlags;
     int m_nFieldValueBytes;
@@ -213,7 +214,7 @@ public:
     // bAnalyze determines whether it will analyze immediately or on the first request
     // be careful with multiple threads / file pointer movement if you don't analyze immediately
     CAPETag(CIO * pIO, BOOL bAnalyze = TRUE);
-    CAPETag(const str_utf16 * pFilename, BOOL bAnalyze = TRUE);
+    CAPETag(const str_utfn * pFilename, BOOL bAnalyze = TRUE);
     
     // destructor
     ~CAPETag();
@@ -226,17 +227,17 @@ public:
 
     // sets the value of a field (use nFieldBytes = -1 for null terminated strings)
     // note: using NULL or "" for a string type will remove the field
-    int SetFieldString(const str_utf16 * pFieldName, const str_utf16 * pFieldValue);
-    int SetFieldString(const str_utf16 * pFieldName, const char * pFieldValue, BOOL bAlreadyUTF8Encoded);
-    int SetFieldBinary(const str_utf16 * pFieldName, const void * pFieldValue, int nFieldBytes, int nFieldFlags);
+    int SetFieldString(const str_utfn * pFieldName, const str_utfn * pFieldValue, const str_utfn * pListDelimiter = NULL);
+    int SetFieldString(const str_utfn * pFieldName, const char * pFieldValue, BOOL bAlreadyUTF8Encoded, const str_utfn * pListDelimiter = NULL);
+    int SetFieldBinary(const str_utfn * pFieldName, const void * pFieldValue, int nFieldBytes, int nFieldFlags);
 
     // gets the value of a field (returns -1 and an empty buffer if the field doesn't exist)
-    int GetFieldBinary(const str_utf16 * pFieldName, void * pBuffer, int * pBufferBytes);
-    int GetFieldString(const str_utf16 * pFieldName, str_utf16 * pBuffer, int * pBufferCharacters);
-    int GetFieldString(const str_utf16 * pFieldName, str_ansi * pBuffer, int * pBufferCharacters, BOOL bUTF8Encode = FALSE);
+    int GetFieldBinary(const str_utfn * pFieldName, void * pBuffer, int * pBufferBytes);
+    int GetFieldString(const str_utfn * pFieldName, str_utfn * pBuffer, int * pBufferCharacters, const str_utfn * pListDelimiter = _T("; "));
+    int GetFieldString(const str_utfn * pFieldName, str_ansi * pBuffer, int * pBufferCharacters, BOOL bUTF8Encode = FALSE);
 
     // remove a specific field
-    int RemoveField(const str_utf16 * pFieldName);
+    int RemoveField(const str_utfn * pFieldName);
     int RemoveField(int nIndex);
 
     // clear all the fields
@@ -253,30 +254,35 @@ public:
     int CreateID3Tag(ID3_TAG * pID3Tag);
 
     // see whether the file has an ID3 or APE tag
-    BOOL GetHasID3Tag() { if (m_bAnalyzed == FALSE) { Analyze(); } return m_bHasID3Tag;    }
-    BOOL GetHasAPETag() { if (m_bAnalyzed == FALSE) { Analyze(); } return m_bHasAPETag;    }
-    int GetAPETagVersion() { return GetHasAPETag() ? m_nAPETagVersion : -1;    }
+    BOOL GetHasID3Tag() { if (m_bAnalyzed == FALSE) { Analyze(); } return m_bHasID3Tag; }
+    BOOL GetHasAPETag() { if (m_bAnalyzed == FALSE) { Analyze(); } return m_bHasAPETag; }
+    int GetAPETagVersion() { return GetHasAPETag() ? m_nAPETagVersion : -1; }
 
     // gets a desired tag field (returns NULL if not found)
     // again, be careful, because this a pointer to the actual field in this class
-    CAPETagField * GetTagField(const str_utf16 * pFieldName);
+    CAPETagField * GetTagField(const str_utfn * pFieldName);
     CAPETagField * GetTagField(int nIndex);
 
     // options
     void SetIgnoreReadOnly(BOOL bIgnoreReadOnly) { m_bIgnoreReadOnly = bIgnoreReadOnly; }
 
+	// statics
+	static const int s_nID3GenreUndefined = 255;
+	static const int s_nID3GenreCount = 148;
+	static const wchar_t * s_aryID3GenreNames[s_nID3GenreCount];
+
 private:
     // private functions
     int Analyze();
-    int GetTagFieldIndex(const str_utf16 * pFieldName);
+    int GetTagFieldIndex(const str_utfn * pFieldName);
     int WriteBufferToEndOfIO(void * pBuffer, int nBytes);
     int LoadField(const char * pBuffer, int nMaximumBytes, int * pBytes);
     int SortFields();
     static int CompareFields(const void * pA, const void * pB);
 
     // helper set / get field functions
-    int SetFieldID3String(const str_utf16 * pFieldName, const char * pFieldValue, int nBytes);
-    int GetFieldID3String(const str_utf16 * pFieldName, char * pBuffer, int nBytes);
+    int SetFieldID3String(const str_utfn * pFieldName, const char * pFieldValue, int nBytes);
+    int GetFieldID3String(const str_utfn * pFieldName, char * pBuffer, int nBytes);
 
     // private data
     CSmartPtr<CIO> m_spIO;

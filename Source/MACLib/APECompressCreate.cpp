@@ -79,18 +79,18 @@ int CAPECompressCreate::EncodeFrame(const void * pInputData, int nInputBytes)
 
     // update the seek table
     m_spAPECompressCore->GetBitArray()->AdvanceToByteBoundary();
-    int nRetVal = SetSeekByte(m_nFrameIndex, m_spIO->GetPosition() + (m_spAPECompressCore->GetBitArray()->GetCurrentBitIndex() / 8));
-    if (nRetVal != ERROR_SUCCESS)
-        return nRetVal;
+    int nResult = SetSeekByte(m_nFrameIndex, m_spIO->GetPosition() + (m_spAPECompressCore->GetBitArray()->GetCurrentBitIndex() / 8));
+    if (nResult != ERROR_SUCCESS)
+        return nResult;
     
     // compress
-    nRetVal = m_spAPECompressCore->EncodeFrame(pInputData, nInputBytes);
+    nResult = m_spAPECompressCore->EncodeFrame(pInputData, nInputBytes);
     
     // update stats
     m_nLastFrameBlocks = nInputBlocks;
     m_nFrameIndex++;
 
-    return nRetVal;
+    return nResult;
 }
 
 int CAPECompressCreate::Finish(const void * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes)
@@ -173,7 +173,7 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     // append the terminating data
     unsigned int nBytesWritten = 0;
     unsigned int nBytesRead = 0;
-    int nRetVal = 0;
+    int nResult = 0;
     if ((pTerminatingData != NULL) && (nTerminatingBytes > 0))
     {
         // update the MD5 sum to include the WAV terminating bytes
@@ -184,17 +184,17 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     }
     
     // go to the beginning and update the information
-    nRetVal = pIO->Seek(0, FILE_BEGIN);
+    nResult = pIO->Seek(0, FILE_BEGIN);
     
     // get the descriptor
     APE_DESCRIPTOR APEDescriptor;
-    nRetVal = pIO->Read(&APEDescriptor, sizeof(APEDescriptor), &nBytesRead);
-    if ((nRetVal != 0) || (nBytesRead != sizeof(APEDescriptor))) { return ERROR_IO_READ; }
+    nResult = pIO->Read(&APEDescriptor, sizeof(APEDescriptor), &nBytesRead);
+    if ((nResult != 0) || (nBytesRead != sizeof(APEDescriptor))) { return ERROR_IO_READ; }
 
     // get the header
     APE_HEADER APEHeader;
-    nRetVal = pIO->Read(&APEHeader, sizeof(APEHeader), &nBytesRead);
-    if (nRetVal != 0 || nBytesRead != sizeof(APEHeader)) { return ERROR_IO_READ; }
+    nResult = pIO->Read(&APEHeader, sizeof(APEHeader), &nBytesRead);
+    if (nResult != 0 || nBytesRead != sizeof(APEHeader)) { return ERROR_IO_READ; }
     
     // update the header
     APEHeader.nFinalFrameBlocks = nFinalFrameBlocks;
@@ -211,7 +211,7 @@ int CAPECompressCreate::FinalizeFile(CIO * pIO, int nNumberOfFrames, int nFinalF
     m_spAPECompressCore->GetBitArray()->GetMD5Helper().GetResult(APEDescriptor.cFileMD5);
 
     // set the pointer and re-write the updated header and peak level
-    nRetVal = pIO->Seek(0, FILE_BEGIN);
+    nResult = pIO->Seek(0, FILE_BEGIN);
     if (pIO->Write(&APEDescriptor, sizeof(APEDescriptor), &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
     if (pIO->Write(&APEHeader, sizeof(APEHeader), &nBytesWritten) != 0) { return ERROR_IO_WRITE; }
     

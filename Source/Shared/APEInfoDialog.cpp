@@ -3,7 +3,6 @@
 using namespace APE;
 
 #include "APEInfoDialog.h"
-#include "ID3Genres.h"
 #include "APECompress.h"
 #include "CharacterHelper.h"
 
@@ -60,7 +59,7 @@ CAPEInfoDialog::~CAPEInfoDialog()
 /***************************************************************************************
 Display the file info dialog
 ***************************************************************************************/
-int CAPEInfoDialog::ShowAPEInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpszTemplateName, HWND hWndParent)
+int CAPEInfoDialog::ShowAPEInfoDialog(const str_utfn * pFilename, HINSTANCE hInstance, const str_utfn * lpszTemplateName, HWND hWndParent)
 {
     // only allow one instance at a time
     if (g_pAPEDecompressDialog != NULL) { return -1; }
@@ -95,10 +94,10 @@ int CAPEInfoDialog::FillGenreComboBox(HWND hDlg, int nComboBoxID, char *pSelecte
     SendMessage(hGenreComboBox, CB_RESETCONTENT, 0, 0); 
         
     // propagate the combobox (0 to 126 so "Undefined" isn't repeated)
-    for (int z = 0; z < GENRE_COUNT; z++) 
+    for (int z = 0; z < CAPETag::s_nID3GenreCount; z++) 
     {
         //add the genre string
-        nRetVal = SendMessage(hGenreComboBox, CB_ADDSTRING, 0, (LPARAM) g_ID3Genre[z]);
+		nRetVal = SendMessage(hGenreComboBox, CB_ADDSTRING, 0, (LPARAM) CAPETag::s_aryID3GenreNames[z]);
         if (nRetVal == CB_ERR) { return -1; }
     }
 

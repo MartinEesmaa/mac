@@ -14,9 +14,9 @@ public:
 
     __forceinline int Compress(const int nInput)
     {
-        int nRetVal = nInput - ((m_nLastValue * MULTIPLY) >> SHIFT);
+        int nResult = nInput - ((m_nLastValue * MULTIPLY) >> SHIFT);
         m_nLastValue = nInput;
-        return nRetVal;
+        return nResult;
     }
 
     __forceinline int Decompress(const int nInput)

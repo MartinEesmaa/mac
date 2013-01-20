@@ -9,7 +9,7 @@ public:
     CWAVInfoDialog();
     ~CWAVInfoDialog();
 
-    long ShowWAVInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpTemplateName, HWND hWndParent);
+    long ShowWAVInfoDialog(const str_utfn * pFilename, HINSTANCE hInstance, const str_utfn * lpTemplateName, HWND hWndParent);
 
 private:
 

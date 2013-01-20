@@ -92,7 +92,7 @@ Plays a file (called once on the start of a file)
 int CAPEWinampPlugin::Play(char * pFilename) 
 {
     // reset or initialize any public variables
-    CSmartPtr<str_utf16> spFilename(CAPECharacterHelper::GetUTF16FromANSI(pFilename), TRUE);
+    CSmartPtr<str_utfn> spFilename(CAPECharacterHelper::GetUTF16FromANSI(pFilename), TRUE);
     _tcscpy(m_cCurrentFilename, spFilename);
 
     m_nPaused = 0;
@@ -468,7 +468,7 @@ Show the the file info dialog
 ************************************************************************************/
 int CAPEWinampPlugin::ShowFileInformationDialog(char * pFilename, HWND hwnd) 
 {
-    CSmartPtr<str_utf16> spFilename(CAPECharacterHelper::GetUTF16FromANSI(pFilename), TRUE);
+    CSmartPtr<str_utfn> spFilename(CAPECharacterHelper::GetUTF16FromANSI(pFilename), TRUE);
     
     CAPEInfoDialog APEInfoDialog;
     APEInfoDialog.ShowAPEInfoDialog(spFilename, g_APEWinampPluginModule.hDllInstance, (LPCTSTR) IDD_APE_INFO, hwnd);
@@ -479,9 +479,9 @@ int CAPEWinampPlugin::ShowFileInformationDialog(char * pFilename, HWND hwnd)
 /************************************************************************************
 File info helpers
 ************************************************************************************/
-void CAPEWinampPlugin::BuildDescriptionStringFromFilename(CString & strBuffer, const str_utf16 * pFilename)
+void CAPEWinampPlugin::BuildDescriptionStringFromFilename(CString & strBuffer, const str_utfn * pFilename)
 {
-    const str_utf16 * p = pFilename + _tcslen(pFilename);
+    const str_utfn * p = pFilename + _tcslen(pFilename);
     while (*p != '\\' && p >= pFilename)
         p--;
     
@@ -491,7 +491,7 @@ void CAPEWinampPlugin::BuildDescriptionStringFromFilename(CString & strBuffer, c
         strBuffer = strBuffer.Left(strBuffer.GetLength() - 4);
 }
 
-void CAPEWinampPlugin::BuildDescriptionString(CString & strBuffer, CAPETag * pAPETag, const str_utf16 * pFilename)
+void CAPEWinampPlugin::BuildDescriptionString(CString & strBuffer, CAPETag * pAPETag, const str_utfn * pFilename)
 {
     if (pAPETag == NULL)
     {
