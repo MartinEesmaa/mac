@@ -5,16 +5,18 @@
 
 #include "IO.h"
 
+namespace APE
+{
+
 class CWinFileIO : public CIO
 {
 public:
-
     // construction / destruction
     CWinFileIO();
     ~CWinFileIO();
 
     // open / close
-    int Open(const wchar_t * pName);
+    int Open(const wchar_t * pName, BOOL bOpenReadOnly = FALSE);
     int Close();
     
     // read / write
@@ -43,6 +45,7 @@ private:
     BOOL        m_bReadOnly;
 };
 
+}
 
 #endif //_winfileio_h_
 

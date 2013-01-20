@@ -1,5 +1,7 @@
-#ifndef APE_SCALEDFIRSTORDERFILTER_H
-#define APE_SCALEDFIRSTORDERFILTER_H
+#pragma once
+
+namespace APE
+{
 
 template <int MULTIPLY, int SHIFT> class CScaledFirstOrderFilter
 {
@@ -24,8 +26,7 @@ public:
     }
 
 protected:
-    
     int m_nLastValue;
 };
 
-#endif // #ifndef APE_SCALEDFIRSTORDERFILTER_H
+}

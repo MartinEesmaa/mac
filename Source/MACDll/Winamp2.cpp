@@ -3,6 +3,8 @@ Includes
 ************************************************************************************/
 #include "stdafx.h"
 #include "MACDllApp.h"
+#include "APETag.h"
+#include "APELink.h"
 #include "Winamp2.h"
 #include "WinampSettingsDlg.h"
 #include "in2.h"
@@ -229,7 +231,7 @@ BOOL CAPEWinampPlugin::CheckBufferForSilence(void * pBuffer, const unsigned __in
     {
         unsigned __int8 * pData = (unsigned __int8 *) pBuffer;
 
-        for (int z = 0; z < nSamples; z++, pData++) 
+        for (unsigned __int32 z = 0; z < nSamples; z++, pData++) 
             nSum += abs(*pData - 128);
 
         nSum <<= 8;
@@ -237,7 +239,7 @@ BOOL CAPEWinampPlugin::CheckBufferForSilence(void * pBuffer, const unsigned __in
     else if (m_nScaledBitsPerSample == 16) 
     {
         __int16 * pData = (__int16 *) pBuffer;
-        for (int z = 0; z < nSamples; z++, pData++) 
+        for (unsigned __int32 z = 0; z < nSamples; z++, pData++) 
             nSum += abs(*pData);
     }
 

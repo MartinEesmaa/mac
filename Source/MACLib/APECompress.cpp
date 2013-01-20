@@ -4,6 +4,9 @@
 #include "APECompressCreate.h"
 #include "WAVInputSource.h"
 
+namespace APE
+{
+
 CAPECompress::CAPECompress()
 {
     m_nBufferHead = 0;
@@ -243,3 +246,4 @@ int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, int nMaxBy
     return ERROR_SUCCESS;
 }
 
+}

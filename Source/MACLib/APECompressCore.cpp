@@ -1,9 +1,11 @@
 #include "All.h"
 #include "APECompressCore.h"
-
 #include "BitArray.h"
 #include "Prepare.h"
 #include "NewPredictor.h"
+
+namespace APE
+{
 
 CAPECompressCore::CAPECompressCore(CIO * pIO, const WAVEFORMATEX * pwfeInput, int nMaxFrameBlocks, int nCompressionLevel)
 {
@@ -123,4 +125,6 @@ int CAPECompressCore::Prepare(const void * pInputData, int nInputBytes, int * pS
     }
     
     return 0;
+}
+
 }

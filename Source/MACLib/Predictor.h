@@ -1,5 +1,7 @@
-#ifndef APE_PREDICTOR_H
-#define APE_PREDICTOR_H
+#pragma once
+
+namespace APE
+{
 
 /*************************************************************************************************
 IPredictorCompress - the interface for compressing (predicting) data
@@ -27,4 +29,4 @@ public:
     virtual int Flush() = 0;
 };
 
-#endif // #ifndef APE_PREDICTOR_H
+}

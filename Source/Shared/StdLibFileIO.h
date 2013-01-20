@@ -1,20 +1,21 @@
 #ifdef IO_USE_STD_LIB_FILE_IO
 
-#ifndef APE_STDLIBFILEIO_H
-#define APE_STDLIBFILEIO_H
+#pragma once
+
+namespace APE
+{
 
 #include "IO.h"
 
 class CStdLibFileIO : public CIO
 {
 public:
-
     // construction / destruction
     CStdLibFileIO();
     ~CStdLibFileIO();
 
     // open / close
-    int Open(LPCTSTR pName);
+    int Open(LPCTSTR pName, BOOL bOpenReadOnly = FALSE);
     int Close();
     
     // read / write
@@ -44,7 +45,6 @@ private:
     FILE * m_pFile;
 };
 
-#endif // #ifndef APE_STDLIBFILEIO_H
+}
 
 #endif // #ifdef IO_USE_STD_LIB_FILE_IO
-

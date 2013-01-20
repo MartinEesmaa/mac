@@ -1,5 +1,7 @@
-#ifndef APE_MACPROGRESSHELPER_H
-#define APE_MACPROGRESSHELPER_H
+#pragma once
+
+namespace APE
+{
 
 #define KILL_FLAG_CONTINUE          0
 #define KILL_FLAG_PAUSE             -1
@@ -20,12 +22,10 @@ public:
     int ProcessKillFlag(BOOL bSleep = TRUE);
     
 private:
-
-	IAPEProgressCallback * m_pProgressCallback;
+    IAPEProgressCallback * m_pProgressCallback;
     int m_nTotalSteps;
     int m_nCurrentStep;
     int m_nLastCallbackFiredPercentageDone;
 };
 
-#endif // #ifndef APE_MACPROGRESSHELPER_H
-
+}

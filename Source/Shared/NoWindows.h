@@ -1,35 +1,37 @@
 #ifndef _WIN32
 
-#ifndef APE_NOWINDOWS_H
-#define APE_NOWINDOWS_H
+#pragma once
+
+namespace APE
+{
 
 #define FALSE    0
-#define TRUE    1
+#define TRUE     1
 
 #define NEAR
 #define FAR
 
 typedef unsigned int        uint32;
-typedef int                    int32;
-typedef unsigned short        uint16;
-typedef short                int16;
-typedef unsigned char        uint8;
+typedef int                 int32;
+typedef unsigned short      uint16;
+typedef short               int16;
+typedef unsigned char       uint8;
 typedef char                int8;
 typedef char                str_ansi;
-typedef unsigned char        str_utf8;
-typedef wchar_t                str_utf16;
+typedef unsigned char       str_utf8;
+typedef wchar_t             str_utf16;
 
 typedef unsigned long       DWORD;
 typedef int                 BOOL;
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
 typedef float               FLOAT;
-typedef void *                HANDLE;
+typedef void *              HANDLE;
 typedef unsigned int        UINT;
 typedef unsigned int        WPARAM;
 typedef long                LPARAM;
 typedef const char *        LPCSTR;
-typedef char *                LPSTR;
+typedef char *              LPSTR;
 typedef long                LRESULT;
 
 #define ZeroMemory(POINTER, BYTES) memset(POINTER, 0, BYTES);
@@ -63,6 +65,6 @@ typedef const WAVEFORMATEX FAR *LPCWAVEFORMATEX;
 
 #endif // #ifndef _WAVEFORMATEX_
 
-#endif // #ifndef APE_NOWINDOWS_H
+}
 
 #endif // #ifndef _WIN32

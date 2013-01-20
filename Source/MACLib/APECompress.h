@@ -1,7 +1,9 @@
-#ifndef APE_APECOMPRESS_H
-#define APE_APECOMPRESS_H
+#pragma once
 
 #include "MACLib.h"
+
+namespace APE
+{
 class CAPECompressCreate;
 
 /*************************************************************************************************
@@ -10,7 +12,6 @@ CAPECompress - uses the CAPECompressHub to provide a simpler compression interfa
 class CAPECompress : public IAPECompress
 {
 public:
-
     CAPECompress();
     ~CAPECompress();
 
@@ -35,22 +36,20 @@ public:
     int Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes);
     int Kill();
     
-private:
-    
-    int    ProcessBuffer(BOOL bFinalize = FALSE);
+private:    
+    int ProcessBuffer(BOOL bFinalize = FALSE);
     
     CSmartPtr<CAPECompressCreate> m_spAPECompressCreate;
 
-    int                m_nBufferHead;
-    int                m_nBufferTail;
-    int                m_nBufferSize;
+    int m_nBufferHead;
+    int m_nBufferTail;
+    int m_nBufferSize;
     unsigned char * m_pBuffer;
-    BOOL            m_bBufferLocked;
+    BOOL m_bBufferLocked;
 
-    CIO    *            m_pioOutput;
-    BOOL            m_bOwnsOutputIO;
-    WAVEFORMATEX    m_wfeInput;
-
+    CIO * m_pioOutput;
+    BOOL m_bOwnsOutputIO;
+    WAVEFORMATEX m_wfeInput;
 };
 
-#endif // #ifndef APE_APECOMPRESS_H
+}

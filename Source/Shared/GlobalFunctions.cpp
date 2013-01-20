@@ -1,41 +1,12 @@
 #include "All.h"
 #include "GlobalFunctions.h"
 #include "IO.h"
-
-/*
-#ifndef __GNUC_IA32__
-
-extern "C" BOOL GetMMXAvailable(void)
-{
-#ifdef ENABLE_ASSEMBLY
-
-    unsigned long nRegisterEDX;
-
-    try
-    {
-        __asm mov eax, 1
-        __asm CPUID
-        __asm mov nRegisterEDX, edx
-       }
-    catch(...)
-    {
-        return FALSE;
-    }
-
-    if (nRegisterEDX & 0x800000) 
-        RETURN_ON_EXCEPTION(__asm emms, FALSE)
-    else
-        return FALSE;
-
-    return TRUE;
-
-#else
-    return FALSE;
+#ifdef _MSC_VER
+    #include <intrin.h>
 #endif
-}
 
-#endif // #ifndef __GNUC_IA32__
-*/
+namespace APE
+{
 
 int ReadSafe(CIO * pIO, void * pBuffer, int nBytes)
 {
@@ -63,20 +34,20 @@ int WriteSafe(CIO * pIO, void * pBuffer, int nBytes)
     return nRetVal;
 }
 
-BOOL FileExists(wchar_t * pFilename)
+bool FileExists(wchar_t * pFilename)
 {    
     if (0 == wcscmp(pFilename, L"-")  ||  0 == wcscmp(pFilename, L"/dev/stdin"))
-        return TRUE;
+        return true;
 
 #ifdef _WIN32
 
-    BOOL bFound = FALSE;
+    bool bFound = false;
 
     WIN32_FIND_DATA WFD;
     HANDLE hFind = FindFirstFile(pFilename, &WFD);
     if (hFind != INVALID_HANDLE_VALUE)
     {
-        bFound = TRUE;
+        bFound = true;
         FindClose(hFind);
     }
 
@@ -89,12 +60,56 @@ BOOL FileExists(wchar_t * pFilename)
     struct stat b;
 
     if (stat(spANSI, &b) != 0)
-        return FALSE;
+        return false;
 
     if (!S_ISREG(b.st_mode))
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 
 #endif
+}
+
+void * AllocateAligned(int nBytes, int nAlignment)
+{
+#ifdef _MSC_VER
+    return _aligned_malloc(nBytes, nAlignment);
+#else
+    void * pMemory = NULL;
+    posix_memalign(&pMemory, nAlignment, nBytes);
+    return pMemory;
+#endif
+}
+
+void FreeAligned(void * pMemory)
+{
+#ifdef _MSC_VER
+    _aligned_free(pMemory);
+#else
+    free(pMemory);
+#endif
+}
+
+bool GetSSEAvailable()
+{
+    bool bSSE = false;
+#ifdef _MSC_VER
+    #define CPU_SSE2 (1 << 26)
+
+    int cpuInfo[4] = { 0 };
+    __cpuid(cpuInfo, 0);
+
+    int nIds = cpuInfo[0];
+    if (nIds >= 1)
+    {
+        __cpuid(cpuInfo, 1);
+        bSSE = !!(cpuInfo[3] & CPU_SSE2);
+    }
+#else
+    // TODO: fill this in
+#endif
+
+    return bSSE;
+}
+
 }

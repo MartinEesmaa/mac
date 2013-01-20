@@ -1,21 +1,14 @@
 /*****************************************************************************************
 Monkey's Audio MACDll.h (include for using MACDll.dll in your projects)
-Copyright (C) 2000-2004 by Matthew T. Ashland   All Rights Reserved.
+Copyright (C) 2000-2011 by Matthew T. Ashland   All Rights Reserved.
 
 Overview:
 
 Basically all this dll does is wrap MACLib.lib, so browse through MACLib.h for documentation
 on how to use the interfaces.
-
-Questions / Suggestions:
-
-Please direct questions or comments to the Monkey's Audio developers board:
-    http://www.monkeysaudio.com/cgi-bin/YaBB/YaBB.cgi -> Developers
-or, if necessary, matt @ monkeysaudio.com
 *****************************************************************************************/
 
-#ifndef APE_MACDLL_H
-#define APE_MACDLL_H
+#pragma once
 
 /*****************************************************************************************
 Includes
@@ -26,7 +19,10 @@ Includes
 /*****************************************************************************************
 Defines (implemented elsewhere)
 *****************************************************************************************/
-struct ID3_TAG;
+namespace APE
+{
+	struct ID3_TAG;
+}
 
 /*****************************************************************************************
 Helper functions
@@ -37,7 +33,7 @@ extern "C"
     __declspec( dllexport ) int __stdcall GetInterfaceCompatibility(int nVersion, BOOL bDisplayWarningsOnFailure = TRUE, HWND hwndParent = NULL);
     __declspec( dllexport ) int __stdcall ShowFileInfoDialog(const str_ansi * pFilename, HWND hwndWindow);
     __declspec( dllexport ) int __stdcall TagFileSimple(const str_ansi * pFilename, const char * pArtist, const char * pAlbum, const char * pTitle, const char * pComment, const char * pGenre, const char * pYear, const char * pTrack, BOOL bClearFirst, BOOL bUseOldID3);
-    __declspec( dllexport ) int __stdcall GetID3Tag(const str_ansi * pFilename, ID3_TAG * pID3Tag);
+	__declspec( dllexport ) int __stdcall GetID3Tag(const str_ansi * pFilename, APE::ID3_TAG * pID3Tag);
     __declspec( dllexport ) int __stdcall RemoveTag(const str_ansi * pFilename);
 }
 
@@ -95,5 +91,3 @@ extern "C"
     __declspec( dllexport ) int __stdcall c_APEDecompress_Seek(APE_DECOMPRESS_HANDLE hAPEDecompress, int nBlockOffset);
     __declspec( dllexport ) int __stdcall c_APEDecompress_GetInfo(APE_DECOMPRESS_HANDLE hAPEDecompress, APE_DECOMPRESS_FIELDS Field, int nParam1 = 0, int nParam2 = 0);
 }
-
-#endif // #ifndef APE_MACDLL_H

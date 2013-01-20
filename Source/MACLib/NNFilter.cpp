@@ -1,7 +1,11 @@
 #include "All.h"
 #include "GlobalFunctions.h"
 #include "NNFilter.h"
-#include "Assembly/Assembly.h"
+#include <emmintrin.h>
+#include <smmintrin.h>
+
+namespace APE
+{
 
 CNNFilter::CNNFilter(int nOrder, int nShift, int nVersion)
 {
@@ -10,20 +14,20 @@ CNNFilter::CNNFilter(int nOrder, int nShift, int nVersion)
     m_nShift = nShift;
     m_nVersion = nVersion;
     
-    m_bMMXAvailable = GetMMXAvailable();
+    m_bSSEAvailable = GetSSEAvailable();
     
     m_rbInput.Create(NN_WINDOW_ELEMENTS, m_nOrder);
     m_rbDeltaM.Create(NN_WINDOW_ELEMENTS, m_nOrder);
-    m_paryM = new short [m_nOrder];
-
-#ifdef NN_TEST_MMX
-    srand(GetTickCount());
-#endif
+    m_paryM = (short *) AllocateAligned(sizeof(short) * m_nOrder, 16); // align for possible SSE usage
 }
 
 CNNFilter::~CNNFilter()
 {
-    SAFE_ARRAY_DELETE(m_paryM)
+    if (m_paryM != NULL)
+    {
+        FreeAligned(m_paryM);
+        m_paryM = NULL;
+    }
 }
 
 void CNNFilter::Flush()
@@ -41,19 +45,19 @@ int CNNFilter::Compress(int nInput)
 
     // figure a dot product
     int nDotProduct;
-    if (m_bMMXAvailable)
-        nDotProduct = CalculateDotProduct(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
+    if (m_bSSEAvailable)
+       nDotProduct = CalculateDotProductSSE(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
     else
-        nDotProduct = CalculateDotProductNoMMX(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
+        nDotProduct = CalculateDotProduct(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
 
     // calculate the output
     int nOutput = nInput - ((nDotProduct + (1 << (m_nShift - 1))) >> m_nShift);
 
     // adapt
-    if (m_bMMXAvailable)
-        Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], -nOutput, m_nOrder);
+    if (m_bSSEAvailable)
+        AdaptSSE(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nOutput, m_nOrder);
     else
-        AdaptNoMMX(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nOutput, m_nOrder);
+        Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nOutput, m_nOrder);
 
     int nTempABS = abs(nInput);
 
@@ -83,17 +87,16 @@ int CNNFilter::Decompress(int nInput)
 {
     // figure a dot product
     int nDotProduct;
-
-    if (m_bMMXAvailable)
+    if (m_bSSEAvailable)
+        nDotProduct = CalculateDotProductSSE(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
+    else
         nDotProduct = CalculateDotProduct(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
-    else
-        nDotProduct = CalculateDotProductNoMMX(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
-    
+
     // adapt
-    if (m_bMMXAvailable)
-        Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], -nInput, m_nOrder);
+    if (m_bSSEAvailable)
+        AdaptSSE(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nInput, m_nOrder);
     else
-        AdaptNoMMX(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nInput, m_nOrder);
+        Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nInput, m_nOrder);
 
     // store the output value
     int nOutput = nInput + ((nDotProduct + (1 << (m_nShift - 1))) >> m_nShift);
@@ -134,7 +137,7 @@ int CNNFilter::Decompress(int nInput)
     return nOutput;
 }
 
-void CNNFilter::AdaptNoMMX(short * pM, short * pAdapt, int nDirection, int nOrder)
+void CNNFilter::Adapt(short * pM, short * pAdapt, int nDirection, int nOrder)
 {
     nOrder >>= 4;
 
@@ -154,7 +157,7 @@ void CNNFilter::AdaptNoMMX(short * pM, short * pAdapt, int nDirection, int nOrde
     }
 }
 
-int CNNFilter::CalculateDotProductNoMMX(short * pA, short * pB, int nOrder)
+int CNNFilter::CalculateDotProduct(short * pA, short * pB, int nOrder)
 {
     int nDotProduct = 0;
     nOrder >>= 4;
@@ -165,4 +168,57 @@ int CNNFilter::CalculateDotProductNoMMX(short * pA, short * pB, int nOrder)
     }
     
     return nDotProduct;
+}
+
+void CNNFilter::AdaptSSE(short * pM, short * pAdapt, int nDirection, int nOrder)
+{
+    // we require that pM is aligned, allowing faster loads and stores
+    ASSERT((size_t(pM) % 16) == 0);
+
+    if (nDirection < 0) 
+    {    
+        for (int z = 0; z < nOrder; z += 8)
+        {
+            __m128i sseM = _mm_load_si128((__m128i *) &pM[z]);
+            __m128i sseAdapt = _mm_loadu_si128((__m128i *) &pAdapt[z]);
+            __m128i sseNew = _mm_add_epi16(sseM, sseAdapt);
+            _mm_store_si128((__m128i *) &pM[z], sseNew);
+        }
+    }
+    else if (nDirection > 0)
+    {
+        for (int z = 0; z < nOrder; z += 8)
+        {
+            __m128i sseM = _mm_load_si128((__m128i *) &pM[z]);
+            __m128i sseAdapt = _mm_loadu_si128((__m128i *) &pAdapt[z]);
+            __m128i sseNew = _mm_sub_epi16(sseM, sseAdapt);
+            _mm_store_si128((__m128i *) &pM[z], sseNew);
+        }
+    }
+}
+
+int CNNFilter::CalculateDotProductSSE(short * pA, short * pB, int nOrder)
+{
+    // we require that pB is aligned, allowing faster loads
+    ASSERT((size_t(pB) % 16) == 0);
+
+    // loop
+    __m128i sseSum = _mm_setzero_si128();
+    for (int z = 0; z < nOrder; z += 8)
+    {
+        __m128i sseA = _mm_loadu_si128((__m128i *) &pA[z]);
+        __m128i sseB = _mm_load_si128((__m128i *) &pB[z]);
+        __m128i sseDotProduct = _mm_madd_epi16(sseA, sseB);
+        sseSum = _mm_add_epi32(sseSum, sseDotProduct);
+    }
+
+    // build output
+    int nDotProduct = sseSum.m128i_i32[0] + sseSum.m128i_i32[1] + sseSum.m128i_i32[2] + sseSum.m128i_i32[3];
+
+    // TODO: SSE4 instructions might help performance of the horizontal add, for example:
+    //int nDotProduct = _mm_extract_epi32(sseSum, 0) + _mm_extract_epi32(sseSum, 1) + _mm_extract_epi32(sseSum, 2) + _mm_extract_epi32(sseSum, 3);
+
+    return nDotProduct;
+}
+
 }

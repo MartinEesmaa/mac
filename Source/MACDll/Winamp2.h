@@ -1,8 +1,5 @@
 #pragma once
 
-class CAPETag;
-class CAPELink;
-
 class CAPEWinampPlugin
 {
 public:

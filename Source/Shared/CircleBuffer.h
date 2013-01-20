@@ -1,10 +1,11 @@
-#ifndef APE_CIRCLEBUFFER_H
-#define APE_CIRCLEBUFFER_H
+#pragma once
+
+namespace APE
+{
 
 class CCircleBuffer  
 {
 public:
-
     // construction / destruction
     CCircleBuffer();
     virtual ~CCircleBuffer();
@@ -46,7 +47,6 @@ public:
     int RemoveTail(int nBytes);
 
 private:
-
     int m_nTotal;
     int m_nMaxDirectWriteBytes;
     int m_nEndCap;
@@ -55,5 +55,4 @@ private:
     unsigned char * m_pBuffer;
 };
 
-
-#endif // #ifndef APE_CIRCLEBUFFER_H
+}

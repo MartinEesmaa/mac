@@ -1,5 +1,7 @@
 #include "All.h"
 #include "APEInfo.h"
+using namespace APE;
+
 #include "APEInfoDialog.h"
 #include "ID3Genres.h"
 #include "APECompress.h"

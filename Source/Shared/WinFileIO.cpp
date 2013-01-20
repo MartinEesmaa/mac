@@ -6,6 +6,9 @@
 #include <windows.h>
 #include "CharacterHelper.h"
 
+namespace APE
+{
+
 CWinFileIO::CWinFileIO()
 {
     m_hFile = INVALID_HANDLE_VALUE;
@@ -18,7 +21,7 @@ CWinFileIO::~CWinFileIO()
     Close();
 }
 
-int CWinFileIO::Open(const wchar_t * pName)
+int CWinFileIO::Open(const wchar_t * pName, BOOL bOpenReadOnly)
 {
     Close();
 
@@ -28,9 +31,12 @@ int CWinFileIO::Open(const wchar_t * pName)
         CSmartPtr<char> spName(GetANSIFromUTF16(pName), TRUE);
     #endif
 
-    m_hFile = ::CreateFile(spName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    // open (read / write)
+    if (bOpenReadOnly == FALSE)
+        m_hFile = ::CreateFile(spName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (m_hFile == INVALID_HANDLE_VALUE) 
     {
+        // open (read-only)
         m_hFile = ::CreateFile(spName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         if (m_hFile == INVALID_HANDLE_VALUE) 
         {
@@ -157,6 +163,8 @@ int CWinFileIO::Delete()
     #endif
 
     return DeleteFile(spName) ? 0 : -1;
+}
+
 }
 
 #endif // #ifdef IO_USE_WIN_FILE_IO

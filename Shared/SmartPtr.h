@@ -1,5 +1,7 @@
-#ifndef APE_SMARTPTR_H
-#define APE_SMARTPTR_H
+#pragma once
+
+namespace APE
+{
 
 // disable the operator -> on UDT warning
 #ifdef _MSC_VER
@@ -14,7 +16,6 @@ CSmartPtr - a simple smart pointer class that can automatically initialize and f
 template <class TYPE> class CSmartPtr
 {
 public:
-
     TYPE * m_pObject;
     BOOL m_bArray;
     BOOL m_bDelete;
@@ -87,4 +88,4 @@ public:
     #pragma warning(pop)
 #endif _MSC_VER
 
-#endif // #ifndef APE_SMARTPTR_H
+}

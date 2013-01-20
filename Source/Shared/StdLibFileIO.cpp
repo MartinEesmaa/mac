@@ -117,7 +117,7 @@ int CStdLibFileIO::GetHandle()
     return FILENO(m_pFile);
 }
 
-int CStdLibFileIO::Open(LPCTSTR pName)
+int CStdLibFileIO::Open(LPCTSTR pName, BOOL bOpenReadOnly)
 {
     Close();
 
@@ -128,7 +128,7 @@ int CStdLibFileIO::Open(LPCTSTR pName)
         m_pFile = SETBINARY_IN(stdin);
         m_bReadOnly = TRUE;                                                     // ReadOnly
     }
-    else if (0 == strcmp (pName, "/dev/stdout")) 
+    else if (0 == strcmp(pName, "/dev/stdout")) 
     {
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                                                    // WriteOnly

@@ -19,6 +19,9 @@
 #ifndef MD5SUM_MD5_H
 #define MD5SUM_MD5_H
 
+namespace APE
+{
+
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 
@@ -40,7 +43,6 @@ void   MD5Final  ( uint8_t digest [16], MD5_CTX* ctx );
 class CMD5Helper
 {
 public:
-
     CMD5Helper(BOOL bInitialize = TRUE)
     {
         if (bInitialize)
@@ -69,11 +71,11 @@ public:
     }
 
 protected:
-
     MD5_CTX m_MD5Context;
     BOOL m_bStopped;
     int m_nTotalBytes;
 };
 
+}
 
 #endif /* MD5SUM_MD5_H */

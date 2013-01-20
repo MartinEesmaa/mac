@@ -1,10 +1,11 @@
-#ifndef APE_ROLLBUFFER_H
-#define APE_ROLLBUFFER_H
+#pragma once
+
+namespace APE
+{
 
 template <class TYPE> class CRollBuffer
 {
 public:
-
     CRollBuffer()
     {
         m_pData = NULL;
@@ -60,7 +61,6 @@ public:
     }
 
 protected:
-
     TYPE * m_pData;
     TYPE * m_pCurrent;
     int m_nHistoryElements;
@@ -70,7 +70,6 @@ protected:
 template <class TYPE, int WINDOW_ELEMENTS, int HISTORY_ELEMENTS> class CRollBufferFast
 {
 public:
-
     CRollBufferFast()
     {
         m_pData = new TYPE[WINDOW_ELEMENTS + HISTORY_ELEMENTS];
@@ -112,9 +111,8 @@ public:
     }
 
 protected:
-
     TYPE * m_pData;
     TYPE * m_pCurrent;
 };
 
-#endif // #ifndef APE_ROLLBUFFER_H
+}

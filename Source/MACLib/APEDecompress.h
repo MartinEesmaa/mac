@@ -1,21 +1,22 @@
-#ifndef APE_APEDECOMPRESS_H
-#define APE_APEDECOMPRESS_H
+#pragma once
 
 #include "APEDecompress.h"
-
-class CUnBitArray;
-class CPrepare;
-class CAPEInfo;
-class IPredictorDecompress;
 #include "UnBitArrayBase.h"
 #include "MACLib.h"
 #include "Prepare.h"
 #include "CircleBuffer.h"
 
+namespace APE
+{
+
+class CUnBitArray;
+class CPrepare;
+class CAPEInfo;
+class IPredictorDecompress;
+
 class CAPEDecompress : public IAPEDecompress
 {
 public:
-
     CAPEDecompress(int * pErrorCode, CAPEInfo * pAPEInfo, int nStartBlock = -1, int nFinishBlock = -1);
     ~CAPEDecompress();
 
@@ -25,7 +26,6 @@ public:
     int GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1 = 0, int nParam2 = 0);
 
 protected:
-
     // file info
     int m_nBlockAlign;
     int m_nCurrentFrame;
@@ -64,10 +64,10 @@ protected:
     
     // decoding buffer
     BOOL m_bErrorDecodingCurrentFrame;
-	int m_nErrorDecodingCurrentFrameOutputSilenceBlocks;
+    int m_nErrorDecodingCurrentFrameOutputSilenceBlocks;
     int m_nCurrentFrameBufferBlock;
     int m_nFrameBufferFinishedBlocks;
     CCircleBuffer m_cbFrameBuffer;
 };
 
-#endif // #ifndef APE_APEDECOMPRESS_H
+}

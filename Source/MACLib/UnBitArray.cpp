@@ -3,6 +3,9 @@
 #include "UnBitArray.h"
 #include "BitArray.h"
 
+namespace APE
+{
+
 const uint32 POWERS_OF_TWO_MINUS_ONE_REVERSED[33] = {4294967295,2147483647,1073741823,536870911,268435455,134217727,67108863,33554431,16777215,8388607,4194303,2097151,1048575,524287,262143,131071,65535,32767,16383,8191,4095,2047,1023,511,255,127,63,31,15,7,3,1,0};
 
 const uint32 K_SUM_MIN_BOUNDARY[32] = {0,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304,8388608,16777216,33554432,67108864,134217728,268435456,536870912,1073741824,2147483648,0,0,0,0};
@@ -28,7 +31,7 @@ const uint32 RANGE_WIDTH_2[64] = {19578,16582,12257,7906,4576,2366,1170,536,261,
 Construction
 ***********************************************************************************/
 CUnBitArray::CUnBitArray(CIO * pIO, int nVersion, int nFurthestReadByte) :
-	CUnBitArrayBase(nFurthestReadByte)
+    CUnBitArrayBase(nFurthestReadByte)
 {
     CreateHelper(pIO, 16384, nVersion);
     m_nFlushCounter = 0;
@@ -59,16 +62,16 @@ void CUnBitArray::GenerateArray(int * pOutputArray, int nElements, int nBytesReq
 
 inline uint32 CUnBitArray::DecodeByte()
 {
-	// error check (only done in debug since we protect against overreads in other ways)
-	#ifdef _DEBUG
-		if ((m_nCurrentBitIndex / 8) >= m_nGoodBytes)
-			ODS(_T("Overread error in CUnBitArray::DecodeByte(...)\n"));
-	#endif
+    // error check (only done in debug since we protect against overreads in other ways)
+    #ifdef _DEBUG
+        if ((m_nCurrentBitIndex / 8) >= m_nGoodBytes)
+            ODS(_T("Overread error in CUnBitArray::DecodeByte(...)\n"));
+    #endif
 
-	// read byte
+    // read byte
     uint32 nByte = ((m_pBitArray[m_nCurrentBitIndex >> 5] >> (24 - (m_nCurrentBitIndex & 31))) & 0xFF);
     m_nCurrentBitIndex += 8;
-	return nByte;
+    return nByte;
 }
 
 inline int CUnBitArray::RangeDecodeFast(int nShift)
@@ -123,7 +126,7 @@ int CUnBitArray::DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState)
             int nRangeTotal = RangeDecodeFast(RANGE_OVERFLOW_SHIFT);
             
             // lookup the symbol (must be a faster way than this)
-            while (nRangeTotal >= RANGE_TOTAL_2[nOverflow + 1]) { nOverflow++; }
+            while (nRangeTotal >= int(RANGE_TOTAL_2[nOverflow + 1])) { nOverflow++; }
             
             // update
             m_RangeCoderInfo.low -= m_RangeCoderInfo.range * RANGE_TOTAL_2[nOverflow];
@@ -201,7 +204,7 @@ int CUnBitArray::DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState)
         
         // lookup the symbol (must be a faster way than this)
         int nOverflow = 0;
-        while (nRangeTotal >= RANGE_TOTAL_1[nOverflow + 1]) { nOverflow++; }
+        while (nRangeTotal >= int(RANGE_TOTAL_1[nOverflow + 1])) { nOverflow++; }
         
         // update
         m_RangeCoderInfo.low -= m_RangeCoderInfo.range * RANGE_TOTAL_1[nOverflow];
@@ -291,4 +294,6 @@ void CUnBitArray::GenerateArrayRange(int * pOutputArray, int nElements)
     }
 
     Finalize();    
+}
+
 }

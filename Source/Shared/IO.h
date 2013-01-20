@@ -1,5 +1,7 @@
-#ifndef APE_IO_H
-#define APE_IO_H
+#pragma once
+
+namespace APE
+{
 
 #ifndef FILE_BEGIN
     #define FILE_BEGIN        0
@@ -14,16 +16,14 @@
 #endif
 
 class CIO
-{
-    
+{   
 public:
-
-    //construction / destruction
+    // construction / destruction
     CIO() { }
     virtual ~CIO() { };
 
     // open / close
-    virtual int Open(const wchar_t * pName) = 0;
+    virtual int Open(const wchar_t * pName, BOOL bOpenReadOnly = FALSE) = 0;
     virtual int Close() = 0;
     
     // read / write
@@ -46,4 +46,4 @@ public:
     virtual int GetName(wchar_t * pBuffer) = 0;
 };
 
-#endif // #ifndef APE_IO_H
+}

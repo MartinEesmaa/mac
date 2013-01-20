@@ -3,6 +3,9 @@
 #include "CharacterHelper.h"
 #include IO_HEADER_FILE
 
+namespace APE
+{
+
 #define APE_LINK_HEADER                 "[Monkey's Audio Image Link File]"
 #define APE_LINK_IMAGE_FILE_TAG         "Image File="
 #define APE_LINK_START_BLOCK_TAG        "Start Block="
@@ -79,7 +82,7 @@ void CAPELink::ParseData(const char * pData, const str_utf16 * pFilename)
                 CSmartPtr<str_utf16> spImageFileUTF16(CAPECharacterHelper::GetUTF16FromUTF8((UCHAR *) cImageFile), TRUE);
 
                 // process the path
-                if (wcsrchr(spImageFileUTF16, '\\') == NULL)
+                if ((wcsrchr(spImageFileUTF16, '\\') == NULL) && (wcsrchr(pFilename, '\\') != NULL))
                 {
                     str_utf16 cImagePath[MAX_PATH + 1];
                     wcscpy(cImagePath, pFilename);
@@ -118,3 +121,4 @@ BOOL CAPELink::GetIsLinkFile()
     return m_bIsLinkFile;
 }
 
+}

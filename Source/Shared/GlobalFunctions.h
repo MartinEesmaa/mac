@@ -1,5 +1,7 @@
-#ifndef APE_GLOBALFUNCTIONS_H
-#define APE_GLOBALFUNCTIONS_H
+#pragma once
+
+namespace APE
+{
 
 /*************************************************************************************
 Definitions
@@ -16,6 +18,17 @@ int WriteSafe(CIO * pIO, void * pBuffer, int nBytes);
 /*************************************************************************************
 Checks for the existence of a file
 *************************************************************************************/
-BOOL FileExists(wchar_t * pFilename);
+bool FileExists(wchar_t * pFilename);
 
-#endif // #ifndef APE_GLOBALFUNCTIONS_H
+/*************************************************************************************
+Allocate aligned memory
+*************************************************************************************/
+void * AllocateAligned(int nBytes, int nAlignment);
+void FreeAligned(void * pMemory);
+
+/*************************************************************************************
+Test for CPU features
+*************************************************************************************/
+bool GetSSEAvailable();
+
+}

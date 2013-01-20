@@ -1,6 +1,9 @@
 #include "All.h"
 #include "CircleBuffer.h"
 
+namespace APE
+{
+
 CCircleBuffer::CCircleBuffer()
 {
     m_pBuffer = NULL;
@@ -86,4 +89,6 @@ int CCircleBuffer::RemoveTail(int nBytes)
     if (m_nTail < 0)
         m_nTail += m_nEndCap;
     return nBytes;
+}
+
 }

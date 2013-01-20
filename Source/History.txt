@@ -1,5 +1,39 @@
 History:
 
+1. NEW: Switched from MMX to SSE assembly, making compression and decompression faster.
+2. NEW: Switched to latest Microsoft compiler, making everything around 5% faster.
+3. Changed: Removed support for old Monkey's Audio 3.92 and earlier files (it hasn't been possible to make these files for over ten years -- use an old copy of Monkey's Audio to convert these files to the latest format if you have any).
+4. Changed: Fixed a few compiler warnings.
+5. Changed: Removed dependence on third-party NASM assembly compiler in favor of intrinsics (which compile nicely with all major compilers).
+6. Changed: Put all Monkey's Audio source code into a namespace APE so that linking into third-party projects should never have name collisions.
+7. Changed: Switched from #ifndef/endif to #pragma once (now supported by any reasonable compiler).
+
+Monkey's Audio 4.10
+
+1. Changed: When compressing a file, the input WAV file is always opened in read-only mode (writes were never done, but previously the input WAV would only be opened in read-only mode if write permissions were not available).
+2. Changed: Updated to newer nasm compiler for MMX assembly.
+3. Changed: Updated the console application (MAC.exe) to support Unicode filenames (GUI has always had Unicode support).
+4. Changed: Removed obsolete Unicode compatibility DLL (unicows.dll) from the installer (only used by Win 9x).
+
+Monkey's Audio 4.09
+
+1. Changed: Updated to an icon that looks nicer on Windows 7 (sorry, still a monkey).
+2. Changed: Updated copyright dates.
+
+Monkey's Audio 4.08
+
+1. Fixed: The decoder could unnecessarily try to analyze the file tag when starting a streaming APE file.
+2. Changed: Switched to Visual Studio 2008 for compilation.
+
+Monkey's Audio 4.07
+
+1. Fixed: A corrupted APE tag could cause an otherwise valid file to fail to be loaded.
+2. Fixed: Improved handling of corrupt frames during decoding.
+
+Monkey's Audio 4.06
+
+1. Fixed: In rare cases, a corrupt frame could output as noise instead of silence when the decoder was ignoring errors.
+
 Monkey's Audio 4.05
 
 1. Fixed: Directshow filter would fail to register on some systems.

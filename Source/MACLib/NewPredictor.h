@@ -1,11 +1,12 @@
-#ifndef APE_NEWPREDICTOR_H
-#define APE_NEWPREDICTOR_H
+#pragma once
 
 #include "Predictor.h"
-
 #include "RollBuffer.h"
 #include "NNFilter.h"
 #include "ScaledFirstOrderFilter.h"
+
+namespace APE
+{
 
 /*************************************************************************************************
 Functions to create the interfaces
@@ -29,7 +30,6 @@ public:
     int Flush();
 
 protected:
-
     // buffer information
     CRollBufferFast<int, WINDOW_BLOCKS, 10> m_rbPrediction;
     CRollBufferFast<int, WINDOW_BLOCKS, 9> m_rbAdapt;
@@ -57,7 +57,6 @@ public:
     int Flush();
 
 protected:
-
     // buffer information
     int * m_pBuffer[BUFFER_COUNT];
 
@@ -84,7 +83,6 @@ public:
     int Flush();
 
 protected:
-
     // adaption
     int m_aryMA[M_COUNT];
     int m_aryMB[M_COUNT];
@@ -108,4 +106,4 @@ protected:
     CNNFilter * m_pNNFilter2;
 };
 
-#endif // #ifndef APE_NEWPREDICTOR_H
+}
