@@ -244,13 +244,13 @@ int CPredictorDecompressNormal3930to3950::DecompressValue(int nInput, int)
         m_aryM[3] += ((p4 >> 30) & 2) - 1;
     }
 
-    int nRetVal = m_pInputBuffer[0] + ((m_nLastValue * 31) >> 5);
-    m_nLastValue = nRetVal;
+    int nResult = m_pInputBuffer[0] + ((m_nLastValue * 31) >> 5);
+    m_nLastValue = nResult;
 
     m_nCurrentIndex++;
     m_pInputBuffer++;
 
-    return nRetVal;
+    return nResult;
 }
 
 /*****************************************************************************************
@@ -398,7 +398,7 @@ int CPredictorDecompress3950toCurrent::DecompressValue(int nA, int nB)
         m_aryMB[4] += m_rbAdaptB[-4];
     }
 
-    int nRetVal = m_Stage1FilterA.Decompress(nCurrentA);
+    int nResult = m_Stage1FilterA.Decompress(nCurrentA);
     m_nLastValueA = nCurrentA;
     
     m_rbPredictionA.IncrementFast(); m_rbPredictionB.IncrementFast();
@@ -406,7 +406,7 @@ int CPredictorDecompress3950toCurrent::DecompressValue(int nA, int nB)
 
     m_nCurrentIndex++;
 
-    return nRetVal;
+    return nResult;
 }
 
 }

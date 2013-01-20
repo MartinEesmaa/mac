@@ -75,7 +75,7 @@ int CBitArray::OutputBitArray(BOOL bFinalize)
     // write the entire file to disk
     unsigned int nBytesWritten = 0;
     unsigned int nBytesToWrite = 0;
-    unsigned int nRetVal = 0;
+    unsigned int nResult = 0;
     
     if (bFinalize)
     {

@@ -3,6 +3,7 @@
 #ifdef IO_USE_STD_LIB_FILE_IO
 
 #include "StdLibFileIO.h"
+#include "CharacterHelper.h"
 
 ///////////////////////////////////////////////////////
 
@@ -98,7 +99,8 @@
 #endif
 
 
-///////////////////////////////////////////////////////
+namespace APE
+{
 
 CStdLibFileIO::CStdLibFileIO()
 {
@@ -117,47 +119,48 @@ int CStdLibFileIO::GetHandle()
     return FILENO(m_pFile);
 }
 
-int CStdLibFileIO::Open(LPCTSTR pName, BOOL bOpenReadOnly)
+int CStdLibFileIO::Open(const wchar_t * pName, BOOL bOpenReadOnly)
 {
     Close();
 
     m_bReadOnly = FALSE;
 
-    if (0 == strcmp(pName, "-") || 0 == strcmp(pName, "/dev/stdin")) 
+    if (0 == wcscmp(pName, _T("-")) || 0 == wcscmp(pName, _T("/dev/stdin")))
     {
         m_pFile = SETBINARY_IN(stdin);
         m_bReadOnly = TRUE;                                                     // ReadOnly
     }
-    else if (0 == strcmp(pName, "/dev/stdout")) 
+    else if (0 == wcscmp(pName, _T("/dev/stdout")))
     {
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                                                    // WriteOnly
     }
     else 
     {
-        m_pFile = fopen(pName, "rb");
+        CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), TRUE);
+        m_pFile = fopen(spFilenameUTF8, "rb");
         m_bReadOnly = FALSE;                                                    // Read/Write
     }
 
     if (!m_pFile)
         return -1;
 
-    strcpy(m_cFileName, pName);
+    wcscpy(m_cFileName, pName);
 
     return 0;
 }
 
 int CStdLibFileIO::Close()
 {
-    int nRetVal = -1;
+    int nResult = -1;
 
     if (m_pFile != NULL) 
     {
-        nRetVal = fclose(m_pFile);
+        nResult = fclose(m_pFile);
         m_pFile = NULL;
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 int CStdLibFileIO::Read(void * pBuffer, unsigned int nBytesToRead, unsigned int * pBytesRead)
@@ -189,6 +192,7 @@ int CStdLibFileIO::GetPosition()
 
     memset(&fPosition, 0, sizeof(fPosition));
     fgetpos(m_pFile, &fPosition);
+   
     return _FPOSOFF(fPosition);
 }
 
@@ -201,9 +205,9 @@ int CStdLibFileIO::GetSize()
     return nLength;
 }
 
-int CStdLibFileIO::GetName(char * pBuffer)
+int CStdLibFileIO::GetName(wchar_t * pBuffer)
 {
-    strcpy(pBuffer, m_cFileName);
+    wcscpy(pBuffer, m_cFileName);
     return 0;
 }
 
@@ -211,21 +215,22 @@ int CStdLibFileIO::Create(const wchar_t * pName)
 {
     Close();
 
-    if (0 == strcmp (pName, "-") || 0 == strcmp (pName, "/dev/stdout")) 
+    if (0 == wcscmp(pName, _T("-")) || 0 == wcscmp(pName, _T("/dev/stdout")))
     {
         m_pFile = SETBINARY_OUT(stdout);
         m_bReadOnly = FALSE;                            // WriteOnly
     }
     else 
     {
-        m_pFile = fopen (pName, "wb");                  // Read/Write
+        CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), TRUE);
+        m_pFile = fopen(spFilenameUTF8, "wb");                  // Read/Write
         m_bReadOnly = FALSE;
     }
 
     if (!m_pFile)
         return -1;
 
-    strcpy (m_cFileName, pName);
+    wcscpy(m_cFileName, pName);
 
     return 0;
 }
@@ -233,7 +238,10 @@ int CStdLibFileIO::Create(const wchar_t * pName)
 int CStdLibFileIO::Delete()
 {
     Close();
-    return unlink (m_cFileName);    // 0 success, -1 error
+    CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(m_cFileName), TRUE);
+    return unlink(spFilenameUTF8);    // 0 success, -1 error
+}
+
 }
 
 #endif // #ifdef IO_USE_STD_LIB_FILE_IO

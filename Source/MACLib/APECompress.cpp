@@ -82,8 +82,8 @@ int CAPECompress::UnlockBuffer(int nBytesAdded, BOOL bProcess)
     
     if (bProcess)
     {
-        int nRetVal = ProcessBuffer();
-        if (nRetVal != 0) { return nRetVal; }
+        int nResult = ProcessBuffer();
+        if (nResult != 0) { return nResult; }
     }
     
     return ERROR_SUCCESS;
@@ -123,9 +123,9 @@ int CAPECompress::AddData(unsigned char * pData, int nBytes)
         memcpy(pBuffer, &pData[nBytesDone], nBytesToProcess);
                         
         // unlock the buffer (fail if not successful)
-        int nRetVal = UnlockBuffer(nBytesToProcess);
-        if (nRetVal != ERROR_SUCCESS)
-                return nRetVal;
+        int nResult = UnlockBuffer(nBytesToProcess);
+        if (nResult != ERROR_SUCCESS)
+                return nResult;
 
         // update our progress
         nBytesDone += nBytesToProcess;
@@ -161,8 +161,8 @@ int CAPECompress::ProcessBuffer(BOOL bFinalize)
             if (nFrameBytes == 0)
                 break;
 
-            int nRetVal = m_spAPECompressCreate->EncodeFrame(&m_pBuffer[m_nBufferHead], nFrameBytes);
-            if (nRetVal != 0) { return nRetVal; }
+            int nResult = m_spAPECompressCreate->EncodeFrame(&m_pBuffer[m_nBufferHead], nFrameBytes);
+            if (nResult != 0) { return nResult; }
             
             m_nBufferHead += nFrameBytes;
         }
@@ -225,8 +225,8 @@ int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, int nMaxBy
 
         // get data
         int nBlocksAdded = 0;
-        int nRetVal = pInputSource->GetData(pBuffer, nBlocksToAdd, &nBlocksAdded);
-        if (nRetVal != 0)
+        int nResult = pInputSource->GetData(pBuffer, nBlocksToAdd, &nBlocksAdded);
+        if (nResult != 0)
             return ERROR_IO_READ;
         else
             nBytesRead = (nBlocksAdded * m_wfeInput.nBlockAlign);
@@ -237,10 +237,10 @@ int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, int nMaxBy
     }
         
     // unlock the data and process
-    int nRetVal = UnlockBuffer(nBytesRead, TRUE);
-    if (nRetVal != 0)
+    int nResult = UnlockBuffer(nBytesRead, TRUE);
+    if (nResult != 0)
     {
-        return nRetVal;
+        return nResult;
     }
     
     return ERROR_SUCCESS;

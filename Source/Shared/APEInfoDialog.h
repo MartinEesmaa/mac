@@ -9,7 +9,7 @@ public:
     CAPEInfoDialog();
     ~CAPEInfoDialog();
 
-    int ShowAPEInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpszTemplateName, HWND hWndParent);
+    int ShowAPEInfoDialog(const str_utfn * pFilename, HINSTANCE hInstance, const str_utfn * lpszTemplateName, HWND hWndParent);
 
 private:
 

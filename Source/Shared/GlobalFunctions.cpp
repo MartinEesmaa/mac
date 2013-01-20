@@ -1,6 +1,7 @@
 #include "All.h"
 #include "GlobalFunctions.h"
 #include "IO.h"
+#include "CharacterHelper.h"
 #ifdef _MSC_VER
     #include <intrin.h>
 #endif
@@ -11,27 +12,27 @@ namespace APE
 int ReadSafe(CIO * pIO, void * pBuffer, int nBytes)
 {
     unsigned int nBytesRead = 0;
-    int nRetVal = pIO->Read(pBuffer, nBytes, &nBytesRead);
-    if (nRetVal == ERROR_SUCCESS)
+    int nResult = pIO->Read(pBuffer, nBytes, &nBytesRead);
+    if (nResult == ERROR_SUCCESS)
     {
         if (nBytes != int(nBytesRead))
-            nRetVal = ERROR_IO_READ;
+            nResult = ERROR_IO_READ;
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 int WriteSafe(CIO * pIO, void * pBuffer, int nBytes)
 {
     unsigned int nBytesWritten = 0;
-    int nRetVal = pIO->Write(pBuffer, nBytes, &nBytesWritten);
-    if (nRetVal == ERROR_SUCCESS)
+    int nResult = pIO->Write(pBuffer, nBytes, &nBytesWritten);
+    if (nResult == ERROR_SUCCESS)
     {
         if (nBytes != int(nBytesWritten))
-            nRetVal = ERROR_IO_WRITE;
+            nResult = ERROR_IO_WRITE;
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 bool FileExists(wchar_t * pFilename)
@@ -55,11 +56,11 @@ bool FileExists(wchar_t * pFilename)
 
 #else
 
-    CSmartPtr<char> spANSI(GetANSIFromUTF16(pFilename), TRUE);
+    CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pFilename), TRUE);
 
     struct stat b;
 
-    if (stat(spANSI, &b) != 0)
+    if (stat(spFilenameUTF8, &b) != 0)
         return false;
 
     if (!S_ISREG(b.st_mode))

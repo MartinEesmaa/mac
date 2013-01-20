@@ -100,9 +100,9 @@ inline int CUnBitArray::RangeDecodeFastWithUpdate(int nShift)
 
     // decode
     m_RangeCoderInfo.range = m_RangeCoderInfo.range >> nShift;
-    int nRetVal = m_RangeCoderInfo.low / m_RangeCoderInfo.range;
-    m_RangeCoderInfo.low -= m_RangeCoderInfo.range * nRetVal;
-    return nRetVal;
+    int nResult = m_RangeCoderInfo.low / m_RangeCoderInfo.range;
+    m_RangeCoderInfo.low -= m_RangeCoderInfo.range * nResult;
+    return nResult;
 }
 
 int CUnBitArray::DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState)

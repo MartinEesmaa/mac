@@ -11,7 +11,7 @@ namespace APE
 #define APE_LINK_START_BLOCK_TAG        "Start Block="
 #define APE_LINK_FINISH_BLOCK_TAG       "Finish Block="
 
-CAPELink::CAPELink(const str_utf16 * pFilename)
+CAPELink::CAPELink(const str_utfn * pFilename)
 {
     // empty
     m_bIsLinkFile = FALSE;
@@ -36,7 +36,7 @@ CAPELink::CAPELink(const str_utf16 * pFilename)
     }
 }
 
-CAPELink::CAPELink(const char * pData, const str_utf16 * pFilename)
+CAPELink::CAPELink(const char * pData, const str_utfn * pFilename)
 {
     ParseData(pData, pFilename);
 }
@@ -45,7 +45,7 @@ CAPELink::~CAPELink()
 {
 }
 
-void CAPELink::ParseData(const char * pData, const str_utf16 * pFilename)
+void CAPELink::ParseData(const char * pData, const str_utfn * pFilename)
 {
     // empty
     m_bIsLinkFile = FALSE;
@@ -79,12 +79,12 @@ void CAPELink::ParseData(const char * pData, const str_utf16 * pFilename)
                     cImageFile[nIndex++] = *pImageCharacter++;
                 cImageFile[nIndex] = 0;
 
-                CSmartPtr<str_utf16> spImageFileUTF16(CAPECharacterHelper::GetUTF16FromUTF8((UCHAR *) cImageFile), TRUE);
+                CSmartPtr<str_utfn> spImageFileUTF16(CAPECharacterHelper::GetUTF16FromUTF8((const str_utf8 *) cImageFile), TRUE);
 
                 // process the path
                 if ((wcsrchr(spImageFileUTF16, '\\') == NULL) && (wcsrchr(pFilename, '\\') != NULL))
                 {
-                    str_utf16 cImagePath[MAX_PATH + 1];
+                    str_utfn cImagePath[MAX_PATH + 1];
                     wcscpy(cImagePath, pFilename);
                     wcscpy(wcsrchr(cImagePath, '\\') + 1, spImageFileUTF16);
                     wcscpy(m_cImageFilename, cImagePath);
@@ -111,7 +111,7 @@ int CAPELink::GetFinishBlock()
     return m_nFinishBlock;
 }
 
-const str_utf16 * CAPELink::GetImageFilename()
+const str_utfn * CAPELink::GetImageFilename()
 {
     return m_cImageFilename;
 }

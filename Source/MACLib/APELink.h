@@ -9,8 +9,8 @@ namespace APE
 class CAPELink
 {
 public:
-    CAPELink(const str_utf16 * pFilename);
-    CAPELink(const char * pData, const str_utf16 * pFilename);
+    CAPELink(const str_utfn * pFilename);
+    CAPELink(const char * pData, const str_utfn * pFilename);
     ~CAPELink();
 
     BOOL GetIsLinkFile();
@@ -22,9 +22,9 @@ protected:
     BOOL m_bIsLinkFile;
     int m_nStartBlock;
     int m_nFinishBlock;
-    str_utf16 m_cImageFilename[MAX_PATH];
+    str_utfn m_cImageFilename[MAX_PATH];
 
-    void ParseData(const char * pData, const str_utf16 * pFilename);
+    void ParseData(const char * pData, const str_utfn * pFilename);
 };
 
 }

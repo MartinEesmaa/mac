@@ -1,22 +1,30 @@
 #pragma once
 
 /*****************************************************************************************
-Cross platform building switch
+Platform
+ 
+One of the following platforms should be defined (either in code or as a project setting):
+PLATFORM_WINDOWS
+PLATFORM_APPLE
+PLATFORM_LINUX
 *****************************************************************************************/
-//#define BUILD_CROSS_PLATFORM
+#if !defined(PLATFORM_WINDOWS) && !defined(PLATFORM_APPLE) && !defined(PLATFORM_LINUX)
+	#pragma message("No platform set for MACLib, defaulting to Windows")
+	#define PLATFORM_WINDOWS
+#endif
 
 /*****************************************************************************************
 Global includes
 *****************************************************************************************/
-#ifndef BUILD_CROSS_PLATFORM
-    #ifndef NO_DEFINE_ENVIRONMENT_VARIABLES
-        #include "WindowsEnvironment.h"
-    #endif
-    #include <windows.h>
-#endif
+#include <stdint.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <stdio.h>
+#include <math.h>
 
-#ifdef _WIN32
-    #include <mmsystem.h>
+#if defined(PLATFORM_WINDOWS)
+    #include "WindowsEnvironment.h"
+    #include <windows.h>
     #include <tchar.h>
     #include <assert.h>
 #else
@@ -25,22 +33,18 @@ Global includes
     #include <sys/time.h>
     #include <sys/types.h>
     #include <sys/stat.h>
+	#include <wchar.h>
     #include "NoWindows.h"
 #endif
 
-#include <stdlib.h>
-#include <memory.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
 #include "SmartPtr.h"
 
 /*****************************************************************************************
 Global compiler settings (useful for porting)
 *****************************************************************************************/
 // assembly code (helps performance, but limits portability)
-#ifndef BUILD_CROSS_PLATFORM
-    #define ENABLE_ASSEMBLY
+#ifdef PLATFORM_WINDOWS
+    #define ENABLE_SSE_ASSEMBLY
 #endif
 
 // compression modes
@@ -50,20 +54,32 @@ Global compiler settings (useful for porting)
 #define ENABLE_COMPRESSION_MODE_EXTRA_HIGH
 
 /*****************************************************************************************
-Global types and macros
+Global types
 *****************************************************************************************/
-#ifdef _WIN32
-    typedef __int64                                     int64;
-    typedef unsigned __int32                            uint32;
-    typedef __int32                                     int32;
-    typedef unsigned __int16                            uint16;
-    typedef __int16                                     int16;
-    typedef unsigned __int8                             uint8;
-    typedef __int8                                      int8;
-    typedef char                                        str_ansi;
-    typedef unsigned char                               str_utf8;
-    typedef wchar_t                                     str_utf16;
+namespace APE
+{
+	// integer types
+	typedef	intptr_t                                    intn; // native integer, can safely hold a pointer
+	typedef uint64_t                                    uint64;
+	typedef int64_t                                     int64;
+	typedef uint32_t                                    uint32;
+	typedef int32_t                                     int32;
+	typedef uint16_t                                    uint16;
+	typedef int16_t                                     int16;
+	typedef uint8_t                                     uint8;
+	typedef int8_t                                      int8;
+	
+	// string types
+	typedef char                                        str_ansi;
+	typedef unsigned char                               str_utf8;
+	typedef int16										str_utf16;
+	typedef wchar_t                                     str_utfn; // could be UTF-16 or UTF-32 depending on platform
+}
 
+/*****************************************************************************************
+Global macros
+*****************************************************************************************/
+#if defined(PLATFORM_WINDOWS)
     #define IO_USE_WIN_FILE_IO
     #define IO_HEADER_FILE                              "WinFileIO.h"
     #define IO_CLASS_NAME                               CWinFileIO
@@ -99,6 +115,25 @@ Global types and macros
 #endif
 
 /*****************************************************************************************
+WAVE format descriptor (binary compatible with Windows define, but in the APE namespace)
+*****************************************************************************************/
+namespace APE
+{
+	typedef struct tWAVEFORMATEX
+	{
+		WORD        wFormatTag;         /* format type */
+		WORD        nChannels;          /* number of channels (i.e. mono, stereo...) */
+		DWORD       nSamplesPerSec;     /* sample rate */
+		DWORD       nAvgBytesPerSec;    /* for buffer estimation */
+		WORD        nBlockAlign;        /* block size of data */
+		WORD        wBitsPerSample;     /* number of bits per sample of mono data */
+		WORD        cbSize;             /* the count in bytes of the size of */
+		/* extra information (after cbSize) */
+	} WAVEFORMATEX, *PWAVEFORMATEX, NEAR *NPWAVEFORMATEX, FAR *LPWAVEFORMATEX;
+	typedef const WAVEFORMATEX FAR *LPCWAVEFORMATEX;
+}
+
+/*****************************************************************************************
 Global defines
 *****************************************************************************************/
 #define MAC_FILE_VERSION_NUMBER                         3990
@@ -132,11 +167,11 @@ Macros
 
 #define CATCH_ERRORS(CODE) try { CODE } catch(...) { }
 
-#define RETURN_ON_ERROR(FUNCTION) {    int nRetVal = FUNCTION; if (nRetVal != 0) { return nRetVal; } }
-#define RETURN_VALUE_ON_ERROR(FUNCTION, VALUE) { int nRetVal = FUNCTION; if (nRetVal != 0) { return VALUE; } }
+#define RETURN_ON_ERROR(FUNCTION) {    int nResult = FUNCTION; if (nResult != 0) { return nResult; } }
+#define RETURN_VALUE_ON_ERROR(FUNCTION, VALUE) { int nResult = FUNCTION; if (nResult != 0) { return VALUE; } }
 #define RETURN_ON_EXCEPTION(CODE, VALUE) { try { CODE } catch(...) { return VALUE; } }
 
-#define THROW_ON_ERROR(CODE) { int nRetVal = CODE; if (nRetVal != 0) throw(nRetVal); }
+#define THROW_ON_ERROR(CODE) { int nResult = CODE; if (nResult != 0) throw(nResult); }
 
 #define EXPAND_1_TIMES(CODE) CODE
 #define EXPAND_2_TIMES(CODE) CODE CODE

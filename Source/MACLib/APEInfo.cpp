@@ -154,14 +154,14 @@ int CAPEInfo::GetFileInformation(BOOL bGetTagInformation)
 
     // use a CAPEHeader class to help us analyze the file
     CAPEHeader APEHeader(m_spIO);
-    int nRetVal = APEHeader.Analyze(&m_APEFileInfo);
+    int nResult = APEHeader.Analyze(&m_APEFileInfo);
 
     // update our internal state
-    if (nRetVal == ERROR_SUCCESS)
+    if (nResult == ERROR_SUCCESS)
         m_bHasFileInformationLoaded = TRUE;
 
     // return
-    return nRetVal;
+    return nResult;
 }
 
 /*****************************************************************************************
@@ -169,72 +169,72 @@ Primary query function
 *****************************************************************************************/
 int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
 {
-    int nRetVal = -1;
+    int nResult = -1;
 
     switch (Field)
     {
     case APE_INFO_FILE_VERSION:
-        nRetVal = m_APEFileInfo.nVersion;
+        nResult = m_APEFileInfo.nVersion;
         break;
     case APE_INFO_COMPRESSION_LEVEL:
-        nRetVal = m_APEFileInfo.nCompressionLevel;
+        nResult = m_APEFileInfo.nCompressionLevel;
         break;
     case APE_INFO_FORMAT_FLAGS:
-        nRetVal = m_APEFileInfo.nFormatFlags;
+        nResult = m_APEFileInfo.nFormatFlags;
         break;
     case APE_INFO_SAMPLE_RATE:
-        nRetVal = m_APEFileInfo.nSampleRate;
+        nResult = m_APEFileInfo.nSampleRate;
         break;
     case APE_INFO_BITS_PER_SAMPLE:
-        nRetVal = m_APEFileInfo.nBitsPerSample;
+        nResult = m_APEFileInfo.nBitsPerSample;
         break;
     case APE_INFO_BYTES_PER_SAMPLE:
-        nRetVal = m_APEFileInfo.nBytesPerSample;
+        nResult = m_APEFileInfo.nBytesPerSample;
         break;
     case APE_INFO_CHANNELS:
-        nRetVal = m_APEFileInfo.nChannels;
+        nResult = m_APEFileInfo.nChannels;
         break;
     case APE_INFO_BLOCK_ALIGN:
-        nRetVal = m_APEFileInfo.nBlockAlign;
+        nResult = m_APEFileInfo.nBlockAlign;
         break;
     case APE_INFO_BLOCKS_PER_FRAME:
-        nRetVal = m_APEFileInfo.nBlocksPerFrame;
+        nResult = m_APEFileInfo.nBlocksPerFrame;
         break;
     case APE_INFO_FINAL_FRAME_BLOCKS:
-        nRetVal = m_APEFileInfo.nFinalFrameBlocks;
+        nResult = m_APEFileInfo.nFinalFrameBlocks;
         break;
     case APE_INFO_TOTAL_FRAMES:
-        nRetVal = m_APEFileInfo.nTotalFrames;
+        nResult = m_APEFileInfo.nTotalFrames;
         break;
     case APE_INFO_WAV_HEADER_BYTES:
-        nRetVal = m_APEFileInfo.nWAVHeaderBytes;
+        nResult = m_APEFileInfo.nWAVHeaderBytes;
         break;
     case APE_INFO_WAV_TERMINATING_BYTES:
-        nRetVal = m_APEFileInfo.nWAVTerminatingBytes;
+        nResult = m_APEFileInfo.nWAVTerminatingBytes;
         break;
     case APE_INFO_WAV_DATA_BYTES:
-        nRetVal = m_APEFileInfo.nWAVDataBytes;
+        nResult = m_APEFileInfo.nWAVDataBytes;
         break;
     case APE_INFO_WAV_TOTAL_BYTES:
-        nRetVal = m_APEFileInfo.nWAVTotalBytes;
+        nResult = m_APEFileInfo.nWAVTotalBytes;
         break;
     case APE_INFO_APE_TOTAL_BYTES:
-        nRetVal = m_APEFileInfo.nAPETotalBytes;
+        nResult = m_APEFileInfo.nAPETotalBytes;
         break;
     case APE_INFO_TOTAL_BLOCKS:
-        nRetVal = m_APEFileInfo.nTotalBlocks;
+        nResult = m_APEFileInfo.nTotalBlocks;
         break;
     case APE_INFO_LENGTH_MS:
-        nRetVal = m_APEFileInfo.nLengthMS;
+        nResult = m_APEFileInfo.nLengthMS;
         break;
     case APE_INFO_AVERAGE_BITRATE:
-        nRetVal = m_APEFileInfo.nAverageBitrate;
+        nResult = m_APEFileInfo.nAverageBitrate;
         break;
     case APE_INFO_FRAME_BITRATE:
     {
         int nFrame = nParam1;
         
-        nRetVal = 0;
+        nResult = 0;
 
         int nFrameBytes = GetInfo(APE_INFO_FRAME_BYTES, nFrame);
         int nFrameBlocks = GetInfo(APE_INFO_FRAME_BLOCKS, nFrame);
@@ -243,30 +243,30 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
             int nFrameMS = (nFrameBlocks * 1000) / m_APEFileInfo.nSampleRate;
             if (nFrameMS != 0)
             {
-                nRetVal = (nFrameBytes * 8) / nFrameMS;
+                nResult = (nFrameBytes * 8) / nFrameMS;
             }
         }
         break;
     }
     case APE_INFO_DECOMPRESSED_BITRATE:
-        nRetVal = m_APEFileInfo.nDecompressedBitrate;
+        nResult = m_APEFileInfo.nDecompressedBitrate;
         break;
     case APE_INFO_PEAK_LEVEL:
-        nRetVal = -1; // no longer supported
+        nResult = -1; // no longer supported
         break;
     case APE_INFO_SEEK_BIT:
     {
         int nFrame = nParam1;
         if (GET_FRAMES_START_ON_BYTES_BOUNDARIES(this)) 
         {
-            nRetVal = 0;
+            nResult = 0;
         }
         else 
         {
             if (nFrame < 0 || nFrame >= m_APEFileInfo.nTotalFrames)
-                nRetVal = 0;
+                nResult = 0;
             else
-                nRetVal = m_APEFileInfo.spSeekBitTable[nFrame];
+                nResult = m_APEFileInfo.spSeekBitTable[nFrame];
         }
         break;
     }
@@ -274,9 +274,9 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
     {
         int nFrame = nParam1;
         if (nFrame < 0 || nFrame >= m_APEFileInfo.nTotalFrames)
-            nRetVal = 0;
+            nResult = 0;
         else
-            nRetVal = m_APEFileInfo.spSeekByteTable[nFrame] + m_APEFileInfo.nJunkHeaderBytes;
+            nResult = m_APEFileInfo.spSeekByteTable[nFrame] + m_APEFileInfo.nJunkHeaderBytes;
         break;
     }
     case APE_INFO_WAV_HEADER_DATA:
@@ -288,27 +288,27 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
         {
             if (sizeof(WAVE_HEADER) > nMaxBytes)
             {
-                nRetVal = -1;
+                nResult = -1;
             }
             else
             {
-                WAVEFORMATEX wfeFormat; GetInfo(APE_INFO_WAVEFORMATEX, (int) &wfeFormat, 0);
+                WAVEFORMATEX wfeFormat; GetInfo(APE_INFO_WAVEFORMATEX, (intn) &wfeFormat, 0);
                 WAVE_HEADER WAVHeader; FillWaveHeader(&WAVHeader, m_APEFileInfo.nWAVDataBytes, &wfeFormat,
                     m_APEFileInfo.nWAVTerminatingBytes);
                 memcpy(pBuffer, &WAVHeader, sizeof(WAVE_HEADER));
-                nRetVal = 0;
+                nResult = 0;
             }
         }
         else
         {
             if (m_APEFileInfo.nWAVHeaderBytes > nMaxBytes)
             {
-                nRetVal = -1;
+                nResult = -1;
             }
             else
             {
                 memcpy(pBuffer, m_APEFileInfo.spWaveHeaderData, m_APEFileInfo.nWAVHeaderBytes);
-                nRetVal = 0;
+                nResult = 0;
             }
         }
         break;
@@ -320,7 +320,7 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
 
         if (m_APEFileInfo.nWAVTerminatingBytes > nMaxBytes)
         {
-            nRetVal = -1;
+            nResult = -1;
         }
         else
         {
@@ -337,7 +337,7 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
                 // restore the file pointer
                 m_spIO->Seek(nOriginalFileLocation, FILE_BEGIN);
             }
-            nRetVal = 0;
+            nResult = 0;
         }
         break;
     }
@@ -345,11 +345,11 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
     {
         WAVEFORMATEX * pWaveFormatEx = (WAVEFORMATEX *) nParam1;
         FillWaveFormatEx(pWaveFormatEx, m_APEFileInfo.nSampleRate, m_APEFileInfo.nBitsPerSample, m_APEFileInfo.nChannels);
-        nRetVal = 0;
+        nResult = 0;
         break;
     }
     case APE_INFO_IO_SOURCE:
-        nRetVal = (int) m_spIO.GetPtr();
+        nResult = (intn) m_spIO.GetPtr();
         break;
     case APE_INFO_FRAME_BYTES:
     {
@@ -358,14 +358,14 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
         // bound-check the frame index
         if ((nFrame < 0) || (nFrame >= m_APEFileInfo.nTotalFrames)) 
         {
-            nRetVal = -1;
+            nResult = -1;
         }
         else
         {
             if (nFrame != (m_APEFileInfo.nTotalFrames - 1)) 
-                nRetVal = GetInfo(APE_INFO_SEEK_BYTE, nFrame + 1) - GetInfo(APE_INFO_SEEK_BYTE, nFrame);
+                nResult = GetInfo(APE_INFO_SEEK_BYTE, nFrame + 1) - GetInfo(APE_INFO_SEEK_BYTE, nFrame);
             else 
-                nRetVal = m_spIO->GetSize() - m_spAPETag->GetTagBytes() - m_APEFileInfo.nWAVTerminatingBytes - GetInfo(APE_INFO_SEEK_BYTE, nFrame);
+                nResult = m_spIO->GetSize() - m_spAPETag->GetTagBytes() - m_APEFileInfo.nWAVTerminatingBytes - GetInfo(APE_INFO_SEEK_BYTE, nFrame);
         }
         break;
     }
@@ -376,26 +376,26 @@ int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
         // bound-check the frame index
         if ((nFrame < 0) || (nFrame >= m_APEFileInfo.nTotalFrames)) 
         {
-            nRetVal = -1;
+            nResult = -1;
         }
         else
         {
             if (nFrame != (m_APEFileInfo.nTotalFrames - 1)) 
-                nRetVal = m_APEFileInfo.nBlocksPerFrame;
+                nResult = m_APEFileInfo.nBlocksPerFrame;
             else 
-                nRetVal = m_APEFileInfo.nFinalFrameBlocks;
+                nResult = m_APEFileInfo.nFinalFrameBlocks;
         }
         break;
     }
     case APE_INFO_TAG:
-        nRetVal = (int) m_spAPETag.GetPtr();
+        nResult = (intn) m_spAPETag.GetPtr();
         break;
     case APE_INTERNAL_INFO:
-        nRetVal = (int) &m_APEFileInfo;
+        nResult = (intn) &m_APEFileInfo;
         break;
     }
 
-    return nRetVal;
+    return nResult;
 }
 
 }

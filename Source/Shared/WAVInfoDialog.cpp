@@ -45,7 +45,7 @@ CWAVInfoDialog::~CWAVInfoDialog()
 /***************************************************************************************
 Display the file info dialog
 ***************************************************************************************/
-long CWAVInfoDialog::ShowWAVInfoDialog(const str_utf16 * pFilename, HINSTANCE hInstance, const str_utf16 * lpTemplateName, HWND hWndParent)
+long CWAVInfoDialog::ShowWAVInfoDialog(const str_utfn * pFilename, HINSTANCE hInstance, const str_utfn * lpTemplateName, HWND hWndParent)
 {
     // only allow one instance at a time
     if (g_pWAVInfoDialog != NULL)
@@ -68,7 +68,7 @@ Initialize the dialog
 long CWAVInfoDialog::InitDialog(HWND hDlg)
 {
     // analyze the WAV
-    WAVEFORMATEX wfeWAV;
+    APE::WAVEFORMATEX wfeWAV;
     int nTotalBlocks = 0;
     int nHeaderBytes = 0;
     int nTerminatingBytes = 0;

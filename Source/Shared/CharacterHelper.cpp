@@ -6,13 +6,13 @@ namespace APE
 
 str_ansi * CAPECharacterHelper::GetANSIFromUTF8(const str_utf8 * pUTF8)
 {
-    str_utf16 * pUTF16 = GetUTF16FromUTF8(pUTF8);
+    str_utfn * pUTF16 = GetUTF16FromUTF8(pUTF8);
     str_ansi * pANSI = GetANSIFromUTF16(pUTF16);
     delete [] pUTF16;
     return pANSI;
 }
 
-str_ansi * CAPECharacterHelper::GetANSIFromUTF16(const str_utf16 * pUTF16)
+str_ansi * CAPECharacterHelper::GetANSIFromUTF16(const str_utfn * pUTF16)
 {
     const int nCharacters = pUTF16 ? int(wcslen(pUTF16)) : 0;
     #ifdef _WIN32
@@ -31,25 +31,25 @@ str_ansi * CAPECharacterHelper::GetANSIFromUTF16(const str_utf16 * pUTF16)
     return (str_ansi *) pANSI;
 }
 
-str_utf16 * CAPECharacterHelper::GetUTF16FromANSI(const str_ansi * pANSI)
+str_utfn * CAPECharacterHelper::GetUTF16FromANSI(const str_ansi * pANSI)
 {
     const int nCharacters = pANSI ? int(strlen(pANSI)) : 0;
-    str_utf16 * pUTF16 = new str_utf16 [nCharacters + 1];
+    str_utfn * pUTF16 = new str_utfn [nCharacters + 1];
 
     #ifdef _WIN32
-        memset(pUTF16, 0, sizeof(str_utf16) * (nCharacters + 1));
+        memset(pUTF16, 0, sizeof(str_utfn) * (nCharacters + 1));
         if (pANSI)
             MultiByteToWideChar(CP_ACP, 0, pANSI, -1, pUTF16, nCharacters);
     #else
         for (int z = 0; z < nCharacters; z++)
-            pUTF16[z] = (str_utf16) ((str_utf8) pANSI[z]);
+            pUTF16[z] = (str_utfn) ((str_utf8) pANSI[z]);
         pUTF16[nCharacters] = 0;
     #endif
 
     return pUTF16;
 }
 
-str_utf16 * CAPECharacterHelper::GetUTF16FromUTF8(const str_utf8 * pUTF8)
+str_utfn * CAPECharacterHelper::GetUTF16FromUTF8(const str_utf8 * pUTF8)
 {
     // get the length
     int nCharacters = 0; int nIndex = 0;
@@ -66,7 +66,7 @@ str_utf16 * CAPECharacterHelper::GetUTF16FromUTF8(const str_utf8 * pUTF8)
     }
 
     // make a UTF-16 string
-    str_utf16 * pUTF16 = new str_utf16 [nCharacters + 1];
+    str_utfn * pUTF16 = new str_utfn [nCharacters + 1];
     nIndex = 0; nCharacters = 0;
     while (pUTF8[nIndex] != 0)
     {
@@ -95,13 +95,13 @@ str_utf16 * CAPECharacterHelper::GetUTF16FromUTF8(const str_utf8 * pUTF8)
 
 str_utf8 * CAPECharacterHelper::GetUTF8FromANSI(const str_ansi * pANSI)
 {
-    str_utf16 * pUTF16 = GetUTF16FromANSI(pANSI);
+    str_utfn * pUTF16 = GetUTF16FromANSI(pANSI);
     str_utf8 * pUTF8 = GetUTF8FromUTF16(pUTF16);
     delete [] pUTF16;
     return pUTF8;
 }
 
-str_utf8 * CAPECharacterHelper::GetUTF8FromUTF16(const str_utf16 * pUTF16)
+str_utf8 * CAPECharacterHelper::GetUTF8FromUTF16(const str_utfn * pUTF16)
 {
     // get the size(s)
     int nCharacters = int(wcslen(pUTF16));

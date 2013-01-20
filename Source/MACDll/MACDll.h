@@ -47,8 +47,8 @@ typedef void * APE_COMPRESS_HANDLE;
 
 typedef APE_COMPRESS_HANDLE (__stdcall * proc_APECompress_Create)(int *); 
 typedef void (__stdcall * proc_APECompress_Destroy)(APE_COMPRESS_HANDLE); 
-typedef int (__stdcall * proc_APECompress_Start)(APE_COMPRESS_HANDLE, const char *, const WAVEFORMATEX *, int, int, const void *, int);
-typedef int (__stdcall * proc_APECompress_StartW)(APE_COMPRESS_HANDLE, const char *, const WAVEFORMATEX *, int, int, const void *, int);
+typedef int (__stdcall * proc_APECompress_Start)(APE_COMPRESS_HANDLE, const char *, const APE::WAVEFORMATEX *, int, int, const void *, int);
+typedef int (__stdcall * proc_APECompress_StartW)(APE_COMPRESS_HANDLE, const char *, const APE::WAVEFORMATEX *, int, int, const void *, int);
 typedef int (__stdcall * proc_APECompress_AddData)(APE_COMPRESS_HANDLE, unsigned char *, int);
 typedef int (__stdcall * proc_APECompress_GetBufferBytesAvailable)(APE_COMPRESS_HANDLE);
 typedef unsigned char * (__stdcall * proc_APECompress_LockBuffer)(APE_COMPRESS_HANDLE, int *);
@@ -60,8 +60,8 @@ extern "C"
 {
     __declspec( dllexport ) APE_COMPRESS_HANDLE __stdcall c_APECompress_Create(int * pErrorCode = NULL);
     __declspec( dllexport ) void __stdcall c_APECompress_Destroy(APE_COMPRESS_HANDLE hAPECompress);
-    __declspec( dllexport ) int __stdcall c_APECompress_Start(APE_COMPRESS_HANDLE hAPECompress, const char * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const unsigned char * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
-    __declspec( dllexport ) int __stdcall c_APECompress_StartW(APE_COMPRESS_HANDLE hAPECompress, const str_utf16 * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const unsigned char * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
+    __declspec( dllexport ) int __stdcall c_APECompress_Start(APE_COMPRESS_HANDLE hAPECompress, const char * pOutputFilename, const APE::WAVEFORMATEX * pwfeInput, int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const unsigned char * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
+    __declspec( dllexport ) int __stdcall c_APECompress_StartW(APE_COMPRESS_HANDLE hAPECompress, const str_utfn * pOutputFilename, const APE::WAVEFORMATEX * pwfeInput, int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const unsigned char * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
     __declspec( dllexport ) int __stdcall c_APECompress_AddData(APE_COMPRESS_HANDLE hAPECompress, unsigned char * pData, int nBytes);
     __declspec( dllexport ) int __stdcall c_APECompress_GetBufferBytesAvailable(APE_COMPRESS_HANDLE hAPECompress);
     __declspec( dllexport ) unsigned char * __stdcall c_APECompress_LockBuffer(APE_COMPRESS_HANDLE hAPECompress, int * pBytesAvailable);
@@ -85,7 +85,7 @@ typedef int (__stdcall * proc_APEDecompress_GetInfo)(APE_DECOMPRESS_HANDLE, APE_
 extern "C"
 {
     __declspec( dllexport ) APE_DECOMPRESS_HANDLE __stdcall c_APEDecompress_Create(const str_ansi * pFilename, int * pErrorCode = NULL);
-    __declspec( dllexport ) APE_DECOMPRESS_HANDLE __stdcall c_APEDecompress_CreateW(const str_utf16 * pFilename, int * pErrorCode = NULL);
+    __declspec( dllexport ) APE_DECOMPRESS_HANDLE __stdcall c_APEDecompress_CreateW(const str_utfn * pFilename, int * pErrorCode = NULL);
     __declspec( dllexport ) void __stdcall c_APEDecompress_Destroy(APE_DECOMPRESS_HANDLE hAPEDecompress);
     __declspec( dllexport ) int __stdcall c_APEDecompress_GetData(APE_DECOMPRESS_HANDLE hAPEDecompress, char * pBuffer, int nBlocks, int * pBlocksRetrieved);
     __declspec( dllexport ) int __stdcall c_APEDecompress_Seek(APE_DECOMPRESS_HANDLE hAPEDecompress, int nBlockOffset);

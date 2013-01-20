@@ -1,8 +1,10 @@
 #include "All.h"
 #include "GlobalFunctions.h"
 #include "NNFilter.h"
-#include <emmintrin.h>
-#include <smmintrin.h>
+#ifdef ENABLE_SSE_ASSEMBLY
+	#include <emmintrin.h>
+	#include <smmintrin.h>
+#endif
 
 namespace APE
 {
@@ -14,8 +16,10 @@ CNNFilter::CNNFilter(int nOrder, int nShift, int nVersion)
     m_nShift = nShift;
     m_nVersion = nVersion;
     
+#ifdef ENABLE_SSE_ASSEMBLY
     m_bSSEAvailable = GetSSEAvailable();
-    
+#endif
+
     m_rbInput.Create(NN_WINDOW_ELEMENTS, m_nOrder);
     m_rbDeltaM.Create(NN_WINDOW_ELEMENTS, m_nOrder);
     m_paryM = (short *) AllocateAligned(sizeof(short) * m_nOrder, 16); // align for possible SSE usage
@@ -45,18 +49,22 @@ int CNNFilter::Compress(int nInput)
 
     // figure a dot product
     int nDotProduct;
+#ifdef ENABLE_SSE_ASSEMBLY
     if (m_bSSEAvailable)
        nDotProduct = CalculateDotProductSSE(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
     else
+#endif
         nDotProduct = CalculateDotProduct(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
 
     // calculate the output
     int nOutput = nInput - ((nDotProduct + (1 << (m_nShift - 1))) >> m_nShift);
 
     // adapt
+#ifdef ENABLE_SSE_ASSEMBLY
     if (m_bSSEAvailable)
         AdaptSSE(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nOutput, m_nOrder);
     else
+#endif
         Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nOutput, m_nOrder);
 
     int nTempABS = abs(nInput);
@@ -87,16 +95,20 @@ int CNNFilter::Decompress(int nInput)
 {
     // figure a dot product
     int nDotProduct;
+#ifdef ENABLE_SSE_ASSEMBLY
     if (m_bSSEAvailable)
         nDotProduct = CalculateDotProductSSE(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
     else
-        nDotProduct = CalculateDotProduct(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
+#endif
+		nDotProduct = CalculateDotProduct(&m_rbInput[-m_nOrder], &m_paryM[0], m_nOrder);
 
     // adapt
+#ifdef ENABLE_SSE_ASSEMBLY
     if (m_bSSEAvailable)
         AdaptSSE(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nInput, m_nOrder);
     else
-        Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nInput, m_nOrder);
+#endif
+		Adapt(&m_paryM[0], &m_rbDeltaM[-m_nOrder], nInput, m_nOrder);
 
     // store the output value
     int nOutput = nInput + ((nDotProduct + (1 << (m_nShift - 1))) >> m_nShift);
@@ -170,6 +182,8 @@ int CNNFilter::CalculateDotProduct(short * pA, short * pB, int nOrder)
     return nDotProduct;
 }
 
+#ifdef ENABLE_SSE_ASSEMBLY
+
 void CNNFilter::AdaptSSE(short * pM, short * pAdapt, int nDirection, int nOrder)
 {
     // we require that pM is aligned, allowing faster loads and stores
@@ -220,5 +234,7 @@ int CNNFilter::CalculateDotProductSSE(short * pA, short * pB, int nOrder)
 
     return nDotProduct;
 }
+
+#endif
 
 }

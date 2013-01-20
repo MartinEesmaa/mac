@@ -1,6 +1,9 @@
-#ifndef _WIN32
-
 #pragma once
+
+#if !defined(PLATFORM_WINDOWS)
+
+// we treat BOOL as a global type, so don't declare it in the namespace
+typedef int                 BOOL;
 
 namespace APE
 {
@@ -11,18 +14,7 @@ namespace APE
 #define NEAR
 #define FAR
 
-typedef unsigned int        uint32;
-typedef int                 int32;
-typedef unsigned short      uint16;
-typedef short               int16;
-typedef unsigned char       uint8;
-typedef char                int8;
-typedef char                str_ansi;
-typedef unsigned char       str_utf8;
-typedef wchar_t             str_utf16;
-
 typedef unsigned long       DWORD;
-typedef int                 BOOL;
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
 typedef float               FLOAT;
@@ -41,29 +33,17 @@ typedef long                LRESULT;
 #define __stdcall
 #define CALLBACK
 
+#define _T(x) L ## x
+
 #define _stricmp strcasecmp
 #define _strnicmp strncasecmp
+#define _wcsicmp wcscasecmp
+#define _wcsnicmp wcsncasecmp
+#define _wtoi(x) wcstol(x, NULL, 10)
+#define _tcscat wcscat
 
-#define _FPOSOFF(fp) ((long)(fp).__pos)
+#define _FPOSOFF(fp) (fp)
 #define MAX_PATH    260
-
-#ifndef _WAVEFORMATEX_
-#define _WAVEFORMATEX_
-
-typedef struct tWAVEFORMATEX
-{
-    WORD        wFormatTag;         /* format type */
-    WORD        nChannels;          /* number of channels (i.e. mono, stereo...) */
-    DWORD       nSamplesPerSec;     /* sample rate */
-    DWORD       nAvgBytesPerSec;    /* for buffer estimation */
-    WORD        nBlockAlign;        /* block size of data */
-    WORD        wBitsPerSample;     /* number of bits per sample of mono data */
-    WORD        cbSize;             /* the count in bytes of the size of */
-                    /* extra information (after cbSize) */
-} WAVEFORMATEX, *PWAVEFORMATEX, NEAR *NPWAVEFORMATEX, FAR *LPWAVEFORMATEX;
-typedef const WAVEFORMATEX FAR *LPCWAVEFORMATEX;
-
-#endif // #ifndef _WAVEFORMATEX_
 
 }
 

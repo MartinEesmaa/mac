@@ -30,8 +30,8 @@ protected:
     static DWORD WINAPI __stdcall DecodeThread(void *Kill_Switch);
     static BOOL CheckBufferForSilence(void * pBuffer, const unsigned __int32 nSamples);
     static long ScaleBuffer(IAPEDecompress *pAPEDecompress, unsigned char *pBuffer, long nBlocks);
-    static void BuildDescriptionStringFromFilename(CString & strBuffer, const str_utf16 * pFilename);
-    static void BuildDescriptionString(CString & strBuffer, CAPETag * pAPETag, const str_utf16 * pFilename);
+    static void BuildDescriptionStringFromFilename(CString & strBuffer, const str_utfn * pFilename);
+    static void BuildDescriptionString(CString & strBuffer, CAPETag * pAPETag, const str_utfn * pFilename);
     static CWinampSettingsDlg * GetSettings();
 
     static int m_nDecodePositionMS;                            // the current decoding position, in milliseconds
