@@ -2,6 +2,10 @@
 #include "UnBitArrayBase.h"
 #include "APEInfo.h"
 #include "UnBitArray.h"
+#ifdef APE_BACKWARDS_COMPATIBILITY
+	#include "Old/APEDecompressOld.h"
+	#include "Old/UnBitArrayOld.h"
+#endif
 
 namespace APE
 {
@@ -23,7 +27,13 @@ CUnBitArrayBase * CreateUnBitArray(IAPEDecompress * pAPEDecompress, int nVersion
            nFurthestReadByte -= pAPETag->GetTagBytes();
     }
 
-    // create the appropriate object
+#ifdef APE_BACKWARDS_COMPATIBILITY
+	if (nVersion >= 3900)
+		return (CUnBitArrayBase * ) new CUnBitArray(GET_IO(pAPEDecompress), nVersion, nFurthestReadByte);
+	else
+		return (CUnBitArrayBase * ) new CUnBitArrayOld(pAPEDecompress, nVersion, nFurthestReadByte);
+#else
+	// create the appropriate object
     if (nVersion < 3900)
     {
         // we should no longer be trying to decode files this old (this check should be redundant since 
@@ -33,6 +43,7 @@ CUnBitArrayBase * CreateUnBitArray(IAPEDecompress * pAPEDecompress, int nVersion
     }
 
     return (CUnBitArrayBase * ) new CUnBitArray(GET_IO(pAPEDecompress), nVersion, nFurthestReadByte);
+#endif
 }
 
 CUnBitArrayBase::CUnBitArrayBase(int nFurthestReadByte)

@@ -7,6 +7,11 @@
 #include "APEDecompress.h"
 #include "APEInfo.h"
 #include "APELink.h"
+#include "GlobalFunctions.h"
+#ifdef APE_BACKWARDS_COMPATIBILITY
+	#include "Old/APEDecompressOld.h"
+#endif
+
 using namespace APE;
 
 IAPEDecompress * CreateIAPEDecompressCore(CAPEInfo * pAPEInfo, int nStartBlock, int nFinishBlock, int * pErrorCode)
@@ -25,6 +30,10 @@ IAPEDecompress * CreateIAPEDecompressCore(CAPEInfo * pAPEInfo, int nStartBlock, 
                 // create
                 if (pAPEInfo->GetInfo(APE_INFO_FILE_VERSION) >= 3930)
                     pAPEDecompress = new CAPEDecompress(pErrorCode, pAPEInfo, nStartBlock, nFinishBlock);
+#ifdef APE_BACKWARDS_COMPATIBILITY
+				else
+					pAPEDecompress = new CAPEDecompressOld(pErrorCode, pAPEInfo, nStartBlock, nFinishBlock);
+#endif
 
                 // error check
                 if (pAPEDecompress == NULL || *pErrorCode != ERROR_SUCCESS)
@@ -69,7 +78,7 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utfn * pFilename, int 
         pExtension--;
 
     // take the appropriate action (based on the extension)
-    if (_wcsicmp(pExtension, L".apl") == 0)
+    if (StringIsEqual(pExtension, L".apl", false))
     {
         // "link" file (.apl linked large APE file)
         CAPELink APELink(pFilename);
@@ -79,7 +88,7 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utfn * pFilename, int 
             nStartBlock = APELink.GetStartBlock(); nFinishBlock = APELink.GetFinishBlock();
         }
     }
-    else if ((_wcsicmp(pExtension, L".mac") == 0) || (_wcsicmp(pExtension, L".ape") == 0))
+    else if (StringIsEqual(pExtension, L".mac", false) || StringIsEqual(pExtension, L".ape", false))
     {
         // plain .ape file
         pAPEInfo = new CAPEInfo(&nErrorCode, pFilename);

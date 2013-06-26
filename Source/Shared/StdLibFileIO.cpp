@@ -138,7 +138,7 @@ int CStdLibFileIO::Open(const wchar_t * pName, BOOL bOpenReadOnly)
     else 
     {
         CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), TRUE);
-        m_pFile = fopen(spFilenameUTF8, "rb");
+        m_pFile = fopen(spFilenameUTF8, "r+b");
         m_bReadOnly = FALSE;                                                    // Read/Write
     }
 

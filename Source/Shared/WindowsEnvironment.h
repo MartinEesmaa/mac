@@ -21,7 +21,7 @@ Unicode
 #endif
 
 /*****************************************************************************************
-Visual Studio 2008 defines
+Visual Studio defines
 *****************************************************************************************/
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NON_CONFORMING_SWPRINTFS

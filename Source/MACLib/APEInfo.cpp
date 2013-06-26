@@ -7,6 +7,7 @@ CAPEInfo:
 #include IO_HEADER_FILE
 #include "APECompress.h"
 #include "APEHeader.h"
+#include "GlobalFunctions.h"
 
 namespace APE
 {
@@ -43,7 +44,7 @@ CAPEInfo::CAPEInfo(int * pErrorCode, const wchar_t * pFilename, CAPETag * pTag)
         // we don't want to analyze right away for non-local files
         // since a single I/O object is shared, we can't tag and read at the same time (i.e. in multiple threads)
         BOOL bAnalyzeNow = TRUE;
-        if ((_wcsnicmp(pFilename, L"http://", 7) == 0) || (_wcsnicmp(pFilename, L"m01p://", 7) == 0))
+        if (StringIsEqual(pFilename, L"http://", false, 7) || StringIsEqual(pFilename, L"m01p://", false, 7))
             bAnalyzeNow = FALSE;
 
         m_spAPETag.Assign(new CAPETag(m_spIO, bAnalyzeNow));
@@ -167,9 +168,9 @@ int CAPEInfo::GetFileInformation(BOOL bGetTagInformation)
 /*****************************************************************************************
 Primary query function
 *****************************************************************************************/
-int CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1, int nParam2)
+intn CAPEInfo::GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1, intn nParam2)
 {
-    int nResult = -1;
+    intn nResult = -1;
 
     switch (Field)
     {

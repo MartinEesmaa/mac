@@ -39,6 +39,12 @@
     <Filter Include="Header Files\Prediction %28h%29">
       <UniqueIdentifier>{f65695bb-dbc5-45ea-992d-37bf88d49cf7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Old %28h%29">
+      <UniqueIdentifier>{17d5fc2b-df89-452c-ab6a-da1b5274975e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Old">
+      <UniqueIdentifier>{c02c258d-69e5-4890-abaf-ebb4a44c7e87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\MACLib\APESimple.cpp">
@@ -112,6 +118,33 @@
     </ClCompile>
     <ClCompile Include="..\..\..\MACLib\BitArray.cpp">
       <Filter>Source Files\Compress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\Anti-Predictor.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorExtraHigh.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorFast.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorHigh.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorNormal.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\APEDecompressCore.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\APEDecompressOld.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\UnBitArrayOld.cpp">
+      <Filter>Source Files\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\UnMAC.cpp">
+      <Filter>Source Files\Old</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +243,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\MACLib\ScaledFirstOrderFilter.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\MACLib\Old\UnMAC.h">
+      <Filter>Header Files\Old %28h%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\MACLib\Old\UnBitArrayOld.h">
+      <Filter>Header Files\Old %28h%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\MACLib\Old\APEDecompressOld.h">
+      <Filter>Header Files\Old %28h%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\MACLib\Old\APEDecompressCore.h">
+      <Filter>Header Files\Old %28h%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\MACLib\Old\Anti-Predictor.h">
+      <Filter>Header Files\Old %28h%29</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
