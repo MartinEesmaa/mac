@@ -19,7 +19,6 @@
 *****************************************************************************/
 
 #include "All.h"
-#include <string.h>
 #include "MD5.h"
 
 namespace APE
@@ -46,15 +45,6 @@ CopyToLittleEndian ( uint32_t*       dst,
     }
 }
 #endif
-
-
-/*
-   Assembler versions of __MD5Transform, MD5Init and MD5Update
-   currently exist for x86 and little-endian ARM.
-   For other targets, we need to use the C versions below.
-*/
-
-#if !(defined (__i386__) || ((defined (__arm__) && (__BYTE_ORDER == __LITTLE_ENDIAN))))
 
 /*
    Initialise the MD5 context.
@@ -229,9 +219,6 @@ MD5Update ( MD5_CTX*        context,
     /* Buffer remaining input */
     memcpy ( (context -> buffer) + byteIndex, input + i, inputBytes - i );
 }
-
-#endif
-
 
 void 
 MD5Final ( uint8_t   digest [16], 

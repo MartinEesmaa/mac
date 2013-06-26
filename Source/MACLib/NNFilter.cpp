@@ -2,8 +2,7 @@
 #include "GlobalFunctions.h"
 #include "NNFilter.h"
 #ifdef ENABLE_SSE_ASSEMBLY
-	#include <emmintrin.h>
-	#include <smmintrin.h>
+	#include <emmintrin.h> // SSE 2
 #endif
 
 namespace APE

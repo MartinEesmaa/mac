@@ -3,7 +3,7 @@
 #if !defined(PLATFORM_WINDOWS)
 
 // we treat BOOL as a global type, so don't declare it in the namespace
-typedef int                 BOOL;
+typedef signed char BOOL;
 
 namespace APE
 {
@@ -35,12 +35,11 @@ typedef long                LRESULT;
 
 #define _T(x) L ## x
 
-#define _stricmp strcasecmp
 #define _strnicmp strncasecmp
-#define _wcsicmp wcscasecmp
-#define _wcsnicmp wcsncasecmp
 #define _wtoi(x) wcstol(x, NULL, 10)
 #define _tcscat wcscat
+#define _totlower towlower
+#define _totupper towupper
 
 #define _FPOSOFF(fp) (fp)
 #define MAX_PATH    260

@@ -336,4 +336,173 @@ void CPrepare::Unprepare(int X, int Y, const WAVEFORMATEX * pWaveFormatEx, unsig
     }
 }
 
+#ifdef APE_BACKWARDS_COMPATIBILITY
+
+int CPrepare::UnprepareOld(int *pInputX, int *pInputY, int nBlocks, const WAVEFORMATEX *pWaveFormatEx, unsigned char *pRawData, unsigned int *pCRC, int *pSpecialCodes, int nFileVersion)
+{
+	// the CRC that will be figured during decompression
+	uint32 CRC = 0xFFFFFFFF;
+
+	// decompress and convert from (x,y) -> (l,r)
+	if (pWaveFormatEx->nChannels == 2) 
+	{
+		// convert the x,y data to raw data
+		if (pWaveFormatEx->wBitsPerSample == 16) 
+		{
+			int16 R;
+			unsigned char *Buffer = &pRawData[0];
+			int *pX = pInputX;
+			int *pY = pInputY;
+
+			for (; pX < &pInputX[nBlocks]; pX++, pY++) 
+			{
+				R = *pX - (*pY / 2);
+
+				*(int16 *) Buffer = (int16) R;
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*(int16 *) Buffer = (int16) R + *pY;
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+			}
+		}
+		else if (pWaveFormatEx->wBitsPerSample == 8) 
+		{
+			unsigned char *R = (unsigned char *) &pRawData[0];
+			unsigned char *L = (unsigned char *) &pRawData[1];
+
+			if (nFileVersion > 3830) 
+			{
+				for (int SampleIndex = 0; SampleIndex < nBlocks; SampleIndex++, L+=2, R+=2) 
+				{
+					*R = (unsigned char) (pInputX[SampleIndex] - (pInputY[SampleIndex] / 2) + 128);
+					CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *R];
+					*L = (unsigned char) (*R + pInputY[SampleIndex]);
+					CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *L];
+				}
+			}
+			else 
+			{
+				for (int SampleIndex = 0; SampleIndex < nBlocks; SampleIndex++, L+=2, R+=2)
+				{
+					*R = (unsigned char) (pInputX[SampleIndex] - (pInputY[SampleIndex] / 2));
+					CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *R];
+					*L = (unsigned char) (*R + pInputY[SampleIndex]);
+					CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *L];
+				}
+			}
+		}
+		else if (pWaveFormatEx->wBitsPerSample == 24) 
+		{
+			unsigned char *Buffer = (unsigned char *) &pRawData[0];
+			int32 RV, LV;
+
+			for (int SampleIndex = 0; SampleIndex < nBlocks; SampleIndex++)
+			{
+				RV = pInputX[SampleIndex] - (pInputY[SampleIndex] / 2);
+				LV = RV + pInputY[SampleIndex];
+
+				uint32 nTemp = 0;
+				if (RV < 0)
+					nTemp = ((uint32) (RV + 0x800000)) | 0x800000;
+				else
+					nTemp = (uint32) RV;    
+
+				*Buffer = (unsigned char) ((nTemp >> 0) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*Buffer = (unsigned char) ((nTemp >> 8) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*Buffer = (unsigned char) ((nTemp >> 16) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				nTemp = 0;
+				if (LV < 0)
+					nTemp = ((uint32) (LV + 0x800000)) | 0x800000;
+				else
+					nTemp = (uint32) LV;    
+
+				*Buffer = (unsigned char) ((nTemp >> 0) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*Buffer = (unsigned char) ((nTemp >> 8) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*Buffer = (unsigned char) ((nTemp >> 16) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+			}
+		}
+	}
+	else if (pWaveFormatEx->nChannels == 1) 
+	{
+		// convert to raw data
+		if (pWaveFormatEx->wBitsPerSample == 8) 
+		{
+			unsigned char *R = (unsigned char *) &pRawData[0];
+
+			if (nFileVersion > 3830) 
+			{
+				for (int SampleIndex = 0; SampleIndex < nBlocks; SampleIndex++, R++)
+				{
+					*R = pInputX[SampleIndex] + 128;
+					CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *R];
+				}
+			}
+			else 
+			{
+				for (int SampleIndex = 0; SampleIndex < nBlocks; SampleIndex++, R++)
+				{
+					*R = (unsigned char) (pInputX[SampleIndex]);
+					CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *R];
+				}
+			}
+		}
+		else if (pWaveFormatEx->wBitsPerSample == 24) 
+		{
+			unsigned char *Buffer = (unsigned char *) &pRawData[0];
+			int32 RV;
+			for (int SampleIndex = 0; SampleIndex<nBlocks; SampleIndex++) 
+			{
+				RV = pInputX[SampleIndex];
+
+				uint32 nTemp = 0;
+				if (RV < 0)
+					nTemp = ((uint32) (RV + 0x800000)) | 0x800000;
+				else
+					nTemp = (uint32) RV;    
+
+				*Buffer = (unsigned char) ((nTemp >> 0) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*Buffer = (unsigned char) ((nTemp >> 8) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+
+				*Buffer = (unsigned char) ((nTemp >> 16) & 0xFF);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+			}
+		}
+		else 
+		{
+			unsigned char *Buffer = &pRawData[0];
+
+			for (int SampleIndex = 0; SampleIndex < nBlocks; SampleIndex++) 
+			{
+				*(int16 *) Buffer = (int16) (pInputX[SampleIndex]);
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+				CRC = (CRC >> 8) ^ CRC32_TABLE[(CRC & 0xFF) ^ *Buffer++];
+			}
+		}
+	}
+
+	CRC = CRC ^ 0xFFFFFFFF;
+
+	*pCRC = CRC;
+
+	return 0;
+}
+
+#endif // #ifdef APE_BACKWARDS_COMPATIBILITY
+
 }

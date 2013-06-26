@@ -2,6 +2,7 @@
 #include "APETag.h"
 #include "CharacterHelper.h"
 #include "IO.h"
+#include "GlobalFunctions.h"
 #include IO_HEADER_FILE
 
 namespace APE
@@ -334,7 +335,7 @@ int CAPETag::GetTagFieldIndex(const str_utfn * pFieldName)
 
     for (int z = 0; z < m_nFields; z++)
     {
-        if (_wcsicmp(m_aryFields[z]->GetFieldName(), pFieldName) == 0)
+        if (StringIsEqual(m_aryFields[z]->GetFieldName(), pFieldName, false))
             return z;
     }
 
@@ -542,7 +543,7 @@ int CAPETag::CreateID3Tag(ID3_TAG * pID3Tag)
     BOOL bFound = FALSE;
     while ((nGenreIndex < CAPETag::s_nID3GenreCount) && (bFound == FALSE))
     {
-        if (_wcsicmp(cBuffer, s_aryID3GenreNames[nGenreIndex]) == 0)
+        if (StringIsEqual(cBuffer, s_aryID3GenreNames[nGenreIndex], false))
         {
             pID3Tag->Genre = nGenreIndex;
             bFound = TRUE;

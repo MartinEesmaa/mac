@@ -80,7 +80,7 @@ public:
     virtual ~CAPEInfo();
 
     // query for information
-    int GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1 = 0, int nParam2 = 0);
+    intn GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1 = 0, intn nParam2 = 0);
     
 private:
     // internal functions

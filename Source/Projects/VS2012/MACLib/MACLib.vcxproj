@@ -173,7 +173,7 @@
       <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
       <ObjectFileName>.\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
@@ -305,6 +305,15 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Full</Optimization>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BrowseInformation>
     </ClCompile>
+    <ClCompile Include="..\..\..\MACLib\Old\Anti-Predictor.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorExtraHigh.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorFast.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorHigh.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\AntiPredictorNormal.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\APEDecompressCore.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\APEDecompressOld.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\UnBitArrayOld.cpp" />
+    <ClCompile Include="..\..\..\MACLib\Old\UnMAC.cpp" />
     <ClCompile Include="..\..\..\MACLib\UnBitArray.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -477,6 +486,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\MACLib\Old\Anti-Predictor.h" />
+    <ClInclude Include="..\..\..\MACLib\Old\APEDecompressCore.h" />
+    <ClInclude Include="..\..\..\MACLib\Old\APEDecompressOld.h" />
+    <ClInclude Include="..\..\..\MACLib\Old\UnBitArrayOld.h" />
+    <ClInclude Include="..\..\..\MACLib\Old\UnMAC.h" />
     <ClInclude Include="..\..\..\Shared\All.h" />
     <ClInclude Include="..\..\..\MACLib\MACLib.h" />
     <ClInclude Include="..\..\..\Shared\WindowsEnvironment.h" />

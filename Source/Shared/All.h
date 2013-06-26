@@ -45,6 +45,16 @@ Global compiler settings (useful for porting)
 // assembly code (helps performance, but limits portability)
 #ifdef PLATFORM_WINDOWS
     #define ENABLE_SSE_ASSEMBLY
+	#define ENABLE_MMX_ASSEMBLY
+#endif
+
+// APE_BACKWARDS_COMPATIBILITY is only needed for decoding APE 3.92 or earlier files.  It
+// has not been possible to make these files for over 10 years, so it's unlikely
+// that disabling APE_BACKWARDS_COMPATIBILITY would have any effect on a normal user.  For
+// porting or third party usage, it's probably best to not bother with APE_BACKWARDS_COMPATIBILITY.
+// A future release of Monkey's Audio itself may remove support for these obsolete files.
+#if defined(PLATFORM_WINDOWS)
+	#define APE_BACKWARDS_COMPATIBILITY
 #endif
 
 // compression modes
@@ -137,12 +147,12 @@ namespace APE
 Global defines
 *****************************************************************************************/
 #define MAC_FILE_VERSION_NUMBER                         3990
-#define MAC_VERSION_STRING                              _T("4.11")
-#define MAC_NAME                                        _T("Monkey's Audio 4.11")
-#define PLUGIN_NAME                                     "Monkey's Audio Player v4.11"
-#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.11)")
-#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.11) (c) Matthew T. Ashland ---\n")
-#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.11\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
+#define MAC_VERSION_STRING                              _T("4.12")
+#define MAC_NAME                                        _T("Monkey's Audio 4.12")
+#define PLUGIN_NAME                                     "Monkey's Audio Player v4.12"
+#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.12)")
+#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.12) (c) Matthew T. Ashland ---\n")
+#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.12\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
 #define MAC_DLL_INTERFACE_VERSION_NUMBER                1000
 
 /*****************************************************************************************

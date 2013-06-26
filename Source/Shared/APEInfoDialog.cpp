@@ -22,15 +22,15 @@ The dialog component ID's
 #define PEAK_LEVEL_STATIC               3003
 
 #define TRACK_LENGTH_STATIC             4000
-#define WAV_SIZE_STATIC                    4001
-#define APE_SIZE_STATIC                    4002
+#define WAV_SIZE_STATIC                 4001
+#define APE_SIZE_STATIC                 4002
 #define COMPRESSION_RATIO_STATIC        4003
 
-#define TITLE_EDIT                        5000
-#define ARTIST_EDIT                        5001
-#define ALBUM_EDIT                        5002
+#define TITLE_EDIT                      5000
+#define ARTIST_EDIT                     5001
+#define ALBUM_EDIT                      5002
 #define COMMENT_EDIT                    5003
-#define YEAR_EDIT                        5004
+#define YEAR_EDIT                       5004
 #define GENRE_COMBOBOX                  5005
 #define TRACK_EDIT                      5006
 
@@ -53,7 +53,6 @@ CAPEInfoDialog::CAPEInfoDialog()
 
 CAPEInfoDialog::~CAPEInfoDialog()
 {
-
 }
 
 /***************************************************************************************

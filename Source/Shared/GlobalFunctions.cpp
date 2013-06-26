@@ -91,6 +91,26 @@ void FreeAligned(void * pMemory)
 #endif
 }
 
+bool GetMMXAvailable()
+{
+	bool bMMX = false;
+#ifdef _MSC_VER
+	#define CPU_MMX (1 << 23)
+
+	int cpuInfo[4] = { 0 };
+	__cpuid(cpuInfo, 0);
+
+	int nIds = cpuInfo[0];
+	if (nIds >= 1)
+	{
+		__cpuid(cpuInfo, 1);
+		if (cpuInfo[3] & CPU_MMX)
+			bMMX = true;
+	}
+#endif
+	return bMMX;
+}
+
 bool GetSSEAvailable()
 {
     bool bSSE = false;
@@ -104,13 +124,46 @@ bool GetSSEAvailable()
     if (nIds >= 1)
     {
         __cpuid(cpuInfo, 1);
-        bSSE = !!(cpuInfo[3] & CPU_SSE2);
+        if (cpuInfo[3] & CPU_SSE2)
+			bSSE = true;
     }
-#else
-    // TODO: fill this in
 #endif
-
     return bSSE;
+}
+
+bool StringIsEqual(const str_utfn * pString1, const str_utfn * pString2, bool bCaseSensitive, int nCharacters)
+{
+	// wcscasecmp isn't available on OSX 10.6 and sometimes it's hard to find other string comparisons that work reliably on different
+	// platforms, so we'll just roll our own simple version here (performance of this function isn't critical to APE performance)
+
+	// default to 'true' so that comparing two empty strings will be a match
+	bool bResult = true;
+
+	// if -1 is passed in, compare the entire string
+	if (nCharacters == -1)
+		nCharacters = 0x7FFFFFFF;
+
+	if (nCharacters > 0)
+	{
+		// walk string
+		str_utfn f, l;
+		do
+		{
+			f = *pString1++;
+			l = *pString2++;
+			if (bCaseSensitive == false)
+			{
+				f = _totlower(f);
+				l = _totlower(l);
+			}
+		}
+		while ((--nCharacters) && (f != 0) && (f == l));
+
+		// if we're still equal, it's a match
+		bResult = (f == l);
+	}
+
+	return bResult;
 }
 
 }
