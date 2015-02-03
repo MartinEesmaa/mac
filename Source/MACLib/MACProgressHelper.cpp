@@ -5,7 +5,7 @@
 namespace APE
 {
 
-CMACProgressHelper::CMACProgressHelper(int nTotalSteps, IAPEProgressCallback * pProgressCallback)
+CMACProgressHelper::CMACProgressHelper(unsigned int nTotalSteps, IAPEProgressCallback * pProgressCallback)
 {
     m_pProgressCallback = pProgressCallback;
 
@@ -21,16 +21,16 @@ CMACProgressHelper::~CMACProgressHelper()
 
 }
 
-void CMACProgressHelper::UpdateProgress(int nCurrentStep, BOOL bForceUpdate)
+void CMACProgressHelper::UpdateProgress(unsigned int nCurrentStep, BOOL bForceUpdate)
 {
     // update the step
-    if (nCurrentStep == -1)
-        m_nCurrentStep++;
-    else
+//     if (nCurrentStep == -1)
+//         m_nCurrentStep++;
+//     else
         m_nCurrentStep = nCurrentStep;
 
     // figure the percentage done
-    float fPercentageDone = float(m_nCurrentStep) / float(max(m_nTotalSteps, 1));
+    float fPercentageDone = float(m_nCurrentStep) / float(ape_max(m_nTotalSteps, 1));
     int nPercentageDone = (int) (fPercentageDone * 1000 * 100);
     if (nPercentageDone > 100000) nPercentageDone = 100000;
 

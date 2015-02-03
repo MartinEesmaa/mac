@@ -36,7 +36,7 @@ CUnBitArrayOld::CUnBitArrayOld(IAPEDecompress * pAPEDecompress, int nVersion, in
             nBitArrayBytes <<= 1;
         }
         
-        nBitArrayBytes = max(nBitArrayBytes, 262144);
+        nBitArrayBytes = ape_max(nBitArrayBytes, 262144);
     }
     else if (nVersion <= 3890)
     {

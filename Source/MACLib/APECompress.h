@@ -16,21 +16,21 @@ public:
     ~CAPECompress();
 
     // start encoding
-    int Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const void * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
-    int StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const void * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
+    int Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const void * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
+    int StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, const void * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION);
     
     // add data / compress data
 
     // allows linear, immediate access to the buffer (fast)
     int GetBufferBytesAvailable();
-    int UnlockBuffer(int nBytesAdded, BOOL bProcess = TRUE);
+    int UnlockBuffer(unsigned int nBytesAdded, BOOL bProcess = TRUE);
     unsigned char * LockBuffer(int * pBytesAvailable);
     
     // slower, but easier than locking and unlocking (copies data)
     int AddData(unsigned char * pData, int nBytes);
     
     // use a CIO (input source) to add data
-    int AddDataFromInputSource(CInputSource * pInputSource, int nMaxBytes = -1, int * pBytesAdded = NULL);
+    int AddDataFromInputSource(CInputSource * pInputSource, unsigned int nMaxBytes = 0, int * pBytesAdded = NULL);
     
     // finish / kill
     int Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes);

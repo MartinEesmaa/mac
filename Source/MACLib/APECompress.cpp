@@ -30,7 +30,7 @@ CAPECompress::~CAPECompress()
     }
 }
 
-int CAPECompress::Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
+int CAPECompress::Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
 {
     m_pioOutput = new IO_CLASS_NAME;
     m_bOwnsOutputIO = TRUE;
@@ -51,7 +51,7 @@ int CAPECompress::Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pw
     return ERROR_SUCCESS;
 }
 
-int CAPECompress::StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
+int CAPECompress::StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
 {
     m_pioOutput = pioOutput;
     m_bOwnsOutputIO = FALSE;
@@ -72,7 +72,7 @@ int CAPECompress::GetBufferBytesAvailable()
     return m_nBufferSize - m_nBufferTail;
 }
 
-int CAPECompress::UnlockBuffer(int nBytesAdded, BOOL bProcess)
+int CAPECompress::UnlockBuffer(unsigned int nBytesAdded, BOOL bProcess)
 {
     if (m_bBufferLocked == FALSE)
         return ERROR_UNDEFINED;
@@ -119,7 +119,7 @@ int CAPECompress::AddData(unsigned char * pData, int nBytes)
             return ERROR_UNDEFINED;
         
         // calculate how many bytes to copy and add that much to the buffer
-        int nBytesToProcess = min(nBytesAvailable, nBytes - nBytesDone);
+        int nBytesToProcess = ape_min(nBytesAvailable, nBytes - nBytesDone);
         memcpy(pBuffer, &pData[nBytesDone], nBytesToProcess);
                         
         // unlock the buffer (fail if not successful)
@@ -156,7 +156,7 @@ int CAPECompress::ProcessBuffer(BOOL bFinalize)
         
         while ((m_nBufferTail - m_nBufferHead) >= nThreshold)
         {
-            int nFrameBytes = min(m_spAPECompressCreate->GetFullFrameBytes(), m_nBufferTail - m_nBufferHead);
+            int nFrameBytes = ape_min(m_spAPECompressCreate->GetFullFrameBytes(), m_nBufferTail - m_nBufferHead);
             
             if (nFrameBytes == 0)
                 break;
@@ -187,7 +187,7 @@ int CAPECompress::ProcessBuffer(BOOL bFinalize)
     return ERROR_SUCCESS;
 }
 
-int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, int nMaxBytes, int * pBytesAdded)
+int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, unsigned int nMaxBytes, int * pBytesAdded)
 {
     // error check the parameters
     if (pInputSource == NULL) return ERROR_BAD_PARAMETER;

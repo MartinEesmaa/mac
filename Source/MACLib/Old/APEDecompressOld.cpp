@@ -33,8 +33,8 @@ CAPEDecompressOld::CAPEDecompressOld(int * pErrorCode, CAPEInfo * pAPEInfo, int 
     m_nCurrentBlock = 0;
 
     // set the "real" start and finish blocks
-    m_nStartBlock = (nStartBlock < 0) ? 0 : min(nStartBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
-    m_nFinishBlock = (nFinishBlock < 0) ? GetInfo(APE_INFO_TOTAL_BLOCKS) : min(nFinishBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
+    m_nStartBlock = (nStartBlock < 0) ? 0 : ape_min(nStartBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
+    m_nFinishBlock = (nFinishBlock < 0) ? GetInfo(APE_INFO_TOTAL_BLOCKS) : ape_min(nFinishBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
     m_bIsRanged = (m_nStartBlock != 0) || (m_nFinishBlock != GetInfo(APE_INFO_TOTAL_BLOCKS));
 }
 
@@ -53,7 +53,7 @@ int CAPEDecompressOld::InitializeDecompressor()
     RETURN_ON_ERROR(m_UnMAC.Initialize(this))
 
     int nMaximumDecompressedFrameBytes = m_nBlockAlign * GetInfo(APE_INFO_BLOCKS_PER_FRAME);
-    int nTotalBufferBytes = max(65536, (nMaximumDecompressedFrameBytes + 16) * 2);
+    int nTotalBufferBytes = ape_max(65536, (nMaximumDecompressedFrameBytes + 16) * 2);
     m_spBuffer.Assign(new char [nTotalBufferBytes], TRUE);
     if (m_spBuffer == NULL)
         return ERROR_INSUFFICIENT_MEMORY;
@@ -73,7 +73,7 @@ int CAPEDecompressOld::GetData(char * pBuffer, int nBlocks, int * pBlocksRetriev
     
     // cap
     int nBlocksUntilFinish = m_nFinishBlock - m_nCurrentBlock;
-    nBlocks = min(nBlocks, nBlocksUntilFinish);
+    nBlocks = ape_min(nBlocks, nBlocksUntilFinish);
 
     int nBlocksRetrieved = 0;
 
@@ -86,7 +86,7 @@ int CAPEDecompressOld::GetData(char * pBuffer, int nBlocks, int * pBlocksRetriev
     {
         // empty the buffer
         int nBytesAvailable = m_nBufferTail;
-        int nIntialBytes = min(nBytesLeft, nBytesAvailable);
+        int nIntialBytes = ape_min(nBytesLeft, nBytesAvailable);
         if (nIntialBytes > 0)
         {
             memcpy(&pBuffer[nTotalBytesNeeded - nBytesLeft], &m_spBuffer[0], nIntialBytes);

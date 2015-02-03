@@ -13,18 +13,18 @@ class CMACProgressHelper
 {
 public:
     
-    CMACProgressHelper(int nTotalSteps, IAPEProgressCallback * pProgressCallback);
+    CMACProgressHelper(unsigned int nTotalSteps, IAPEProgressCallback * pProgressCallback);
     virtual ~CMACProgressHelper();
 
-    void UpdateProgress(int nCurrentStep = -1, BOOL bForceUpdate = FALSE);
+    void UpdateProgress(unsigned int nCurrentStep = 0, BOOL bForceUpdate = FALSE);
     void UpdateProgressComplete() { UpdateProgress(m_nTotalSteps, TRUE); }
 
     int ProcessKillFlag(BOOL bSleep = TRUE);
     
 private:
     IAPEProgressCallback * m_pProgressCallback;
-    int m_nTotalSteps;
-    int m_nCurrentStep;
+    unsigned int m_nTotalSteps;
+    unsigned int m_nCurrentStep;
     int m_nLastCallbackFiredPercentageDone;
 };
 

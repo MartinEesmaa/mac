@@ -243,7 +243,7 @@ BOOL CAPEWinampPlugin::CheckBufferForSilence(void * pBuffer, const unsigned __in
             nSum += abs(*pData);
     }
 
-    nSum /= max(nSamples, 1);
+    nSum /= ape_max(nSamples, 1);
     
     if (nSum > 64)
         return FALSE;
