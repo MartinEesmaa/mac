@@ -85,7 +85,7 @@ Defines
 #define MAC_FORMAT_FLAG_CREATE_WAV_HEADER    32    // create the wave header on decompression (not stored)
 
 #define CREATE_WAV_HEADER_ON_DECOMPRESSION    -1
-#define MAX_AUDIO_BYTES_UNKNOWN -1
+#define MAX_AUDIO_BYTES_UNKNOWN 0
 
 /*****************************************************************************************
 Progress callbacks
@@ -334,11 +334,11 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     virtual int Start(const str_utfn * pOutputFilename, const WAVEFORMATEX * pwfeInput, 
-        int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, 
+        unsigned int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, 
         const void * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION) = 0;
 
     virtual int StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, 
-        int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, 
+        unsigned int nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, 
         const void * pHeaderData = NULL, int nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION) = 0;
     
     /*********************************************************************************************
@@ -387,7 +387,7 @@ public:
     //    BOOL bProcess
     //        whether MAC should process as much as possible of the buffer
     //////////////////////////////////////////////////////////////////////////////////////////////
-    virtual int UnlockBuffer(int nBytesAdded, BOOL bProcess = TRUE) = 0;
+    virtual int UnlockBuffer(unsigned int nBytesAdded, BOOL bProcess = TRUE) = 0;
     
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +401,7 @@ public:
     //    int * pBytesAdded
     //        returns the number of bytes added from the I/O source
     //////////////////////////////////////////////////////////////////////////////////////////////
-    virtual int AddDataFromInputSource(CInputSource * pInputSource, int nMaxBytes = -1, int * pBytesAdded = NULL) = 0;
+    virtual int AddDataFromInputSource(CInputSource * pInputSource, unsigned int nMaxBytes = 0, int * pBytesAdded = NULL) = 0;
     
     /*********************************************************************************************
     * Finish / Kill

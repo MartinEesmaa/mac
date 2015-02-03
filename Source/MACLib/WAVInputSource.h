@@ -48,9 +48,9 @@ private:
     CSmartPtr<CIO> m_spIO;    
     WAVEFORMATEX m_wfeSource;
     int m_nHeaderBytes;
-    int m_nDataBytes;
+    unsigned int m_nDataBytes;
     int m_nTerminatingBytes;
-    int m_nFileBytes;
+    unsigned int m_nFileBytes;
     BOOL m_bIsValid;
 };
 

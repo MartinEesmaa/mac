@@ -174,9 +174,9 @@ int CPrepare::Prepare(const unsigned char * pRawData, int nBytes, const WAVEFORM
 
             if (LPeak == 0) { *pSpecialCodes |= SPECIAL_FRAME_LEFT_SILENCE; }
             if (RPeak == 0) { *pSpecialCodes |= SPECIAL_FRAME_RIGHT_SILENCE; }
-            if (max(LPeak, RPeak) > *pPeakLevel) 
+            if (ape_max(LPeak, RPeak) > *pPeakLevel) 
             {
-                *pPeakLevel = max(LPeak, RPeak);
+                *pPeakLevel = ape_max(LPeak, RPeak);
             }
 
             // check for pseudo-stereo files

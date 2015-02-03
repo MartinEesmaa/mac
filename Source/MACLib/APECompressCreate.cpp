@@ -15,7 +15,7 @@ CAPECompressCreate::~CAPECompressCreate()
 {
 }
 
-int CAPECompressCreate::Start(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
+int CAPECompressCreate::Start(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
 {
     // verify the parameters
     if (pioOutput == NULL || pwfeInput == NULL)
@@ -51,7 +51,7 @@ int CAPECompressCreate::Start(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, i
     
     // initialize the file
     if (nMaxAudioBytes < 0)
-        nMaxAudioBytes = 2147483647;
+		nMaxAudioBytes = 0xffffffff;
 
     uint32 nMaxAudioBlocks = nMaxAudioBytes / pwfeInput->nBlockAlign;
     int nMaxFrames = nMaxAudioBlocks / m_nSamplesPerFrame;

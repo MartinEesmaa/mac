@@ -136,7 +136,7 @@ int __stdcall CompressFileW2(const APE::str_utfn * pInputFilename, const APE::st
         if (spAPECompress == NULL) throw ERROR_UNDEFINED;
         
         // figure the audio bytes
-        int nAudioBytes = nAudioBlocks * WaveFormatEx.nBlockAlign;
+        unsigned int nAudioBytes = nAudioBlocks * WaveFormatEx.nBlockAlign;
 
         // start the encoder
         if (nHeaderBytes > 0) spBuffer.Assign(new unsigned char [nHeaderBytes], TRUE);
@@ -150,7 +150,7 @@ int __stdcall CompressFileW2(const APE::str_utfn * pInputFilename, const APE::st
         spMACProgressHelper.Assign(new CMACProgressHelper(nAudioBytes, pProgressCallback));
 
         // master loop
-        int nBytesLeft = nAudioBytes;
+        unsigned int nBytesLeft = nAudioBytes;
 
         while (nBytesLeft > 0)
         {
@@ -269,7 +269,7 @@ int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, IAPEProgressCal
             nBytesRead = 1;
             while ((nBytesLeft > 0) && (nBytesRead > 0))
             {
-                int nBytesToRead = min(16384, nBytesLeft);
+                int nBytesToRead = ape_min(16384, nBytesLeft);
                 if (pIO->Read(spBuffer, nBytesToRead, &nBytesRead) != ERROR_SUCCESS)
                     throw(ERROR_IO_READ);
 

@@ -4,7 +4,7 @@ MAC Console Frontend (MAC.exe)
 Pretty simple and straightforward console front end.  If somebody ever wants to add 
 more functionality like tagging, auto-verify, etc., that'd be excellent.
 
-Copyrighted (c) 2000 - 2011 Matthew T. Ashland.  All Rights Reserved.
+Copyrighted (c) 2000 - 2015 Matthew T. Ashland.  All Rights Reserved.
 ***************************************************************************************/
 #include "All.h"
 #include <stdio.h>

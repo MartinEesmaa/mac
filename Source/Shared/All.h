@@ -36,6 +36,8 @@ Global includes
 	#include <wchar.h>
     #include "NoWindows.h"
 #endif
+#define ape_max(a,b)    (((a) > (b)) ? (a) : (b))
+#define ape_min(a,b)    (((a) < (b)) ? (a) : (b))
 
 #include "SmartPtr.h"
 
@@ -129,30 +131,31 @@ WAVE format descriptor (binary compatible with Windows define, but in the APE na
 *****************************************************************************************/
 namespace APE
 {
+#pragma pack(push, 1)
 	typedef struct tWAVEFORMATEX
 	{
 		WORD        wFormatTag;         /* format type */
 		WORD        nChannels;          /* number of channels (i.e. mono, stereo...) */
-		DWORD       nSamplesPerSec;     /* sample rate */
-		DWORD       nAvgBytesPerSec;    /* for buffer estimation */
+		uint32       nSamplesPerSec;     /* sample rate */
+		uint32       nAvgBytesPerSec;    /* for buffer estimation */
 		WORD        nBlockAlign;        /* block size of data */
 		WORD        wBitsPerSample;     /* number of bits per sample of mono data */
 		WORD        cbSize;             /* the count in bytes of the size of */
 		/* extra information (after cbSize) */
 	} WAVEFORMATEX, *PWAVEFORMATEX, NEAR *NPWAVEFORMATEX, FAR *LPWAVEFORMATEX;
-	typedef const WAVEFORMATEX FAR *LPCWAVEFORMATEX;
+#pragma pack(pop)
 }
 
 /*****************************************************************************************
 Global defines
 *****************************************************************************************/
 #define MAC_FILE_VERSION_NUMBER                         3990
-#define MAC_VERSION_STRING                              _T("4.12")
-#define MAC_NAME                                        _T("Monkey's Audio 4.12")
-#define PLUGIN_NAME                                     "Monkey's Audio Player v4.12"
-#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.12)")
-#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.12) (c) Matthew T. Ashland ---\n")
-#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.12\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
+#define MAC_VERSION_STRING                              _T("4.13")
+#define MAC_NAME                                        _T("Monkey's Audio 4.13")
+#define PLUGIN_NAME                                     "Monkey's Audio Player v4.13"
+#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.13)")
+#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.13) (c) Matthew T. Ashland ---\n")
+#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.13\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
 #define MAC_DLL_INTERFACE_VERSION_NUMBER                1000
 
 /*****************************************************************************************

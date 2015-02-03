@@ -121,7 +121,7 @@ int CWinFileIO::GetPosition()
     return SetFilePointer(m_hFile, 0, NULL, FILE_CURRENT);
 }
 
-int CWinFileIO::GetSize()
+unsigned int CWinFileIO::GetSize()
 {
     return GetFileSize(m_hFile, NULL);
 }

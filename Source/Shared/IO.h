@@ -42,7 +42,7 @@ public:
 
     // attributes
     virtual int GetPosition() = 0;
-    virtual int GetSize() = 0;
+    virtual unsigned int GetSize() = 0;
     virtual int GetName(wchar_t * pBuffer) = 0;
 };
 
