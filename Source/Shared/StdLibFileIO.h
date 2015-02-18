@@ -34,7 +34,7 @@ public:
 
     // attributes
     int GetPosition();
-    int GetSize();
+    unsigned int GetSize();
     int GetName(wchar_t * pBuffer);
     int GetHandle();
 

@@ -24,9 +24,9 @@ CMACProgressHelper::~CMACProgressHelper()
 void CMACProgressHelper::UpdateProgress(unsigned int nCurrentStep, BOOL bForceUpdate)
 {
     // update the step
-//     if (nCurrentStep == -1)
-//         m_nCurrentStep++;
-//     else
+     if (nCurrentStep == -1)
+         m_nCurrentStep++;
+     else
         m_nCurrentStep = nCurrentStep;
 
     // figure the percentage done

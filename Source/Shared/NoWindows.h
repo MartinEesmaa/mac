@@ -3,7 +3,11 @@
 #if !defined(PLATFORM_WINDOWS)
 
 // we treat BOOL as a global type, so don't declare it in the namespace
-typedef signed char BOOL;
+#ifdef PLATFORM_APPLE
+	typedef signed char BOOL;  // this is the way it's defined in Obj-C
+#else
+	typedef unsigned char BOOL; // this is the way it's defined in X11
+#endif
 
 namespace APE
 {
@@ -27,8 +31,6 @@ typedef char *              LPSTR;
 typedef long                LRESULT;
 
 #define ZeroMemory(POINTER, BYTES) memset(POINTER, 0, BYTES);
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
 
 #define __stdcall
 #define CALLBACK
@@ -41,7 +43,11 @@ typedef long                LRESULT;
 #define _totlower towlower
 #define _totupper towupper
 
+#ifdef PLATFORM_LINUX
+#define _FPOSOFF(fp) (fp.__pos)
+#else
 #define _FPOSOFF(fp) (fp)
+#endif
 #define MAX_PATH    260
 
 }
