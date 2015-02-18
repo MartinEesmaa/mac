@@ -16,7 +16,7 @@ public:
     CMACProgressHelper(unsigned int nTotalSteps, IAPEProgressCallback * pProgressCallback);
     virtual ~CMACProgressHelper();
 
-    void UpdateProgress(unsigned int nCurrentStep = 0, BOOL bForceUpdate = FALSE);
+    void UpdateProgress(unsigned int nCurrentStep = -1, BOOL bForceUpdate = FALSE);
     void UpdateProgressComplete() { UpdateProgress(m_nTotalSteps, TRUE); }
 
     int ProcessKillFlag(BOOL bSleep = TRUE);

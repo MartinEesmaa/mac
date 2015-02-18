@@ -150,12 +150,12 @@ namespace APE
 Global defines
 *****************************************************************************************/
 #define MAC_FILE_VERSION_NUMBER                         3990
-#define MAC_VERSION_STRING                              _T("4.13")
-#define MAC_NAME                                        _T("Monkey's Audio 4.13")
-#define PLUGIN_NAME                                     "Monkey's Audio Player v4.13"
-#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.13)")
-#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.13) (c) Matthew T. Ashland ---\n")
-#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.13\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
+#define MAC_VERSION_STRING                              _T("4.14")
+#define MAC_NAME                                        _T("Monkey's Audio 4.14")
+#define PLUGIN_NAME                                     "Monkey's Audio Player v4.14"
+#define MJ_PLUGIN_NAME                                  _T("APE Plugin (v4.14)")
+#define CONSOLE_NAME                                    _T("--- Monkey's Audio Console Front End (v 4.14) (c) Matthew T. Ashland ---\n")
+#define PLUGIN_ABOUT                                    _T("Monkey's Audio Player v4.14\nCopyrighted (c) 2000-2013 by Matthew T. Ashland")
 #define MAC_DLL_INTERFACE_VERSION_NUMBER                1000
 
 /*****************************************************************************************

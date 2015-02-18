@@ -196,7 +196,7 @@ int CStdLibFileIO::GetPosition()
     return _FPOSOFF(fPosition);
 }
 
-int CStdLibFileIO::GetSize()
+unsigned int CStdLibFileIO::GetSize()
 {
     int nCurrentPosition = GetPosition();
     Seek(0, FILE_END);

@@ -226,7 +226,14 @@ int CNNFilter::CalculateDotProductSSE(short * pA, short * pB, int nOrder)
     }
 
     // build output
-    int nDotProduct = sseSum.m128i_i32[0] + sseSum.m128i_i32[1] + sseSum.m128i_i32[2] + sseSum.m128i_i32[3];
+    int nDotProduct = 0;
+#ifdef PLATFORM_LINUX
+    __oword my__oword;
+    my__oword.m128i = sseSum;
+    nDotProduct = my__oword.m128i_i32[0] + my__oword.m128i_i32[1] + my__oword.m128i_i32[2] + my__oword.m128i_i32[3];
+#else
+    nDotProduct = sseSum.m128i_i32[0] + sseSum.m128i_i32[1] + sseSum.m128i_i32[2] + sseSum.m128i_i32[3];
+#endif
 
     // TODO: SSE4 instructions might help performance of the horizontal add, for example:
     //int nDotProduct = _mm_extract_epi32(sseSum, 0) + _mm_extract_epi32(sseSum, 1) + _mm_extract_epi32(sseSum, 2) + _mm_extract_epi32(sseSum, 3);
