@@ -65,7 +65,7 @@ CInputSource * CreateInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
 CWAVInputSource::CWAVInputSource(CIO * pIO, WAVEFORMATEX * pwfeSource, int * pTotalBlocks, int * pHeaderBytes, int * pTerminatingBytes, int * pErrorCode)
     : CInputSource(pIO, pwfeSource, pTotalBlocks, pHeaderBytes, pTerminatingBytes, pErrorCode)
 {
-    m_bIsValid = FALSE;
+    m_bIsValid = false;
 
     if (pIO == NULL || pwfeSource == NULL)
     {
@@ -73,7 +73,7 @@ CWAVInputSource::CWAVInputSource(CIO * pIO, WAVEFORMATEX * pwfeSource, int * pTo
         return;
     }
     
-    m_spIO.Assign(pIO, FALSE, FALSE);
+    m_spIO.Assign(pIO, false, false);
 
     int nResult = AnalyzeSource();
     if (nResult == ERROR_SUCCESS)
@@ -84,7 +84,7 @@ CWAVInputSource::CWAVInputSource(CIO * pIO, WAVEFORMATEX * pwfeSource, int * pTo
         if (pHeaderBytes) *pHeaderBytes = m_nHeaderBytes;
         if (pTerminatingBytes) *pTerminatingBytes = m_nTerminatingBytes;
 
-        m_bIsValid = TRUE;
+        m_bIsValid = true;
     }
     
     if (pErrorCode) *pErrorCode = nResult;
@@ -93,7 +93,7 @@ CWAVInputSource::CWAVInputSource(CIO * pIO, WAVEFORMATEX * pwfeSource, int * pTo
 CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwfeSource, int * pTotalBlocks, int * pHeaderBytes, int * pTerminatingBytes, int * pErrorCode)
     : CInputSource(pSourceName, pwfeSource, pTotalBlocks, pHeaderBytes, pTerminatingBytes, pErrorCode)
 {
-    m_bIsValid = FALSE;
+    m_bIsValid = false;
 
     if (pSourceName == NULL || pwfeSource == NULL)
     {
@@ -102,7 +102,7 @@ CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
     }
     
     m_spIO.Assign(new IO_CLASS_NAME);
-    if (m_spIO->Open(pSourceName, TRUE) != ERROR_SUCCESS)
+    if (m_spIO->Open(pSourceName, true) != ERROR_SUCCESS)
     {
         m_spIO.Delete();
         if (pErrorCode) *pErrorCode = ERROR_INVALID_INPUT_FILE;
@@ -118,7 +118,7 @@ CWAVInputSource::CWAVInputSource(const wchar_t * pSourceName, WAVEFORMATEX * pwf
         if (pHeaderBytes) *pHeaderBytes = m_nHeaderBytes;
         if (pTerminatingBytes) *pTerminatingBytes = m_nTerminatingBytes;
 
-        m_bIsValid = TRUE;
+        m_bIsValid = true;
     }
     
     if (pErrorCode) *pErrorCode = nResult;

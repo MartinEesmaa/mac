@@ -96,19 +96,19 @@ int CAPEInfoDialog::FillGenreComboBox(HWND hDlg, int nComboBoxID, char *pSelecte
     for (int z = 0; z < CAPETag::s_nID3GenreCount; z++) 
     {
         //add the genre string
-		nRetVal = SendMessage(hGenreComboBox, CB_ADDSTRING, 0, (LPARAM) CAPETag::s_aryID3GenreNames[z]);
+		nRetVal = SendMessage(hGenreComboBox, CB_ADDSTRING, 0, (intn) CAPETag::s_aryID3GenreNames[z]);
         if (nRetVal == CB_ERR) { return -1; }
     }
 
     // add the 'Undefined' genre
-    nRetVal = SendMessage(hGenreComboBox, CB_ADDSTRING, 0, (LPARAM) "Undefined");
+    nRetVal = SendMessage(hGenreComboBox, CB_ADDSTRING, 0, (intn) "Undefined");
     if (nRetVal == CB_ERR) { return -1; }
     
     // set the genre id (if it's specified)
     if (pSelectedGenre)
     {
         if (strlen(pSelectedGenre) > 0)
-            SendMessage(hGenreComboBox, CB_SELECTSTRING, -1, (LPARAM) pSelectedGenre);
+            SendMessage(hGenreComboBox, CB_SELECTSTRING, -1, (intn) pSelectedGenre);
     }
 
     return 0;
@@ -117,7 +117,7 @@ int CAPEInfoDialog::FillGenreComboBox(HWND hDlg, int nComboBoxID, char *pSelecte
 /***************************************************************************************
 The dialog procedure
 ***************************************************************************************/
-LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK CAPEInfoDialog::DialogProc(HWND hDlg, UINT message, intn wParam, intn lParam)
 {
     // get the class
     IAPEDecompress * pAPEDecompress = g_pAPEDecompressDialog->m_pAPEDecompress;

@@ -16,10 +16,10 @@ public:
     CMACProgressHelper(unsigned int nTotalSteps, IAPEProgressCallback * pProgressCallback);
     virtual ~CMACProgressHelper();
 
-    void UpdateProgress(unsigned int nCurrentStep = -1, BOOL bForceUpdate = FALSE);
-    void UpdateProgressComplete() { UpdateProgress(m_nTotalSteps, TRUE); }
+    void UpdateProgress(unsigned int nCurrentStep = -1, bool bForceUpdate = false);
+    void UpdateProgressComplete() { UpdateProgress(m_nTotalSteps, true); }
 
-    int ProcessKillFlag(BOOL bSleep = TRUE);
+    int ProcessKillFlag(bool bSleep = true);
     
 private:
     IAPEProgressCallback * m_pProgressCallback;

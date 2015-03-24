@@ -61,7 +61,6 @@ The version of the APE tag
 #define APE_TAG_FIELD_PUBLISHER_URL             L"Publisher URL"
 #define APE_TAG_FIELD_FILE_URL                  L"File URL"
 #define APE_TAG_FIELD_COPYRIGHT_URL             L"Copyright URL"
-#define APE_TAG_FIELD_MJ_METADATA               L"Media Jukebox Metadata"
 #define APE_TAG_FIELD_TOOL_NAME                 L"Tool Name"
 #define APE_TAG_FIELD_TOOL_VERSION              L"Tool Version"
 #define APE_TAG_FIELD_PEAK_LEVEL                L"Peak Level"
@@ -141,22 +140,22 @@ public:
     int GetFieldBytes() { return m_nSize - APE_TAG_FOOTER_BYTES; }
     int GetFieldsOffset() { return GetHasHeader() ? APE_TAG_FOOTER_BYTES : 0; }
     int GetNumberFields() { return m_nFields; }
-    BOOL GetHasHeader() { return (m_nFlags & APE_TAG_FLAG_CONTAINS_HEADER) ? TRUE : FALSE; }
-    BOOL GetIsHeader() { return (m_nFlags & APE_TAG_FLAG_IS_HEADER) ? TRUE : FALSE; }
+    bool GetHasHeader() { return (m_nFlags & APE_TAG_FLAG_CONTAINS_HEADER) ? true : false; }
+    bool GetIsHeader() { return (m_nFlags & APE_TAG_FLAG_IS_HEADER) ? true : false; }
     int GetVersion() { return m_nVersion; }
 
-    BOOL GetIsValid(BOOL bAllowHeader)
+    bool GetIsValid(bool bAllowHeader)
     {
-        BOOL bValid = (strncmp(m_cID, "APETAGEX", 8) == 0) && 
+        bool bValid = (strncmp(m_cID, "APETAGEX", 8) == 0) && 
             (m_nVersion <= CURRENT_APE_TAG_VERSION) &&
             (m_nFields <= 65536) &&
             (m_nSize >= APE_TAG_FOOTER_BYTES) &&
             (GetFieldBytes() <= (1024 * 1024 * 16));
         
-        if (bValid && (bAllowHeader == FALSE) && GetIsHeader())
-            bValid = FALSE;
+        if (bValid && !bAllowHeader && GetIsHeader())
+            bValid = false;
 
-        return bValid ? TRUE : FALSE;
+        return bValid ? true : false;
     }
 };
 
@@ -191,8 +190,8 @@ public:
     int SaveField(char * pBuffer);
 
     // checks to see if the field is read-only
-    BOOL GetIsReadOnly() { return (m_nFieldFlags & TAG_FIELD_FLAG_READ_ONLY) ? TRUE : FALSE; }
-    BOOL GetIsUTF8Text() { return ((m_nFieldFlags & TAG_FIELD_FLAG_DATA_TYPE_MASK) == TAG_FIELD_FLAG_DATA_TYPE_TEXT_UTF8) ? TRUE : FALSE; }
+    bool GetIsReadOnly() { return (m_nFieldFlags & TAG_FIELD_FLAG_READ_ONLY) ? true : false; }
+    bool GetIsUTF8Text() { return ((m_nFieldFlags & TAG_FIELD_FLAG_DATA_TYPE_MASK) == TAG_FIELD_FLAG_DATA_TYPE_TEXT_UTF8) ? true : false; }
 
     // set helpers (use with EXTREME caution)
     void SetFieldFlags(int nFlags) { m_nFieldFlags = nFlags; }
@@ -213,28 +212,28 @@ public:
     // create an APE tag 
     // bAnalyze determines whether it will analyze immediately or on the first request
     // be careful with multiple threads / file pointer movement if you don't analyze immediately
-    CAPETag(CIO * pIO, BOOL bAnalyze = TRUE);
-    CAPETag(const str_utfn * pFilename, BOOL bAnalyze = TRUE);
+    CAPETag(CIO * pIO, bool bAnalyze = true);
+    CAPETag(const str_utfn * pFilename, bool bAnalyze = true);
     
     // destructor
     ~CAPETag();
 
     // save the tag to the I/O source (bUseOldID3 forces it to save as an ID3v1.1 tag instead of an APE tag)
-    int Save(BOOL bUseOldID3 = FALSE);
+    int Save(bool bUseOldID3 = false);
     
     // removes any tags from the file (bUpdate determines whether is should re-analyze after removing the tag)
-    int Remove(BOOL bUpdate = TRUE);
+    int Remove(bool bUpdate = true);
 
     // sets the value of a field (use nFieldBytes = -1 for null terminated strings)
     // note: using NULL or "" for a string type will remove the field
     int SetFieldString(const str_utfn * pFieldName, const str_utfn * pFieldValue, const str_utfn * pListDelimiter = NULL);
-    int SetFieldString(const str_utfn * pFieldName, const char * pFieldValue, BOOL bAlreadyUTF8Encoded, const str_utfn * pListDelimiter = NULL);
+    int SetFieldString(const str_utfn * pFieldName, const char * pFieldValue, bool bAlreadyUTF8Encoded, const str_utfn * pListDelimiter = NULL);
     int SetFieldBinary(const str_utfn * pFieldName, const void * pFieldValue, int nFieldBytes, int nFieldFlags);
 
     // gets the value of a field (returns -1 and an empty buffer if the field doesn't exist)
     int GetFieldBinary(const str_utfn * pFieldName, void * pBuffer, int * pBufferBytes);
     int GetFieldString(const str_utfn * pFieldName, str_utfn * pBuffer, int * pBufferCharacters, const str_utfn * pListDelimiter = _T("; "));
-    int GetFieldString(const str_utfn * pFieldName, str_ansi * pBuffer, int * pBufferCharacters, BOOL bUTF8Encode = FALSE);
+    int GetFieldString(const str_utfn * pFieldName, str_ansi * pBuffer, int * pBufferCharacters, bool bUTF8Encode = false);
 
     // remove a specific field
     int RemoveField(const str_utfn * pFieldName);
@@ -244,7 +243,7 @@ public:
     int ClearFields();
     
     // see if we've been analyzed (we do lazy analysis)
-    BOOL GetAnalyzed() { return m_bAnalyzed; }
+    bool GetAnalyzed() { return m_bAnalyzed; }
 
     // get the total tag bytes in the file from the last analyze
     // need to call Save() then Analyze() to update any changes
@@ -254,8 +253,8 @@ public:
     int CreateID3Tag(ID3_TAG * pID3Tag);
 
     // see whether the file has an ID3 or APE tag
-    BOOL GetHasID3Tag() { if (m_bAnalyzed == FALSE) { Analyze(); } return m_bHasID3Tag; }
-    BOOL GetHasAPETag() { if (m_bAnalyzed == FALSE) { Analyze(); } return m_bHasAPETag; }
+    bool GetHasID3Tag() { if (!m_bAnalyzed) { Analyze(); } return m_bHasID3Tag; }
+    bool GetHasAPETag() { if (!m_bAnalyzed) { Analyze(); } return m_bHasAPETag; }
     int GetAPETagVersion() { return GetHasAPETag() ? m_nAPETagVersion : -1; }
 
     // gets a desired tag field (returns NULL if not found)
@@ -264,7 +263,7 @@ public:
     CAPETagField * GetTagField(int nIndex);
 
     // options
-    void SetIgnoreReadOnly(BOOL bIgnoreReadOnly) { m_bIgnoreReadOnly = bIgnoreReadOnly; }
+    void SetIgnoreReadOnly(bool bIgnoreReadOnly) { m_bIgnoreReadOnly = bIgnoreReadOnly; }
 
 	// statics
 	static const int s_nID3GenreUndefined = 255;
@@ -286,14 +285,14 @@ private:
 
     // private data
     CSmartPtr<CIO> m_spIO;
-    BOOL m_bAnalyzed;
+    bool m_bAnalyzed;
     int m_nTagBytes;
     int m_nFields;
     CAPETagField * m_aryFields[256];
-    BOOL m_bHasAPETag;
+    bool m_bHasAPETag;
     int m_nAPETagVersion;
-    BOOL m_bHasID3Tag;
-    BOOL m_bIgnoreReadOnly;
+    bool m_bHasID3Tag;
+    bool m_bIgnoreReadOnly;
 };
 
 }

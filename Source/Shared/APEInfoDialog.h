@@ -1,6 +1,6 @@
 #pragma once
 
-BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, intn wParam, intn lParam);
     
 class CAPEInfoDialog
 {
@@ -13,7 +13,7 @@ public:
 
 private:
 
-    static LRESULT CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK DialogProc(HWND hDlg, UINT message, intn wParam, intn lParam);
     int FillGenreComboBox(HWND hDlg, int nComboBoxID, char * pSelectedGenre);
     IAPEDecompress * m_pAPEDecompress;
 };

@@ -13,13 +13,13 @@ public:
     CAPELink(const char * pData, const str_utfn * pFilename);
     ~CAPELink();
 
-    BOOL GetIsLinkFile();
+    bool GetIsLinkFile();
     int GetStartBlock();
     int GetFinishBlock();
     const wchar_t * GetImageFilename();
 
 protected:
-    BOOL m_bIsLinkFile;
+    bool m_bIsLinkFile;
     int m_nStartBlock;
     int m_nFinishBlock;
     str_utfn m_cImageFilename[MAX_PATH];

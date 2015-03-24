@@ -84,7 +84,7 @@ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utfn * pFilename, int 
         CAPELink APELink(pFilename);
         if (APELink.GetIsLinkFile())
         {
-            pAPEInfo = new CAPEInfo(&nErrorCode, APELink.GetImageFilename(), new CAPETag(pFilename, TRUE));
+            pAPEInfo = new CAPEInfo(&nErrorCode, APELink.GetImageFilename(), new CAPETag(pFilename, true));
             nStartBlock = APELink.GetStartBlock(); nFinishBlock = APELink.GetFinishBlock();
         }
     }

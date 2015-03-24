@@ -15,7 +15,7 @@ public:
     int GetData(char * pBuffer, int nBlocks, int * pBlocksRetrieved);
     int Seek(int nBlockOffset);
 
-    int GetInfo(APE_DECOMPRESS_FIELDS Field, int nParam1 = 0, int nParam2 = 0);
+    intn GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1 = 0, intn nParam2 = 0);
     
 protected:
     // buffer
@@ -30,13 +30,13 @@ protected:
     int m_nStartBlock;
     int m_nFinishBlock;
     int m_nCurrentBlock;
-    BOOL m_bIsRanged;
+    bool m_bIsRanged;
 
     // decoding tools    
     CUnMAC m_UnMAC;
     CSmartPtr<CAPEInfo> m_spAPEInfo;
     
-    BOOL m_bDecompressorInitialized;
+    bool m_bDecompressorInitialized;
     int InitializeDecompressor();
 };
 

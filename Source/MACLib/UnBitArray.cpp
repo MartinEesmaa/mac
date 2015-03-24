@@ -36,7 +36,6 @@ CUnBitArray::CUnBitArray(CIO * pIO, int nVersion, int nFurthestReadByte) :
     CreateHelper(pIO, 16384, nVersion);
     m_nFlushCounter = 0;
     m_nFinalizeCounter = 0;
-    m_nRefillBitThreshold = (m_nBits - 512);
 }
 
 CUnBitArray::~CUnBitArray()
@@ -62,11 +61,7 @@ void CUnBitArray::GenerateArray(int * pOutputArray, int nElements, int nBytesReq
 
 inline uint32 CUnBitArray::DecodeByte()
 {
-    // error check (only done in debug since we protect against overreads in other ways)
-    #ifdef _DEBUG
-        if ((m_nCurrentBitIndex / 8) >= m_nGoodBytes)
-            ODS(_T("Overread error in CUnBitArray::DecodeByte(...)\n"));
-    #endif
+	EnsureBitsAvailable(8, true);
 
     // read byte
     uint32 nByte = ((m_pBitArray[m_nCurrentBitIndex >> 5] >> (24 - (m_nCurrentBitIndex & 31))) & 0xFF);
@@ -91,12 +86,21 @@ inline int CUnBitArray::RangeDecodeFast(int nShift)
 
 inline int CUnBitArray::RangeDecodeFastWithUpdate(int nShift)
 {
-    while (m_RangeCoderInfo.range <= BOTTOM_VALUE)
-    {   
-        m_RangeCoderInfo.buffer = (m_RangeCoderInfo.buffer << 8) | DecodeByte();
-        m_RangeCoderInfo.low = (m_RangeCoderInfo.low << 8) | ((m_RangeCoderInfo.buffer >> 1) & 0xFF);
-        m_RangeCoderInfo.range <<= 8;
-    }
+	// update range
+	while (m_RangeCoderInfo.range <= BOTTOM_VALUE)
+	{   
+		// if the decoder's range falls to zero, it means the input bitstream is corrupt
+		if (m_RangeCoderInfo.range == 0)
+		{
+			ASSERT(false);
+			throw(1);
+		}
+
+		// read byte and update range
+		m_RangeCoderInfo.buffer = (m_RangeCoderInfo.buffer << 8) | DecodeByte();
+		m_RangeCoderInfo.low = (m_RangeCoderInfo.low << 8) | ((m_RangeCoderInfo.buffer >> 1) & 0xFF);
+		m_RangeCoderInfo.range <<= 8;
+	}
 
     // decode
     m_RangeCoderInfo.range = m_RangeCoderInfo.range >> nShift;
@@ -107,17 +111,12 @@ inline int CUnBitArray::RangeDecodeFastWithUpdate(int nShift)
 
 int CUnBitArray::DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState)
 {
-    // make sure there is room for the data
-    // this is a little slower than ensuring a huge block to start with, but it's safer
-    if (m_nCurrentBitIndex > m_nRefillBitThreshold)
-        FillBitArray();
-
     int nValue = 0;
 
     if (m_nVersion >= 3990)
     {
         // figure the pivot value
-        int nPivotValue = ape_max(BitArrayState.nKSum / 32, 1);
+        int nPivotValue = ape_max(BitArrayState.nKSum / 32, (uint32)1);
         
         // get the overflow
         int nOverflow = 0;

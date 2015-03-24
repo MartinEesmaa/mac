@@ -56,29 +56,29 @@ ANSI wrappers
 *****************************************************************************************/
 int __stdcall CompressFile(const APE::str_ansi * pInputFilename, const APE::str_ansi * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
-    CSmartPtr<str_utfn> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), TRUE);
+    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), true);
+    CSmartPtr<str_utfn> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), true);
     return CompressFileW(spInputFile, spOutputFile, nCompressionLevel, pPercentageDone, ProgressCallback, pKillFlag);
 }
 
 int __stdcall DecompressFile(const APE::str_ansi * pInputFilename, const APE::str_ansi * pOutputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
-    CSmartPtr<str_utfn> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), TRUE);
+    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), true);
+    CSmartPtr<str_utfn> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), true);
     return DecompressFileW(spInputFile, pOutputFilename ? spOutputFile : NULL, pPercentageDone, ProgressCallback, pKillFlag);
 }
 
 int __stdcall ConvertFile(const APE::str_ansi * pInputFilename, const APE::str_ansi * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag)
 {
-    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
-    CSmartPtr<str_utfn> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), TRUE);
+    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), true);
+    CSmartPtr<str_utfn> spOutputFile(CAPECharacterHelper::GetUTF16FromANSI(pOutputFilename), true);
     return ConvertFileW(spInputFile, spOutputFile, nCompressionLevel, pPercentageDone, ProgressCallback, pKillFlag);
 }
 
-int __stdcall VerifyFile(const APE::str_ansi * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible)
+int __stdcall VerifyFile(const APE::str_ansi * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, bool bQuickVerifyIfPossible)
 {
-    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), TRUE);
-    return VerifyFileW(spInputFile, pPercentageDone, ProgressCallback, pKillFlag, FALSE);
+    CSmartPtr<str_utfn> spInputFile(CAPECharacterHelper::GetUTF16FromANSI(pInputFilename), true);
+    return VerifyFileW(spInputFile, pPercentageDone, ProgressCallback, pKillFlag, false);
 }
 
 /*****************************************************************************************
@@ -90,7 +90,7 @@ int __stdcall CompressFileW(const APE::str_utfn * pInputFilename, const APE::str
     return CompressFileW2(pInputFilename, pOutputFilename, nCompressionLevel, &ProgressCallbackLegacy);
 }
 
-int __stdcall VerifyFileW(const APE::str_utfn * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible)
+int __stdcall VerifyFileW(const APE::str_utfn * pInputFilename, int * pPercentageDone, APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, bool bQuickVerifyIfPossible)
 {
     CAPEProgressCallbackLegacy ProgressCallbackLegacy(pPercentageDone, ProgressCallback, pKillFlag);
     return VerifyFileW2(pInputFilename, &ProgressCallbackLegacy, bQuickVerifyIfPossible);
@@ -139,7 +139,7 @@ int __stdcall CompressFileW2(const APE::str_utfn * pInputFilename, const APE::st
         unsigned int nAudioBytes = nAudioBlocks * WaveFormatEx.nBlockAlign;
 
         // start the encoder
-        if (nHeaderBytes > 0) spBuffer.Assign(new unsigned char [nHeaderBytes], TRUE);
+        if (nHeaderBytes > 0) spBuffer.Assign(new unsigned char [nHeaderBytes], true);
         THROW_ON_ERROR(spInputSource->GetHeaderData(spBuffer.GetPtr()))
         THROW_ON_ERROR(spAPECompress->Start(pOutputFilename, &WaveFormatEx, nAudioBytes,
             nCompressionLevel, spBuffer.GetPtr(), nHeaderBytes));
@@ -163,12 +163,12 @@ int __stdcall CompressFileW2(const APE::str_utfn * pInputFilename, const APE::st
             spMACProgressHelper->UpdateProgress(nAudioBytes - nBytesLeft);
 
             // process the kill flag
-            if (spMACProgressHelper->ProcessKillFlag(TRUE) != ERROR_SUCCESS)
+            if (spMACProgressHelper->ProcessKillFlag(true) != ERROR_SUCCESS)
                 throw(ERROR_USER_STOPPED_PROCESSING);
         }
 
         // finalize the file
-        if (nTerminatingBytes > 0) spBuffer.Assign(new unsigned char [nTerminatingBytes], TRUE);
+        if (nTerminatingBytes > 0) spBuffer.Assign(new unsigned char [nTerminatingBytes], true);
         THROW_ON_ERROR(spInputSource->GetTerminatingData(spBuffer.GetPtr()));
         THROW_ON_ERROR(spAPECompress->Finish(spBuffer.GetPtr(), nTerminatingBytes, nTerminatingBytes))
 
@@ -195,7 +195,7 @@ int __stdcall CompressFileW2(const APE::str_utfn * pInputFilename, const APE::st
 /*****************************************************************************************
 Verify file
 *****************************************************************************************/
-int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, IAPEProgressCallback * pProgressCallback, BOOL bQuickVerifyIfPossible)
+int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, IAPEProgressCallback * pProgressCallback, bool bQuickVerifyIfPossible)
 {
     // error check the function parameters
     if (pInputFilename == NULL)
@@ -224,12 +224,12 @@ int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, IAPEProgressCal
                 throw(ERROR_UPSUPPORTED_FILE_VERSION);
 
             // make sure the MD5 is valid
-            if (pInfo->nMD5Invalid != FALSE)
+            if (pInfo->nMD5Invalid)
                 throw(ERROR_UPSUPPORTED_FILE_VERSION);
         }
         catch(...)
         {
-            bQuickVerifyIfPossible = FALSE;
+            bQuickVerifyIfPossible = false;
         }
     }
 
@@ -260,12 +260,12 @@ int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, IAPEProgressCal
 
             pIO->Seek(nHead, FILE_BEGIN);
             int nHeadBytes = nStart - nHead;
-            CSmartPtr<unsigned char> spHeadBuffer(new unsigned char [nHeadBytes], TRUE);
+            CSmartPtr<unsigned char> spHeadBuffer(new unsigned char [nHeadBytes], true);
             if ((pIO->Read(spHeadBuffer, nHeadBytes, &nBytesRead) != ERROR_SUCCESS) || (nHeadBytes != int(nBytesRead)))
                 throw(ERROR_IO_READ);
             
             int nBytesLeft = pInfo->spAPEDescriptor->nHeaderDataBytes + pInfo->spAPEDescriptor->nAPEFrameDataBytes + pInfo->spAPEDescriptor->nTerminatingDataBytes;
-            CSmartPtr<unsigned char> spBuffer(new unsigned char [16384], TRUE);
+            CSmartPtr<unsigned char> spBuffer(new unsigned char [16384], true);
             nBytesRead = 1;
             while ((nBytesLeft > 0) && (nBytesRead > 0))
             {
@@ -358,7 +358,7 @@ int DecompressCore(const APE::str_utfn * pInputFilename, const APE::str_utfn * p
         THROW_ON_ERROR(spAPEDecompress->GetInfo(APE_INFO_WAVEFORMATEX, (intn) &wfeInput))
 
         // allocate space for the header
-        spTempBuffer.Assign(new unsigned char [spAPEDecompress->GetInfo(APE_INFO_WAV_HEADER_BYTES)], TRUE);
+        spTempBuffer.Assign(new unsigned char [spAPEDecompress->GetInfo(APE_INFO_WAV_HEADER_BYTES)], true);
         if (spTempBuffer == NULL) throw(ERROR_INSUFFICIENT_MEMORY);
 
         // get the header
@@ -386,7 +386,7 @@ int DecompressCore(const APE::str_utfn * pInputFilename, const APE::str_utfn * p
         }
 
         // allocate space for decompression
-        spTempBuffer.Assign(new unsigned char [spAPEDecompress->GetInfo(APE_INFO_BLOCK_ALIGN) * BLOCKS_PER_DECODE], TRUE);
+        spTempBuffer.Assign(new unsigned char [spAPEDecompress->GetInfo(APE_INFO_BLOCK_ALIGN) * BLOCKS_PER_DECODE], true);
         if (spTempBuffer == NULL) throw(ERROR_INSUFFICIENT_MEMORY);
 
         int nBlocksLeft = spAPEDecompress->GetInfo(APE_DECOMPRESS_TOTAL_BLOCKS);
@@ -422,7 +422,7 @@ int DecompressCore(const APE::str_utfn * pInputFilename, const APE::str_utfn * p
         
             // update progress and kill flag
             spMACProgressHelper->UpdateProgress();
-            if (spMACProgressHelper->ProcessKillFlag(TRUE) != 0)
+            if (spMACProgressHelper->ProcessKillFlag(true) != 0)
                 throw(ERROR_USER_STOPPED_PROCESSING);
         }
 
@@ -432,7 +432,7 @@ int DecompressCore(const APE::str_utfn * pInputFilename, const APE::str_utfn * p
             // write any terminating WAV data
             if (spAPEDecompress->GetInfo(APE_INFO_WAV_TERMINATING_BYTES) > 0) 
             {
-                spTempBuffer.Assign(new unsigned char[spAPEDecompress->GetInfo(APE_INFO_WAV_TERMINATING_BYTES)], TRUE);
+                spTempBuffer.Assign(new unsigned char[spAPEDecompress->GetInfo(APE_INFO_WAV_TERMINATING_BYTES)], true);
                 if (spTempBuffer == NULL) throw(ERROR_INSUFFICIENT_MEMORY);
                 THROW_ON_ERROR(spAPEDecompress->GetInfo(APE_INFO_WAV_TERMINATING_DATA, (intn) spTempBuffer.GetPtr(), spAPEDecompress->GetInfo(APE_INFO_WAV_TERMINATING_BYTES)))
         
@@ -453,7 +453,7 @@ int DecompressCore(const APE::str_utfn * pInputFilename, const APE::str_utfn * p
 
             if (nTerminatingBytes > 0) 
             {
-                spTempBuffer.Assign(new unsigned char[nTerminatingBytes], TRUE);
+                spTempBuffer.Assign(new unsigned char[nTerminatingBytes], true);
                 if (spTempBuffer == NULL) throw(ERROR_INSUFFICIENT_MEMORY);
                 
                 THROW_ON_ERROR(spAPEDecompress->GetInfo(APE_INFO_WAV_TERMINATING_DATA, (intn) spTempBuffer.GetPtr(), nTerminatingBytes))

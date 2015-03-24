@@ -70,7 +70,7 @@ CBitArray::~CBitArray()
 /************************************************************************************
 Output the bit array via the CIO (typically saves to disk)
 ************************************************************************************/
-int CBitArray::OutputBitArray(BOOL bFinalize)
+int CBitArray::OutputBitArray(bool bFinalize)
 {
     // write the entire file to disk
     unsigned int nBytesWritten = 0;
@@ -101,7 +101,7 @@ int CBitArray::OutputBitArray(BOOL bFinalize)
         m_nCurrentBitIndex = (m_nCurrentBitIndex & 31);
         
         // zero the rest of the memory (may not need the +1 because of frame byte alignment)
-        memset(&m_pBitArray[1], 0, ape_min(nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
+        memset(&m_pBitArray[1], 0, ape_min((int)nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
     }
     
     // return a success
@@ -221,7 +221,7 @@ int CBitArray::EncodeValue(int nEncode, BIT_ARRAY_STATE & BitArrayState)
     nEncode = (nEncode > 0) ? nEncode * 2 - 1 : -nEncode * 2;
 
     // figure the pivot value
-    int nPivotValue = ape_max(BitArrayState.nKSum / 32, 1);
+    int nPivotValue = ape_max(BitArrayState.nKSum / 32, (uint32)1);
     int nOverflow = nEncode / nPivotValue;
     int nBase = nEncode - (nOverflow * nPivotValue);
 

@@ -384,10 +384,10 @@ public:
     // Parameters:
     //    int nBytesAdded
     //        the number of bytes copied into the buffer
-    //    BOOL bProcess
+    //    bool bProcess
     //        whether MAC should process as much as possible of the buffer
     //////////////////////////////////////////////////////////////////////////////////////////////
-    virtual int UnlockBuffer(unsigned int nBytesAdded, BOOL bProcess = TRUE) = 0;
+    virtual int UnlockBuffer(unsigned int nBytesAdded, bool bProcess = true) = 0;
     
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -469,12 +469,12 @@ extern "C"
     DLLEXPORT int __stdcall CompressFileW(const APE::str_utfn * pInputFilename, const APE::str_utfn * pOutputFilename, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, int * pPercentageDone = NULL, APE::APE_PROGRESS_CALLBACK ProgressCallback = 0, int * pKillFlag = NULL);
     DLLEXPORT int __stdcall DecompressFileW(const APE::str_utfn * pInputFilename, const APE::str_utfn * pOutputFilename, int * pPercentageDone, APE::APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag);
     DLLEXPORT int __stdcall ConvertFileW(const APE::str_utfn * pInputFilename, const APE::str_utfn * pOutputFilename, int nCompressionLevel, int * pPercentageDone, APE::APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag);
-    DLLEXPORT int __stdcall VerifyFileW(const APE::str_utfn * pInputFilename, int * pPercentageDone, APE::APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, BOOL bQuickVerifyIfPossible = FALSE); 
+    DLLEXPORT int __stdcall VerifyFileW(const APE::str_utfn * pInputFilename, int * pPercentageDone, APE::APE_PROGRESS_CALLBACK ProgressCallback, int * pKillFlag, bool bQuickVerifyIfPossible = false); 
 
     DLLEXPORT int __stdcall CompressFileW2(const APE::str_utfn * pInputFilename, const APE::str_utfn * pOutputFilename, int nCompressionLevel = COMPRESSION_LEVEL_NORMAL, APE::IAPEProgressCallback * pProgressCallback = NULL);
     DLLEXPORT int __stdcall DecompressFileW2(const APE::str_utfn * pInputFilename, const APE::str_utfn * pOutputFilename, APE::IAPEProgressCallback * pProgressCallback = NULL);
     DLLEXPORT int __stdcall ConvertFileW2(const APE::str_utfn * pInputFilename, const APE::str_utfn * pOutputFilename, int nCompressionLevel, APE::IAPEProgressCallback * pProgressCallback = NULL);
-    DLLEXPORT int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, APE::IAPEProgressCallback * pProgressCallback = NULL, BOOL bQuickVerifyIfPossible = FALSE); 
+    DLLEXPORT int __stdcall VerifyFileW2(const APE::str_utfn * pInputFilename, APE::IAPEProgressCallback * pProgressCallback = NULL, bool bQuickVerifyIfPossible = false); 
 
     // helper functions
     DLLEXPORT int __stdcall FillWaveFormatEx(APE::WAVEFORMATEX * pWaveFormatEx, int nSampleRate = 44100, int nBitsPerSample = 16, int nChannels = 2);
