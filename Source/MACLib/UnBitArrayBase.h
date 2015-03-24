@@ -34,6 +34,7 @@ public:
     virtual unsigned int DecodeValue(DECODE_VALUE_METHOD DecodeMethod, int nParam1 = 0, int nParam2 = 0) { return 0; }
     
     virtual void AdvanceToByteBoundary();
+	virtual bool EnsureBitsAvailable(uint32 nBits, bool bThrowExceptionOnFailure);
 
     virtual int DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState) { return 0; }
     virtual void FlushState(UNBIT_ARRAY_STATE & BitArrayState) { }

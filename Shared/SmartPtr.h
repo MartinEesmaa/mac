@@ -1,3 +1,6 @@
+#ifdef PLATFORM_LINUX
+#include "SharedFiles/MPLinux.h"
+#endif
 #pragma once
 
 namespace APE
@@ -17,17 +20,17 @@ template <class TYPE> class CSmartPtr
 {
 public:
     TYPE * m_pObject;
-    BOOL m_bArray;
-    BOOL m_bDelete;
+    bool m_bArray;
+    bool m_bDelete;
 
     CSmartPtr()
     {
-        m_bDelete = TRUE;
+        m_bDelete = true;
         m_pObject = NULL;
     }
-    CSmartPtr(TYPE * a_pObject, BOOL a_bArray = FALSE, BOOL a_bDelete = TRUE)
+    CSmartPtr(TYPE * a_pObject, bool a_bArray = false, bool a_bDelete = true)
     {
-        m_bDelete = TRUE;
+        m_bDelete = true;
         m_pObject = NULL;
         Assign(a_pObject, a_bArray, a_bDelete);
     }
@@ -37,7 +40,7 @@ public:
         Delete();
     }
 
-    void Assign(TYPE * a_pObject, BOOL a_bArray = FALSE, BOOL a_bDelete = TRUE)
+    void Assign(TYPE * a_pObject, bool a_bArray = false, bool a_bDelete = true)
     {
         Delete();
 
@@ -59,7 +62,7 @@ public:
         }
     }
 
-    void SetDelete(const BOOL a_bDelete)
+    void SetDelete(const bool a_bDelete)
     {
         m_bDelete = a_bDelete;
     }
@@ -86,6 +89,6 @@ public:
 
 #ifdef _MSC_VER
     #pragma warning(pop)
-#endif _MSC_VER
+#endif
 
 }

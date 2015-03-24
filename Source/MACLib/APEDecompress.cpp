@@ -29,17 +29,17 @@ CAPEDecompress::CAPEDecompress(int * pErrorCode, CAPEInfo * pAPEInfo, int nStart
     m_nBlockAlign = GetInfo(APE_INFO_BLOCK_ALIGN);
 
     // initialize other stuff
-    m_bDecompressorInitialized = FALSE;
+    m_bDecompressorInitialized = false;
     m_nCurrentFrame = 0;
     m_nCurrentBlock = 0;
     m_nCurrentFrameBufferBlock = 0;
     m_nFrameBufferFinishedBlocks = 0;
-    m_bErrorDecodingCurrentFrame = FALSE;
+    m_bErrorDecodingCurrentFrame = false;
     m_nErrorDecodingCurrentFrameOutputSilenceBlocks = 0;
 
     // set the "real" start and finish blocks
-    m_nStartBlock = (nStartBlock < 0) ? 0 : ape_min(nStartBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
-    m_nFinishBlock = (nFinishBlock < 0) ? GetInfo(APE_INFO_TOTAL_BLOCKS) : ape_min(nFinishBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
+    m_nStartBlock = (nStartBlock < 0) ? 0 : ape_min(nStartBlock, (int)GetInfo(APE_INFO_TOTAL_BLOCKS));
+    m_nFinishBlock = (nFinishBlock < 0) ? GetInfo(APE_INFO_TOTAL_BLOCKS) : ape_min(nFinishBlock, (int)GetInfo(APE_INFO_TOTAL_BLOCKS));
     m_bIsRanged = (m_nStartBlock != 0) || (m_nFinishBlock != GetInfo(APE_INFO_TOTAL_BLOCKS));
 }
 
@@ -54,7 +54,7 @@ int CAPEDecompress::InitializeDecompressor()
         return ERROR_SUCCESS;
 
     // update the initialized flag
-    m_bDecompressorInitialized = TRUE;
+    m_bDecompressorInitialized = true;
 
     // create a frame buffer
     m_cbFrameBuffer.CreateBuffer((GetInfo(APE_INFO_BLOCKS_PER_FRAME) + DECODE_BLOCK_SIZE) * m_nBlockAlign, m_nBlockAlign * 64);
@@ -151,7 +151,7 @@ int CAPEDecompress::Seek(int nBlockOffset)
     RETURN_ON_ERROR(SeekToFrame(m_nCurrentFrame));
 
     // skip necessary blocks
-    CSmartPtr<char> spTempBuffer(new char [nBytesToSkip], TRUE);
+    CSmartPtr<char> spTempBuffer(new char [nBytesToSkip], true);
     if (spTempBuffer == NULL) return ERROR_INSUFFICIENT_MEMORY;
     
     int nBlocksRetrieved = 0;
@@ -218,11 +218,11 @@ int CAPEDecompress::FillFrameBuffer()
         DecodeBlocksToFrameBuffer(nBlocksThisPass);
             
         // end the frame if we decoded all the blocks from the current frame
-        BOOL bEndedFrame = FALSE;
+        bool bEndedFrame = false;
         if ((nFrameOffsetBlocks + nBlocksThisPass) >= nFrameBlocks)
         {
             EndFrame();
-            bEndedFrame = TRUE;
+            bEndedFrame = true;
         }
 
         // handle errors (either mid-frame or from a CRC at the end of the frame)
@@ -353,13 +353,13 @@ void CAPEDecompress::DecodeBlocksToFrameBuffer(int nBlocks)
     }
     catch(...)
     {
-        m_bErrorDecodingCurrentFrame = TRUE;
+        m_bErrorDecodingCurrentFrame = true;
     }
 
     // get actual blocks that have been decoded and added to the frame buffer
     int nActualBlocks = (m_cbFrameBuffer.MaxGet() - nFrameBufferBytes) / m_nBlockAlign;
     if (nBlocks != nActualBlocks)
-        m_bErrorDecodingCurrentFrame = TRUE;
+        m_bErrorDecodingCurrentFrame = true;
 
     // bump frame decode position
     m_nCurrentFrameBufferBlock += nActualBlocks;
@@ -371,10 +371,10 @@ void CAPEDecompress::StartFrame()
     
     // get the frame header
     m_nStoredCRC = m_spUnBitArray->DecodeValue(DECODE_VALUE_METHOD_UNSIGNED_INT);
-    m_bErrorDecodingCurrentFrame = FALSE;
+    m_bErrorDecodingCurrentFrame = false;
     m_nErrorDecodingCurrentFrameOutputSilenceBlocks = 0;
 
-    // get any 'special' codes if the file uses them (for silence, FALSE stereo, etc.)
+    // get any 'special' codes if the file uses them (for silence, false stereo, etc.)
     m_nSpecialCodes = 0;
     if (GET_USES_SPECIAL_FRAMES(m_spAPEInfo))
     {
@@ -410,14 +410,14 @@ void CAPEDecompress::EndFrame()
     if (m_nCRC != m_nStoredCRC)
     {
         // error
-        m_bErrorDecodingCurrentFrame = TRUE;
+        m_bErrorDecodingCurrentFrame = true;
 
         // We didn't use to check the CRC of the last frame in MAC 3.98 and earlier.  This caused some confusion for one
         // user that had a lot of 3.97 Extra High files that have CRC errors on the last frame.  They would verify
         // with old versions, but not with newer versions.  It's still unknown what corrupted the user's files but since
         // only the last frame was bad, it's likely to have been caused by a buggy tagger.
         //if ((m_nCurrentFrame >= GetInfo(APE_INFO_TOTAL_FRAMES)) && (GetInfo(APE_INFO_FILE_VERSION) < 3990))
-        //    m_bErrorDecodingCurrentFrame = FALSE;
+        //    m_bErrorDecodingCurrentFrame = false;
     }
 }
 
@@ -436,7 +436,7 @@ Get information from the decompressor
 intn CAPEDecompress::GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1, intn nParam2)
 {
     intn nResult = 0;
-    BOOL bHandled = TRUE;
+    bool bHandled = true;
 
     switch (Field)
     {
@@ -498,12 +498,12 @@ intn CAPEDecompress::GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1, intn nPa
         break;
     }
     default:
-        bHandled = FALSE;
+        bHandled = false;
     }
 
     if (!bHandled && m_bIsRanged)
     {
-        bHandled = TRUE;
+        bHandled = true;
 
         switch (Field)
         {
@@ -537,11 +537,11 @@ intn CAPEDecompress::GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1, intn nPa
             nResult = 0;
             break;
         default:
-            bHandled = FALSE;
+            bHandled = false;
         }
     }
 
-    if (bHandled == FALSE)
+    if (!bHandled)
         nResult = m_spAPEInfo->GetInfo(Field, nParam1, nParam2);
 
     return nResult;

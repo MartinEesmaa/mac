@@ -23,7 +23,7 @@ CUnBitArrayBase * CreateUnBitArray(IAPEDecompress * pAPEDecompress, int nVersion
 
        // tag (not worth analyzing the tag since we could be a remote file, etc.)
        CAPETag * pAPETag = (CAPETag *) pAPEDecompress->GetInfo(APE_INFO_TAG);
-       if ((pAPETag != NULL) && (pAPETag->GetAnalyzed() != FALSE))
+       if ((pAPETag != NULL) && pAPETag->GetAnalyzed())
            nFurthestReadByte -= pAPETag->GetTagBytes();
     }
 
@@ -61,11 +61,38 @@ void CUnBitArrayBase::AdvanceToByteBoundary()
     if (nMod != 0) { m_nCurrentBitIndex += 8 - nMod; }
 }
 
+bool CUnBitArrayBase::EnsureBitsAvailable(uint32 nBits, bool bThrowExceptionOnFailure)
+{
+	bool bResult = true;
+
+	// get more data if necessary
+	if ((m_nCurrentBitIndex + nBits) >= (m_nGoodBytes * 8))
+	{
+		// fill
+		FillBitArray();
+
+		// if we still don't have enough good bytes, we don't have the bits available
+		if ((m_nCurrentBitIndex + nBits) >= (m_nGoodBytes * 8))
+		{
+			// overread error
+			ASSERT(false);
+
+			// throw exception if specified
+			if (bThrowExceptionOnFailure)
+				throw(1);
+
+			// data not available
+			bResult = false;
+		}
+	}
+
+	return bResult;
+}
+
 uint32 CUnBitArrayBase::DecodeValueXBits(uint32 nBits) 
 {
     // get more data if necessary
-    if ((m_nCurrentBitIndex + nBits) >= m_nBits)
-        FillBitArray();
+	EnsureBitsAvailable(nBits, true);
 
     // variable declares
     uint32 nLeftBits = 32 - (m_nCurrentBitIndex & 31);

@@ -38,7 +38,6 @@ private:
     int m_nFlushCounter;
     int m_nFinalizeCounter;
     RANGE_CODER_STRUCT_DECOMPRESS m_RangeCoderInfo;
-    uint32 m_nRefillBitThreshold;
     
     // functions
     inline uint32 DecodeByte();

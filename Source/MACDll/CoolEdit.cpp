@@ -75,7 +75,7 @@ __declspec(dllexport) DWORD FAR PASCAL FilterGetOptions(HWND hWnd, HINSTANCE hIn
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //DIALOGMsgProc: All Dialog stuff here
 //////////////////////////////////////
-__declspec(dllexport) BOOL FAR PASCAL DIALOGMsgProc(HWND hWndDlg, UINT Message, WPARAM wParam, LPARAM lParam)
+__declspec(dllexport) BOOL FAR PASCAL DIALOGMsgProc(HWND hWndDlg, UINT Message, intn wParam, intn lParam)
 {
     switch(Message)
     {

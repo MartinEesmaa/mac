@@ -56,7 +56,7 @@ bool FileExists(wchar_t * pFilename)
 
 #else
 
-    CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pFilename), TRUE);
+    CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pFilename), true);
 
     struct stat b;
 
@@ -151,7 +151,7 @@ bool StringIsEqual(const str_utfn * pString1, const str_utfn * pString2, bool bC
 		{
 			f = *pString1++;
 			l = *pString2++;
-			if (bCaseSensitive == false)
+			if (!bCaseSensitive)
 			{
 				f = _totlower(f);
 				l = _totlower(l);

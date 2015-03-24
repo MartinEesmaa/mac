@@ -22,7 +22,7 @@ public:
 		QueryPerformanceCounter(&m_Timer);
 	}
 
-	double GetElapsedMS(BOOL bReset = FALSE)
+	double GetElapsedMS(bool bReset = false)
 	{
 		double dElapsedMS = 0;
 

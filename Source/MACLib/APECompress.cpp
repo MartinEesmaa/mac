@@ -12,8 +12,8 @@ CAPECompress::CAPECompress()
     m_nBufferHead = 0;
     m_nBufferTail = 0;
     m_nBufferSize = 0;
-    m_bBufferLocked = FALSE;
-    m_bOwnsOutputIO = FALSE;
+    m_bBufferLocked = false;
+    m_bOwnsOutputIO = false;
     m_pioOutput = NULL;
     m_pBuffer = NULL;
 
@@ -33,7 +33,7 @@ CAPECompress::~CAPECompress()
 int CAPECompress::Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
 {
     m_pioOutput = new IO_CLASS_NAME;
-    m_bOwnsOutputIO = TRUE;
+    m_bOwnsOutputIO = true;
     
     if (m_pioOutput->Create(pOutputFilename) != 0)
     {
@@ -54,7 +54,7 @@ int CAPECompress::Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pw
 int CAPECompress::StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, unsigned int nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int nHeaderBytes)
 {
     m_pioOutput = pioOutput;
-    m_bOwnsOutputIO = FALSE;
+    m_bOwnsOutputIO = false;
 
     m_spAPECompressCreate->Start(m_pioOutput, pwfeInput, nMaxAudioBytes, nCompressionLevel,
         pHeaderData, nHeaderBytes);
@@ -72,13 +72,13 @@ int CAPECompress::GetBufferBytesAvailable()
     return m_nBufferSize - m_nBufferTail;
 }
 
-int CAPECompress::UnlockBuffer(unsigned int nBytesAdded, BOOL bProcess)
+int CAPECompress::UnlockBuffer(unsigned int nBytesAdded, bool bProcess)
 {
-    if (m_bBufferLocked == FALSE)
+    if (!m_bBufferLocked)
         return ERROR_UNDEFINED;
     
     m_nBufferTail += nBytesAdded;
-    m_bBufferLocked = FALSE;
+    m_bBufferLocked = false;
     
     if (bProcess)
     {
@@ -96,7 +96,7 @@ unsigned char * CAPECompress::LockBuffer(int * pBytesAvailable)
     if (m_bBufferLocked)
         return NULL;
     
-    m_bBufferLocked = TRUE;
+    m_bBufferLocked = true;
     
     if (pBytesAvailable)
         *pBytesAvailable = GetBufferBytesAvailable();
@@ -136,7 +136,7 @@ int CAPECompress::AddData(unsigned char * pData, int nBytes)
 
 int CAPECompress::Finish(unsigned char * pTerminatingData, int nTerminatingBytes, int nWAVTerminatingBytes)
 {
-    RETURN_ON_ERROR(ProcessBuffer(TRUE))
+    RETURN_ON_ERROR(ProcessBuffer(true))
     return m_spAPECompressCreate->Finish(pTerminatingData, nTerminatingBytes, nWAVTerminatingBytes);
 }
 
@@ -145,7 +145,7 @@ int CAPECompress::Kill()
     return ERROR_SUCCESS;
 }
 
-int CAPECompress::ProcessBuffer(BOOL bFinalize)
+int CAPECompress::ProcessBuffer(bool bFinalize)
 {
     if (m_pBuffer == NULL) { return ERROR_UNDEFINED; }
     
@@ -237,7 +237,7 @@ int CAPECompress::AddDataFromInputSource(CInputSource * pInputSource, unsigned i
     }
         
     // unlock the data and process
-    int nResult = UnlockBuffer(nBytesRead, TRUE);
+    int nResult = UnlockBuffer(nBytesRead, true);
     if (nResult != 0)
     {
         return nResult;

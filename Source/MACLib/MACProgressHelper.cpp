@@ -21,7 +21,7 @@ CMACProgressHelper::~CMACProgressHelper()
 
 }
 
-void CMACProgressHelper::UpdateProgress(unsigned int nCurrentStep, BOOL bForceUpdate)
+void CMACProgressHelper::UpdateProgress(unsigned int nCurrentStep, bool bForceUpdate)
 {
     // update the step
      if (nCurrentStep == -1)
@@ -46,7 +46,7 @@ void CMACProgressHelper::UpdateProgress(unsigned int nCurrentStep, BOOL bForceUp
     }
 }
 
-int CMACProgressHelper::ProcessKillFlag(BOOL bSleep)
+int CMACProgressHelper::ProcessKillFlag(bool bSleep)
 {
     // process any messages (allows repaint, etc.)
     if (bSleep)

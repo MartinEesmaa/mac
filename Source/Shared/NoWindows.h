@@ -2,7 +2,7 @@
 
 #if !defined(PLATFORM_WINDOWS)
 
-// we treat BOOL as a global type, so don't declare it in the namespace
+// we treat bool as a global type, so don't declare it in the namespace
 #ifdef PLATFORM_APPLE
 	typedef signed char BOOL;  // this is the way it's defined in Obj-C
 #else
@@ -11,9 +11,6 @@
 
 namespace APE
 {
-
-#define FALSE    0
-#define TRUE     1
 
 #define NEAR
 #define FAR
@@ -24,8 +21,8 @@ typedef unsigned short      WORD;
 typedef float               FLOAT;
 typedef void *              HANDLE;
 typedef unsigned int        UINT;
-typedef unsigned int        WPARAM;
-typedef long                LPARAM;
+//typedef unsigned int        intn;
+//typedef long                intn;
 typedef const char *        LPCSTR;
 typedef char *              LPSTR;
 typedef long                LRESULT;
@@ -48,7 +45,7 @@ typedef long                LRESULT;
 #else
 #define _FPOSOFF(fp) (fp)
 #endif
-#define MAX_PATH    260
+#define MAX_PATH    4096
 
 }
 

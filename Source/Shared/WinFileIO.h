@@ -16,7 +16,7 @@ public:
     ~CWinFileIO();
 
     // open / close
-    int Open(const wchar_t * pName, BOOL bOpenReadOnly = FALSE);
+    int Open(const wchar_t * pName, bool bOpenReadOnly = false);
     int Close();
     
     // read / write
@@ -42,7 +42,7 @@ private:
     
     HANDLE        m_hFile;
     wchar_t        m_cFileName[MAX_PATH];
-    BOOL        m_bReadOnly;
+    bool        m_bReadOnly;
 };
 
 }

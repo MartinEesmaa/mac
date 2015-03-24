@@ -1,6 +1,6 @@
 #pragma once
 
-BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK FileInfoDialogProcedureA(HWND hDlg, UINT message, intn wParam, intn lParam);
     
 class CWAVInfoDialog
 {
@@ -13,7 +13,7 @@ public:
 
 private:
 
-    static LRESULT CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK DialogProc(HWND hDlg, UINT message, intn wParam, intn lParam);
     long InitDialog(HWND hDlg);
     TCHAR m_cFileName[MAX_PATH];
 };

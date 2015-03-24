@@ -15,7 +15,7 @@ public:
     ~CStdLibFileIO();
 
     // open / close
-    int Open(const wchar_t * pName, BOOL bOpenReadOnly = FALSE);
+    int Open(const wchar_t * pName, bool bOpenReadOnly = false);
     int Close();
     
     // read / write
@@ -41,7 +41,7 @@ public:
 private:
     
     wchar_t m_cFileName[MAX_PATH];
-    BOOL m_bReadOnly;
+    bool m_bReadOnly;
     FILE * m_pFile;
 };
 

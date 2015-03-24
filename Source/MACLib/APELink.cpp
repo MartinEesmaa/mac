@@ -14,7 +14,7 @@ namespace APE
 CAPELink::CAPELink(const str_utfn * pFilename)
 {
     // empty
-    m_bIsLinkFile = FALSE;
+    m_bIsLinkFile = false;
     m_nStartBlock = 0;
     m_nFinishBlock = 0;
     m_cImageFilename[0] = 0;
@@ -24,7 +24,7 @@ CAPELink::CAPELink(const str_utfn * pFilename)
     if (ioLinkFile.Open(pFilename) == ERROR_SUCCESS)
     {
         // create a buffer
-        CSmartPtr<char> spBuffer(new char [1024], TRUE);
+        CSmartPtr<char> spBuffer(new char [1024], true);
         
         // fill the buffer from the file and null terminate it
         unsigned int nBytesRead = 0;
@@ -48,7 +48,7 @@ CAPELink::~CAPELink()
 void CAPELink::ParseData(const char * pData, const str_utfn * pFilename)
 {
     // empty
-    m_bIsLinkFile = FALSE;
+    m_bIsLinkFile = false;
     m_nStartBlock = 0;
     m_nFinishBlock = 0;
     m_cImageFilename[0] = 0;
@@ -79,7 +79,7 @@ void CAPELink::ParseData(const char * pData, const str_utfn * pFilename)
                     cImageFile[nIndex++] = *pImageCharacter++;
                 cImageFile[nIndex] = 0;
 
-                CSmartPtr<str_utfn> spImageFileUTF16(CAPECharacterHelper::GetUTF16FromUTF8((const str_utf8 *) cImageFile), TRUE);
+                CSmartPtr<str_utfn> spImageFileUTF16(CAPECharacterHelper::GetUTF16FromUTF8((const str_utf8 *) cImageFile), true);
 
                 // process the path
                 if ((wcsrchr(spImageFileUTF16, '\\') == NULL) && (wcsrchr(pFilename, '\\') != NULL))
@@ -95,7 +95,7 @@ void CAPELink::ParseData(const char * pData, const str_utfn * pFilename)
                 }
 
                 // this is a valid link file
-                m_bIsLinkFile = TRUE;
+                m_bIsLinkFile = true;
             }
         }
     }
@@ -116,7 +116,7 @@ const str_utfn * CAPELink::GetImageFilename()
     return m_cImageFilename;
 }
 
-BOOL CAPELink::GetIsLinkFile()
+bool CAPELink::GetIsLinkFile()
 {
     return m_bIsLinkFile;
 }

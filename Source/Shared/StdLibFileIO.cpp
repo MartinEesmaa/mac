@@ -21,11 +21,13 @@
 # include <sys/ioctl.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/errno.h>
 #else
 # include <fcntl.h>
 # include <unistd.h>
 # include <sys/ioctl.h>
 # include <sys/stat.h>
+# include <sys/errno.h>
 #endif
 
 
@@ -105,7 +107,7 @@ namespace APE
 CStdLibFileIO::CStdLibFileIO()
 {
     memset(m_cFileName, 0, MAX_PATH);
-    m_bReadOnly = FALSE;
+    m_bReadOnly = false;
     m_pFile = NULL;
 }
 
@@ -119,27 +121,36 @@ int CStdLibFileIO::GetHandle()
     return FILENO(m_pFile);
 }
 
-int CStdLibFileIO::Open(const wchar_t * pName, BOOL bOpenReadOnly)
+int CStdLibFileIO::Open(const wchar_t * pName, bool bOpenReadOnly)
 {
     Close();
 
-    m_bReadOnly = FALSE;
+	if (wcslen(pName) >= MAX_PATH)
+		return -1;
+
+    m_bReadOnly = false;
 
     if (0 == wcscmp(pName, _T("-")) || 0 == wcscmp(pName, _T("/dev/stdin")))
     {
         m_pFile = SETBINARY_IN(stdin);
-        m_bReadOnly = TRUE;                                                     // ReadOnly
+        m_bReadOnly = true;                                                     // ReadOnly
     }
     else if (0 == wcscmp(pName, _T("/dev/stdout")))
     {
         m_pFile = SETBINARY_OUT(stdout);
-        m_bReadOnly = FALSE;                                                    // WriteOnly
+        m_bReadOnly = false;                                                    // WriteOnly
     }
     else 
     {
-        CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), TRUE);
+        CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), true);
         m_pFile = fopen(spFilenameUTF8, "r+b");
-        m_bReadOnly = FALSE;                                                    // Read/Write
+		if (m_pFile == NULL && errno == EACCES)
+		{
+			// failed asking for read/write mode on open, try read-only
+			m_pFile = fopen(spFilenameUTF8, "rb");
+			if (m_pFile)
+				m_bReadOnly = true;
+		}
     }
 
     if (!m_pFile)
@@ -186,6 +197,10 @@ int CStdLibFileIO::SetEOF()
     return ftruncate(GetHandle(), GetPosition());
 }
 
+#ifdef PLATFORM_LINUX
+#define _FPOSOFF(fp) (fp.__pos)
+#endif
+
 int CStdLibFileIO::GetPosition()
 {
     fpos_t fPosition;
@@ -215,16 +230,20 @@ int CStdLibFileIO::Create(const wchar_t * pName)
 {
     Close();
 
+	if (wcslen(pName) >= MAX_PATH)
+		return -1;
+
     if (0 == wcscmp(pName, _T("-")) || 0 == wcscmp(pName, _T("/dev/stdout")))
     {
         m_pFile = SETBINARY_OUT(stdout);
-        m_bReadOnly = FALSE;                            // WriteOnly
+        m_bReadOnly = false;                            // WriteOnly
     }
     else 
     {
-        CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), TRUE);
-        m_pFile = fopen(spFilenameUTF8, "wb");                  // Read/Write
-        m_bReadOnly = FALSE;
+        CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(pName), true);
+		// NOTE: on Mac OSX (BSD Unix), we MUST have "w+b" if we want to read & write, with other systems "wb" seems to be fine
+        m_pFile = fopen(spFilenameUTF8, "w+b");                  // Read/Write
+        m_bReadOnly = false;
     }
 
     if (!m_pFile)
@@ -238,7 +257,7 @@ int CStdLibFileIO::Create(const wchar_t * pName)
 int CStdLibFileIO::Delete()
 {
     Close();
-    CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(m_cFileName), TRUE);
+    CSmartPtr<char> spFilenameUTF8((char *) CAPECharacterHelper::GetUTF8FromUTF16(m_cFileName), true);
     return unlink(spFilenameUTF8);    // 0 success, -1 error
 }
 

@@ -25,7 +25,7 @@ private:
     APE::CRollBuffer<short> m_rbDeltaM;
     short * m_paryM;
 	#ifdef ENABLE_SSE_ASSEMBLY
-		BOOL m_bSSEAvailable;
+		bool m_bSSEAvailable;
 	#endif
 
     __forceinline short GetSaturatedShortFromInt(int nValue) const
