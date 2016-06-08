@@ -12,6 +12,10 @@
 namespace APE
 {
 
+#define __forceinline __attribute__((always_inline))
+#define __stdcall
+#define __fastcall
+
 #define NEAR
 #define FAR
 
