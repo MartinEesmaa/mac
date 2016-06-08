@@ -78,6 +78,8 @@ int CWinFileIO::Read(void * pBuffer, unsigned int nBytesToRead, unsigned int * p
     while ((nBytesLeft > 0) && (*pBytesRead > 0) && bRetVal)
     {
         bRetVal = ::ReadFile(m_hFile, &pucBuffer[nBytesToRead - nBytesLeft], nBytesLeft, (unsigned long *) pBytesRead, NULL);
+		if (bRetVal && (*pBytesRead <= 0))
+			bRetVal = false;
         if (bRetVal)
         {
             nBytesLeft -= *pBytesRead;

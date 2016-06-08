@@ -2,7 +2,7 @@
 #ifdef APE_BACKWARDS_COMPATIBILITY
 
 #include "../APEInfo.h"
-#include "UnBitarrayOld.h"
+#include "UnBitArrayOld.h"
 #include "../BitArray.h"
 
 namespace APE
