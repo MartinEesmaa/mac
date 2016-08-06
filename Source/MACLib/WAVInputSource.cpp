@@ -200,6 +200,8 @@ int CWAVInputSource::AnalyzeSource()
     m_nDataBytes = RIFFChunkHeader.nChunkBytes;
     if (m_nDataBytes < 0)
         m_nDataBytes = m_nFileBytes - m_nHeaderBytes;
+	else if (m_nDataBytes > (m_nFileBytes - m_nHeaderBytes))
+		m_nDataBytes = m_nFileBytes - m_nHeaderBytes;
 
     // make sure the data bytes is a whole number of blocks
     if ((m_nDataBytes % m_wfeSource.nBlockAlign) != 0)
