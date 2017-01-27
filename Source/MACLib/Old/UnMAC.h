@@ -1,6 +1,6 @@
 /*****************************************************************************************
 UnMAC.h
-Copyright (C) 2000-2015 by Matthew T. Ashland   All Rights Reserved.
+Copyright (C) 2000-2017 by Matthew T. Ashland   All Rights Reserved.
 
 Methods for decompressing or verifying APE files
 

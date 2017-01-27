@@ -1,6 +1,6 @@
 /*****************************************************************************************
 APEInfo.h
-Copyright (C) 2000-2015 by Matthew T. Ashland   All Rights Reserved.
+Copyright (C) 2000-2017 by Matthew T. Ashland   All Rights Reserved.
 
 Simple method for working with APE files... it encapsulates reading, writing and getting
 file information.  Just create a CAPEInfo class, call OpenFile(), and use the class methods

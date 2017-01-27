@@ -169,7 +169,7 @@ int CAPEDecompressOld::Seek(int nBlockOffset)
 
 intn CAPEDecompressOld::GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1, intn nParam2)
 {
-    int nRetVal = 0;
+    intn nRetVal = 0;
     bool bHandled = true;
 
     switch (Field)
@@ -273,7 +273,7 @@ intn CAPEDecompressOld::GetInfo(APE_DECOMPRESS_FIELDS Field, intn nParam1, intn 
     }
 
     if (!bHandled)
-        nRetVal = (int)m_spAPEInfo->GetInfo(Field, nParam1, nParam2);
+        nRetVal = m_spAPEInfo->GetInfo(Field, nParam1, nParam2);
 
     return nRetVal;
 }
