@@ -1,6 +1,6 @@
 /*****************************************************************************************
 UnMAC.cpp
-Copyright (C) 2000-2015 by Matthew T. Ashland   All Rights Reserved.
+Copyright (C) 2000-2017 by Matthew T. Ashland   All Rights Reserved.
 
 CUnMAC - the main hub for decompression (manages all of the other components)
 
